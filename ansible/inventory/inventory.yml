@@ -1,0 +1,46 @@
+---
+unix:
+  children:
+    macos:
+      hosts:
+        Wills-MBP:
+          ansible_connection: local
+
+    linux:
+      hosts:
+        sbc1:
+          ansible_user: automation
+        sbc2:
+        sbc4:
+        nas1:
+        kvm1:
+        # vwkr[1:3]:
+        #   ansible_user: automation
+        vws1:
+          ansible_user: automation
+        vdb1:
+          ansible_user: automation
+        vin1:
+          ansible_user: automation
+
+    home:
+      hosts:
+        sbc1:
+          ansible_user: automation
+        sbc2:
+        sbc4:
+        nas1:
+        kvm1:
+        # vwkr[1:3]:
+        #   ansible_user: automation
+        vws1:
+          ansible_user: automation
+        vdb1:
+          ansible_user: automation
+        vin1:
+          ansible_user: automation
+
+    k8s_home:
+      hosts:
+        vwkr[1:3]:
+          ansible_user: automation

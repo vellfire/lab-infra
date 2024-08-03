@@ -1,0 +1,56 @@
+---
+- name: Create /opt/virt directory
+  ansible.builtin.file:
+    path: "{{ item.path }}"
+    state: directory
+    recurse: true
+    mode: '0775'
+    owner: libvirt-qemu
+    group: kvm
+  failed_when: false
+  changed_when: false
+
+- name: Create storage pool
+  community.libvirt.virt_pool:
+    name: "{{ item.name }}"
+    command: define
+    xml: "{{ lookup('template', 'libvirt-pool.xml.j2') }}"
+
+- name: Start storage pools
+  community.libvirt.virt_pool:
+    name: "{{ item.name }}"
+    state: active
+
+- name: Autostart storage pools
+  community.libvirt.virt_pool:
+    name: "{{ item.name }}"
+    autostart: true
+
+- name: Add apparmor rules for libvirt
+  ansible.builtin.lineinfile:
+    path: /etc/apparmor.d/abstractions/libvirt-qemu
+    line: '  include if exists <abstractions/libvirt-qemu.d>'
+    insertafter: '  #include <abstractions/libvirt-qemu.d>'
+    state: present
+
+- name: Create abstraction subdirectory
+  ansible.builtin.file:
+    path: /etc/apparmor.d/abstractions/libvirt-qemu.d
+    state: directory
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Create abstraction file
+  ansible.builtin.copy:
+    content: |
+      /var/lib/libvirt/images/** rwk,
+      /opt/virt/** rwk,
+      /opt/shares/virt/** rwk,
+    dest: /etc/apparmor.d/abstractions/libvirt-qemu.d/override
+    owner: root
+    group: root
+    mode: '0644'
+  notify:
+    - Restart apparmor
+    - Restart libvirt

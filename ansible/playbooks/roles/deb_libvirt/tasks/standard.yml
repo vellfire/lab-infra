@@ -1,0 +1,56 @@
+---
+- name: Configure libvirt-guests
+  ansible.builtin.template:
+    src: libvirt-guests.j2
+    dest: /etc/default/libvirt-guests
+    owner: root
+    group: root
+    mode: '0644'
+  notify: Restart libvirt
+
+- name: Configure libvirt/qemu
+  ansible.builtin.template:
+    src: qemu.conf.j2
+    dest: /etc/libvirt/qemu.conf
+    owner: root
+    group: root
+    mode: '0600'
+  notify: Restart libvirt
+
+- name: Remove default network
+  when: ansible_facts.libvirt_networks['default'] is defined
+  block:
+    - name: Stop default network
+      community.libvirt.virt_net:
+        command: destroy
+        name: default
+
+    - name: Remove default network
+      community.libvirt.virt_net:
+        command: undefine
+        name: default
+
+- name: Remove default storage pool
+  when: ansible_facts.libvirt_pools['default'] is defined
+  block:
+    - name: Stop default storage pool
+      community.libvirt.virt_pool:
+        command: destroy
+        name: default
+
+    - name: Remove default storage pool
+      community.libvirt.virt_pool:
+        command: undefine
+        name: default
+
+- name: Add virtualisation groups to user
+  ansible.builtin.user:
+    name: "{{ ansible_user }}"
+    groups: "{{ item }}"
+    append: true
+  loop:
+    - libvirt
+    - libvirt-qemu
+    - kvm
+  notify:
+    - Refresh SSH

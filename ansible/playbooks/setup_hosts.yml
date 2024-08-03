@@ -1,0 +1,257 @@
+---
+- name: Run host setup tasks
+  hosts: linux
+  gather_facts: true
+  module_defaults:
+    community.docker.docker_container:
+      default_host_ip: ""
+      restart_policy: unless-stopped
+      state: started
+      comparisons:
+        '*': strict
+        env: allow_more_present
+      security_opts:
+        - "no-new-privileges:true"
+      env:
+        TZ: "Europe/London"
+  tasks:
+    - name: Update hosts
+      ansible.builtin.include_role:
+        name: update_hosts
+        apply:
+          become: true
+          tags:
+            - update
+      tags:
+        - update
+
+    - name: Get service facts
+      ansible.builtin.service_facts:
+      tags:
+        - setup
+        - alloy
+        - docker
+        - virt
+
+    - name: Run standard setup tasks
+      when: ansible_os_family == 'Debian'
+      ansible.builtin.include_role:
+        name: deb_setup
+        apply:
+          become: true
+          tags:
+            - setup
+            - all
+      tags:
+        - setup
+        - all
+
+    - name: Setup NTP
+      when: req_ntp | default(false)
+      tags: ["time"]
+      ansible.builtin.include_role:
+        name: geerlingguy.ntp
+        apply:
+          become: true
+          tags:
+            - time
+      vars:
+        ntp_enabled: true
+        ntp_timezone: "Europe/London"
+        ntp_manage_config: true
+        ntp_servers:
+          - "10.10.0.1"
+
+    - name: Setup Alloy monitoring
+      when: req_monitor | default(false)
+      tags:
+        - alloy
+      block:
+        - name: Install and configure Alloy
+          ansible.builtin.include_role:
+            name: grafana.grafana.alloy
+            apply:
+              become: true
+          vars:
+            alloy_env_file_vars:
+              CUSTOM_ARGS: "--disable-reporting"
+            alloy_config: |
+              prometheus.exporter.unix "node" {
+                cpu { guest = {{ (ansible_facts.virtualization_role == 'guest') | lower }} }
+                disk {}
+                ethtool {}
+                hwmon {}
+                ntp {}
+                netclass {}
+                netstat {}
+                perf {}
+                sysctl {}
+                systemd {}
+                vmstat {}
+                netdev { device_exclude = "^(docker.*|br-.*|veth.*|tap.*|cni-podman.*|podman.*|tailscale.*)$" }
+                filesystem { mount_points_exclude = "^/(dev|proc|run/credentials/.+|sys|var/lib/docker/.+|opt/shares/.+)($|/)" }
+              }
+
+              prometheus.scrape "node" {
+                targets         = prometheus.exporter.unix.node.targets
+                job_name        = "node-exporter"
+                scrape_interval = "15s"
+                forward_to      = [prometheus.relabel.node.receiver]
+              }
+
+              prometheus.relabel "node" {
+                rule {
+                  target_label = "instance"
+                  replacement  = env("HOSTNAME")
+                }
+                forward_to = [prometheus.remote_write.prom.receiver]
+              }
+
+              prometheus.remote_write "prom" {
+                endpoint { url = "https://{{ lookup('ripplefcl.bwscache.secret', 'prometheus_domain').value }}/api/v1/write" }
+              }
+
+              loki.source.journal "all" {
+                max_age    = "12h"
+                path       = "/var/log/journal"
+                labels     = { job = "systemd-journal", host = env("HOSTNAME"), source = "journal" }
+                forward_to = [loki.process.journal.receiver]
+              }
+
+              {% raw %}loki.process "journal" {
+                stage.labels {
+                  values = {
+                    priority = "{{ .Priority }}",
+                    unit     = "{{ or .__journal__SYSTEMD_UNIT .__journal__SYSTEMD_USER_UNIT \"\" }}",
+                  }
+                }
+                stage.match {
+                  selector = "{unit=~\"alloy.*\"}"
+                  action   = "drop"
+                }
+                forward_to = [loki.write.loki.receiver]
+              }{% endraw %}
+
+              loki.source.file "system_logs" {
+                targets = [
+                  { __path__ = "/var/log/auth.log", job = "auth", host = env("HOSTNAME"), source = "file" },
+                  { __path__ = "/var/log/kern.log", job = "kernel", host = env("HOSTNAME"), source = "file" },
+                  { __path__ = "/var/log/syslog", job = "syslog", host = env("HOSTNAME"), source = "file" },
+                ]
+                forward_to = [loki.process.system_files.receiver]
+              }
+
+              {% raw %}loki.process "system_files" {
+                stage.static_labels { values = { log_type = "file" } }
+                stage.regex {
+                  expression = "^(?P<timestamp>\\S+\\s+\\d+\\s+\\S+)\\s+(?P<hostname>\\S+)\\s+(?P<service>\\S+?)(?:\\[(?P<pid>\\d+)\\])?:\\s+(?P<message>.*)$"
+                }
+                stage.labels { values = { service = "{{ .service }}" } }
+                stage.timestamp {
+                  source = "timestamp"
+                  format = "Jan _2 15:04:05"
+                }
+                forward_to = [loki.write.loki.receiver]
+              }{% endraw %}
+
+              loki.write "loki" {
+                endpoint { url = "https://{{ lookup('ripplefcl.bwscache.secret', 'loki_domain').value }}/loki/api/v1/push" }
+              }
+
+        - name: Add alloy user to systemd-journal group
+          become: true
+          ansible.builtin.user:
+            name: alloy
+            groups: systemd-journal
+            append: true
+          notify: Restart alloy service
+
+    - name: Setup NUT client
+      when: req_nut | default(false)
+      tags:
+        - nut
+      block:
+        - name: Lookup NUT secret
+          ansible.builtin.set_fact:
+            nut_client_password: "{{ lookup('ripplefcl.bwscache.secret', 'nut_pass').value }}"
+          no_log: true
+
+        - name: Install NUT client
+          ansible.builtin.include_role:
+            name: geerlingguy.nut_client
+            apply:
+              become: true
+              tags:
+                - nut
+              no_log: true
+
+    - name: Setup docker
+      when:
+        - req_docker | default(false)
+      ansible.builtin.include_role:
+        name: geerlingguy.docker
+        apply:
+          become: true
+          tags:
+            - docker
+      tags:
+        - docker
+
+    - name: Configure meshmon
+      when: req_meshmon | default(false)
+      ansible.builtin.include_role:
+        name: meshmon
+        apply:
+          become: true
+          tags:
+            - docker
+            - meshmon
+      tags:
+        - docker
+        - meshmon
+
+    - name: Setup pods
+      when:
+        - pods is defined
+      ansible.builtin.include_role:
+        name: setup_pods
+        apply:
+          become: false
+          tags:
+            - docker
+            - pods
+      tags:
+        - docker
+        - pods
+
+    - name: Setup monitoring stack
+      when: inventory_hostname == 'sbc2'
+      tags:
+        - pods
+        - monitor
+      block:
+        - name: Lookup monitor secrets
+          ansible.builtin.set_fact:
+            mktxp_pass: "{{ lookup('ripplefcl.bwscache.secret', 'mktxp_pass').value }}"
+          no_log: true
+
+        - name: Include monitor role
+          ansible.builtin.include_role:
+            name: monitor
+            apply:
+              tags:
+                - pods
+                - monitor
+
+    - name: Setup libvirt
+      when:
+        - req_libvirt | default(false)
+        - ansible_os_family == 'Debian'
+      ansible.builtin.include_role:
+        name: deb_libvirt
+        apply:
+          become: true
+          tags:
+            - virt
+      tags:
+        - virt

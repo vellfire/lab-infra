@@ -1,0 +1,102 @@
+---
+monitor_pods_path: /opt/pods/monitor
+
+monitor_pods_def:
+  - name: prometheus
+    image: quay.io/prometheus/prometheus:v3.6.0
+    user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
+    networks: [{name: monitor}]
+    ports: ["9090:9090"]
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
+      - "--web.enable-remote-write-receiver"
+    volumes:
+      - "{{ monitor_pods_path }}/prometheus/config/prometheus.yml:/etc/prometheus/prometheus.yml:ro"
+      - "{{ monitor_pods_path }}/prometheus/data:/prometheus"
+
+  - name: mktxp
+    image: ghcr.io/akpw/mktxp:1.2.14
+    user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
+    networks: [{name: monitor}]
+    volumes:
+      - "{{ monitor_pods_path }}/mktxp/config:/mktxp"
+
+  - name: mysqld_exporter
+    image: docker.io/prom/mysqld-exporter:v0.18.0
+    user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
+    networks: [{name: monitor}]
+    env:
+      MYSQLD_EXPORTER_PASSWORD: "{{ lookup('ripplefcl.bwscache.secret', 'dad_db_root').value }}"
+    volumes:
+      - "{{ monitor_pods_path }}/mysqld_exporter/config/user_my.cnf:/.my.cnf"
+
+  - name: grafana
+    image: docker.io/grafana/grafana:12.2.0
+    user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
+    networks: [{name: monitor}]
+    ports: ["3000:3000"]
+    env:
+      GF_INSTALL_PLUGINS: grafana-clock-panel,natel-discrete-panel,grafana-piechart-panel
+    volumes:
+      - "{{ monitor_pods_path }}/grafana/data:/var/lib/grafana"
+
+  - name: loki
+    image: grafana/loki:3.5.5
+    user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
+    networks: [{name: monitor}]
+    ports: ["3100:3100"]
+    volumes:
+      - "{{ monitor_pods_path }}/loki/config:/mnt/config"
+      - "{{ monitor_pods_path }}/loki/data:/loki"
+
+monitor_prometheus_config:
+  - job_name: "node-exporter"
+    scheme: http
+    static_configs:
+      - targets:
+          - 'homeassistant:9100'
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: instance
+        regex: "([^:]+).*"
+        replacement: '${1}'
+
+  - job_name: "gravity"
+    static_configs:
+      - targets:
+          - 10.10.0.3:8009
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: instance
+        regex: "([^:]+).*"
+        replacement: '${1}'
+
+  - job_name: "unpoller"
+    scheme: http
+    static_configs:
+      - targets: ["sbc4:9130"]
+
+  - job_name: "mktxp"
+    static_configs:
+      - targets: ["mktxp:49090"]
+
+  - job_name: mysql
+    metrics_path: /probe
+    static_configs:
+      - targets: ["vdb1:15000"]
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: mysqld_exporter:9104
+
+  - job_name: incus
+    metrics_path: '/1.0/metrics'
+    scheme: 'https'
+    tls_config:
+      insecure_skip_verify: true
+    static_configs:
+      - targets: ['kvm1:8443']

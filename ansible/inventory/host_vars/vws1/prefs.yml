@@ -1,0 +1,6 @@
+---
+req_nut: false
+req_docker: true
+req_libvirt: false
+req_monitor: true
+req_ntp: true

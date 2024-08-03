@@ -1,0 +1,39 @@
+#cloud-config
+hostname: ${name}
+package_update: true
+package_upgrade: true
+packages:
+- "curl"
+- "incus-agent"
+- "openssh-server"
+- "ssh-import-id"
+timezone: ${timezone}
+users:
+- name: ${standard_username}
+  shell: "/bin/bash"
+  ssh_authorized_keys:
+    - ${standard_ssh_key}
+    - ${automation_ssh_key}
+  sudo: "ALL=(ALL) NOPASSWD:ALL"
+- name: ${automation_username}
+  shell: "/bin/bash"
+  ssh_authorized_keys:
+    - ${standard_ssh_key}
+    - ${automation_ssh_key}
+  sudo: "ALL=(ALL) NOPASSWD:ALL"
+  uid: ${automation_uid}
+- name: ${dad_username}
+  shell: "/bin/bash"
+  ssh_authorized_keys:
+    - ${dad_ssh_key}
+    - ${standard_ssh_key}
+  uid: ${dad_uid}
+runcmd:
+  - systemctl enable ssh.service
+  - systemctl start ssh.service
+disk_setup:
+  "/dev/sdb": {"layout": true, "overwrite": false, "table_type": "gpt"}
+fs_setup:
+- {"device": "/dev/sdb1", "filesystem": "ext4", "label": "data"}
+mounts:
+- ["/dev/sdb1", "/opt"]

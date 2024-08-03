@@ -1,0 +1,13 @@
+---
+- name: Refresh SSH
+  ansible.builtin.meta: reset_connection
+
+- name: Restart libvirt
+  ansible.builtin.systemd:
+    name: libvirtd
+    state: restarted
+
+- name: Restart apparmor
+  ansible.builtin.systemd:
+    name: apparmor
+    state: restarted

@@ -1,0 +1,32 @@
+---
+- name: Create /etc/qemu directory
+  ansible.builtin.file:
+    path: /etc/qemu
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: Add to qemu bridge helper
+  ansible.builtin.template:
+    src: qemu-bridge.conf.j2
+    dest: /etc/qemu/bridge.conf
+    owner: root
+    group: root
+    mode: '0640'
+
+- name: "Configure libvirt network: {{ item.name }}"
+  community.libvirt.virt_net:
+    name: "{{ item.name }}"
+    command: define
+    xml: "{{ lookup('template', 'libvirt-bridge.xml.j2') }}"
+
+- name: "Start libvirt network: {{ item.name }}"
+  community.libvirt.virt_net:
+    name: "{{ item.name }}"
+    state: active
+
+- name: "Enable autostart on libvirt network: {{ item.name }}"
+  community.libvirt.virt_net:
+    name: "{{ item.name }}"
+    autostart: true

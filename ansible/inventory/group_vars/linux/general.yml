@@ -1,0 +1,22 @@
+---
+# Standard Variables
+ansible_user: will
+automation_user: automation
+automation_uid: 1337
+
+# Docker Variables
+docker_edition: 'ce'
+docker_packages:
+  - "docker-{{ docker_edition }}"
+  - "docker-{{ docker_edition }}-cli"
+  - "docker-{{ docker_edition }}-rootless-extras"
+docker_packages_state: present
+docker_users:
+  - "{{ ansible_user }}"
+  - "{{ automation_user }}"
+
+# Nut Client Configuration
+nut_client_server: sbc1
+nut_client_username: observer
+nut_client_state: started
+nut_client_enabled: true

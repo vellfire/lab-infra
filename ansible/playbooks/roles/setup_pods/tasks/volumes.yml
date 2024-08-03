@@ -1,0 +1,23 @@
+---
+- name: "Checking for volume"
+  register: setup_pods_volume
+  failed_when: false
+  community.docker.docker_volume_info:
+    name: "{{ pod_volume.name }}"
+  loop: "{{ pod_volumes }}"
+  loop_control:
+    label: "{{ pod_volume.name }}"
+    loop_var: pod_volume
+    index_var: volume_index
+
+- name: "Create volume"
+  when: setup_pods_volume.results[volume_index].exists is false
+  community.docker.docker_volume:
+    name: "{{ pod_volume.name }}"
+    driver: "{{ pod_volume.driver }}"
+    state: present
+  loop: "{{ pod_volumes }}"
+  loop_control:
+    label: "{{ pod_volume.name }}"
+    loop_var: pod_volume
+    index_var: volume_index

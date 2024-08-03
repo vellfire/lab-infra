@@ -1,0 +1,108 @@
+---
+standard_pod_path_prefix: "/opt/pods"
+storage_pod_path_prefix: "/tank/pods"
+
+pods:
+  - name: gravity
+    hostname: "{{ inventory_hostname }}"
+    image: ghcr.io/beryju/gravity:v0.28.1
+    network_mode: host
+    env:
+      LOG_LEVEL: info
+    log_driver: json-file
+    log_options:
+      max-size: "10m"
+      max-file: "3"
+    volumes: ["gravity_data:/data"]
+
+  - name: scrutiny-collector
+    image: ghcr.io/analogj/scrutiny:v0.8.1-collector
+    capabilities:
+      - SYS_ADMIN
+      - SYS_RAWIO
+    env:
+      COLLECTOR_API_ENDPOINT: "{{ lookup('ripplefcl.bwscache.secret', 'scrutiny_domain').value }}"
+      COLLECTOR_HOST_ID: "{{ inventory_hostname }}"
+      COLLECTOR_CRON_SCHEDULE: "0 * * * *"
+      COLLECTOR_RUN_STARTUP: "true"
+    volumes: ["/run/udev:/run/udev:ro"]
+    devices:
+      - /dev/sda
+      - /dev/sdb
+      - /dev/sdc
+
+  - name: unifi-db
+    image: public.ecr.aws/docker/library/mongo:8.0.15
+    networks: [{ name: unifi-net }]
+    env:
+      MONGO_INITDB_ROOT_USERNAME: "root"
+      MONGO_INITDB_ROOT_PASSWORD: "{{ lookup('ripplefcl.bwscache.secret', 'unifi_db_pass').value }}"
+      MONGO_USER: "unifi"
+      MONGO_PASS: "{{ lookup('ripplefcl.bwscache.secret', 'unifi_db_pass').value }}"
+      MONGO_DBNAME: "unifi"
+      MONGO_AUTHSOURCE: "admin"
+    volumes:
+      - "/opt/pods/unifi/db:/data/db"
+      - "/opt/pods/unifi/init-mongo.sh:/docker-entrypoint-initdb.d/init-mongo.sh:ro"
+
+  - name: unifi-app
+    image: ghcr.io/linuxserver/unifi-network-application:9.4.19
+    networks: [{ name: unifi-net }]
+    ports:
+      - 8080:8080
+      - 8443:8443
+      - 8880:8880
+      - 8843:8843
+      - 27117:27117
+      - 3478:3478/udp
+      - 10001:10001/udp
+    env:
+      PUID: "{{ ansible_facts.user_uid | string }}"
+      PGID: "{{ ansible_facts.user_gid | string }}"
+      MONGO_INITDB_ROOT_USERNAME: "root"
+      MONGO_INITDB_ROOT_PASSWORD: "{{ lookup('ripplefcl.bwscache.secret', 'unifi_db_pass').value }}"
+      MONGO_USER: "unifi"
+      MONGO_PASS: "{{ lookup('ripplefcl.bwscache.secret', 'unifi_db_pass').value }}"
+      MONGO_DBNAME: "unifi"
+      MONGO_AUTHSOURCE: "admin"
+      MONGO_HOST: "unifi-db"
+      MONGO_PORT: "27017"
+      MEM_STARTUP: "512"
+      MEM_LIMIT: "1024"
+    volumes: ["/opt/pods/unifi/app:/config"]
+
+  - name: unpoller
+    image: ghcr.io/unpoller/unpoller:v2.15.4
+    networks: [{ name: unifi-net }]
+    ports: ["9130:9130"]
+    env:
+      UP_UNIFI_DEFAULT_USER: poller
+      UP_UNIFI_DEFAULT_PASS: "{{ lookup('ripplefcl.bwscache.secret', 'unpoller_pass').value }}"
+      UP_UNIFI_DYNAMIC: "false"
+      UP_UNIFI_DEFAULT_URL: "https://unifi-app:8443"
+      UP_UNIFI_DEFAULT_VERIFY_SSL: "false"
+      UP_UNIFI_DEFAULT_SAVE_SITES: "true"
+      UP_INFLUXDB_DISABLE: "true"
+      UP_POLLER_DEBUG: "true"
+
+  - name: garage
+    image: docker.io/dxflrs/garage:v2.1.0
+    network_mode: host
+    volumes:
+      - "/tank/pods/garage/config/garage.toml:/etc/garage.toml"
+      - "/tank/pods/garage/meta:/var/lib/garage/meta"
+      - "/tank/pods/garage/data:/var/lib/garage/data"
+
+  - name: meshmon
+    image: ghcr.io/ripplefcl/meshmon:v3.1.1
+    user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
+    ports: ["8000:8000"]
+    volumes: ["{{ standard_pod_path_prefix }}/meshmon/config:/app/config"]
+
+pod_volumes:
+  - name: gravity_data
+    driver: local
+
+pod_networks:
+  - name: unifi-net
+    driver: local

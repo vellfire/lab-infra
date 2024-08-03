@@ -1,0 +1,12 @@
+---
+- name: Create docker networks
+  when: pod_networks is defined
+  ansible.builtin.include_tasks: networks.yml
+
+- name: Create docker volumes
+  when: pod_volumes is defined
+  ansible.builtin.include_tasks: volumes.yml
+
+- name: Create docker containers
+  when: pods is defined
+  ansible.builtin.include_tasks: pods.yml
