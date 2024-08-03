@@ -1,0 +1,7 @@
+---
+proxmox:
+  hosts:
+    pbs.mgmt.lan:
+    pve1.mgmt.lan:
+    pve2.mgmt.lan:
+    pve3.mgmt.lan:

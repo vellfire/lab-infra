@@ -1,0 +1,41 @@
+---
+- name: Update Debian-based Hosts
+  hosts: debian
+  become: true
+  tasks:
+    - name: Update APT cache, upgrade hosts, clean up
+      ansible.builtin.apt:
+        update_cache: true
+        cache_valid_time: 3600
+        upgrade: full
+        autoremove: true
+        autoclean: true
+
+- name: Update RHEL Hosts
+  hosts: rhel
+  become: true
+  tasks:
+    - name: Upgrade all DNF packages
+      ansible.builtin.dnf:
+        state: latest
+        name: '*' # noqa package-latest
+
+    - name: DNF autoremove packages
+      ansible.builtin.dnf:
+        autoremove: true
+
+    - name: Cleanup DNF
+      ansible.builtin.command:
+        cmd: dnf clean all
+      changed_when: true
+
+- name: Update PVE Hosts
+  hosts: proxmox
+  tasks:
+    - name: Full-upgrade all APT packages
+      ansible.builtin.apt:
+        update_cache: true
+        cache_valid_time: 3600
+        upgrade: full
+        autoremove: true
+        autoclean: true

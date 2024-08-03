@@ -1,0 +1,14 @@
+---
+debian:
+  hosts:
+    pi3b.mgmt.lan:
+    core.vms.lan:
+    store.vms.lan:
+    media.vms.lan:
+    db1.vms.lan:
+    wifi.vms.lan:
+  children:
+    ubuntu:
+      hosts:
+        eclipse.home.arpa:
+
