@@ -1,0 +1,18 @@
+---
+linux:
+  children:
+    debian:
+      hosts:
+        pi3b.mgmt.lan:
+        core.vms.lan:
+        store.vms.lan:
+        media.vms.lan:
+        db1.vms.lan:
+        wifi.vms.lan:
+    
+    rhel:
+      children:
+        rocky:
+          hosts:
+            amstamps-web.vms.lan:
+            bntva-web.vms.lan:

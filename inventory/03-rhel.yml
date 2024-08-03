@@ -1,8 +1,0 @@
----
-rhel:
-  hosts:
-  children:
-    rocky:
-      hosts:
-        amstamps-web.vms.lan:
-        bntva-web.vms.lan:
