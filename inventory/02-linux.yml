@@ -9,6 +9,8 @@ linux:
         media.vms.lan:
         db1.vms.lan:
         wifi.vms.lan:
+        librenms.vms.lan:
+        graf.vms.lan:
     
     rhel:
       children:
