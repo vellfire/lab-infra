@@ -18,3 +18,13 @@ linux:
           hosts:
             amstamps-web.vms.lan:
             bntva-web.vms.lan:
+
+    docker:
+      hosts:
+        pi3b.mgmt.lan:
+        core.vms.lan:
+        store.vms.lan:
+        media.vms.lan:
+        db1.vms.lan:
+        wifi.vms.lan:
+        graf.vms.lan:
