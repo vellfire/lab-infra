@@ -25,9 +25,10 @@
             autoremove: true
 
         - name: Cleanup DNF
-          ansible.builtin.command:
-            cmd: dnf clean all
-          changed_when: true
+          ansible.builtin.shell:
+            cmd: "set -o pipefail && dnf clean all | awk '{print $1}'"
+          register: dnf_clean
+          changed_when: dnf_clean.rc > 0
 
     - name: Restart Linux hosts if required
       ansible.builtin.stat:
