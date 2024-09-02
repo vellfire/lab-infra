@@ -4,7 +4,7 @@ linux:
     debian:
       hosts:
         xoa.mgt.lan:
-        pi3b.mgmt.lan:
+        pi3b.default.lan:
         do1.virt.lan:
     
     rhel:
@@ -17,5 +17,5 @@ linux:
     docker:
       hosts:
         xoa.mgt.lan:
-        pi3b.mgmt.lan:
+        pi3b.default.lan:
         do1.virt.lan:
