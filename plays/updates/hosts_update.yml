@@ -30,7 +30,7 @@
           register: dnf_clean
           changed_when: dnf_clean.rc > 0
 
-    - name: Restart Linux hosts if required
+    - name: Check if reboot is required
       ansible.builtin.stat:
         path: /var/run/reboot-required
       register: reboot_required
@@ -38,14 +38,3 @@
     - name: Reboot if required
       ansible.builtin.reboot:
       when: reboot_required.stat.exists
-
-- name: Update PVE Hosts
-  hosts: proxmox
-  tasks:
-    - name: Full-upgrade all APT packages
-      ansible.builtin.apt:
-        update_cache: true
-        cache_valid_time: 3600
-        upgrade: full
-        autoremove: true
-        autoclean: true

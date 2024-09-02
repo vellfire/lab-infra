@@ -1,0 +1,21 @@
+---
+linux:
+  children:
+    debian:
+      hosts:
+        xoa.mgt.lan:
+        pi3b.mgmt.lan:
+        do1.virt.lan:
+    
+    rhel:
+      children:
+        rocky:
+          hosts:
+            amstamps-web.virt.lan:
+            bntva-web.virt.lan:
+
+    docker:
+      hosts:
+        xoa.mgt.lan:
+        pi3b.mgmt.lan:
+        do1.virt.lan:
