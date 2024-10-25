@@ -3,9 +3,11 @@ linux:
   children:
     debian:
       hosts:
-        xoa.mgt.lan:
-        pi3b.default.lan:
+        media.mgt.lan:
+        pi3b.mgt.lan:
         do1.virt.lan:
+        wifi.mgt.lan:
+
     
     rhel:
       children:
@@ -13,9 +15,14 @@ linux:
           hosts:
             amstamps-web.virt.lan:
             bntva-web.virt.lan:
+            mcd-wg1:
+              ansible_user: ec2-user
+            do2.virt.lan:
 
     docker:
       hosts:
-        xoa.mgt.lan:
-        pi3b.default.lan:
+        media.mgt.lan:
+        pi3b.mgt.lan:
         do1.virt.lan:
+        do2.virt.lan:
+        wifi.mgt.lan:
