@@ -3,10 +3,10 @@ linux:
   children:
     debian:
       hosts:
-        media.mgt.lan:
-        pi3b.mgt.lan:
-        do1.virt.lan:
-        wifi.mgt.lan:
+        smi-md-01.mgt.lan:
+        smi-pi-01.mgt.lan:
+        smi-do-01.virt.lan:
+        smi-ui-01.mgt.lan:
 
     
     rhel:
@@ -17,12 +17,12 @@ linux:
             bntva-web.virt.lan:
             mcd-wg1:
               ansible_user: ec2-user
-            do2.virt.lan:
+            smi-do-02.virt.lan:
 
     docker:
       hosts:
-        media.mgt.lan:
-        pi3b.mgt.lan:
-        do1.virt.lan:
-        do2.virt.lan:
-        wifi.mgt.lan:
+        smi-md-01.mgt.lan:
+        smi-pi-01.mgt.lan:
+        smi-do-01.virt.lan:
+        smi-do-02.virt.lan:
+        smi-ui-01.mgt.lan:
