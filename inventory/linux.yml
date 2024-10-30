@@ -18,6 +18,7 @@ linux:
             mcd-wg1:
               ansible_user: ec2-user
             smi-do-02.virt.lan:
+            smi-db-01.virt.lan:
 
     docker:
       hosts:
@@ -25,4 +26,5 @@ linux:
         smi-pi-01.mgt.lan:
         smi-do-01.virt.lan:
         smi-do-02.virt.lan:
+        smi-db-01.virt.lan:
         smi-ui-01.mgt.lan:
