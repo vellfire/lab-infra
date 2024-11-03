@@ -1,0 +1,41 @@
+---
+- name: Update Debian-based Hosts
+  hosts: linux
+  become: true
+  tasks:
+    - name: Install Packages
+      when: ansible_os_family == 'RedHat'
+      block:
+        - name: Install epel-release
+          ansible.builtin.dnf:
+            name: epel-release
+            state: present
+
+        - name: Install standard packages
+          ansible.builtin.dnf:
+            name:
+              - nano
+              - vim
+              - htop
+              - tmux
+              - PackageKit-command-not-found
+              - zsh
+              - thefuck
+              - autojump
+              - tmux
+              - rsync
+              - git
+            state: present
+
+        - name: Cleanup DNF
+          ansible.builtin.shell:
+            cmd: "set -o pipefail && dnf clean all | awk '{print $1}'"
+          register: dnf_clean
+          changed_when: dnf_clean.rc > 0
+
+    - name: Add smithy group
+      become: true
+      ansible.builtin.group:
+        name: smithy
+        state: present
+        gid: 10337

@@ -8,21 +8,22 @@ linux:
         smi-do-01.virt.lan:
         smi-ui-01.mgt.lan:
 
-    
     rhel:
       children:
         rocky:
           hosts:
             amstamps-web.virt.lan:
             bntva-web.virt.lan:
-            mcd-wg1:
-              ansible_user: ec2-user
+            # mcd-wg1:
+              # ansible_user: ec2-user
             smi-do-02.virt.lan:
             smi-db-01.virt.lan:
+            smi-rl-01.mgt.lan:
 
     docker:
       hosts:
         smi-md-01.mgt.lan:
+        smi-rl-01.mgt.lan:
         smi-pi-01.mgt.lan:
         smi-do-01.virt.lan:
         smi-do-02.virt.lan:
