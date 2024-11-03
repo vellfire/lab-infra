@@ -1,0 +1,17 @@
+---
+- name: Update Debian-based Hosts
+  hosts: smi-rl-02
+  become: true
+  tasks:
+    - name: Install epel-release
+      ansible.builtin.dnf:
+        name: elrepo-release
+        state: present
+
+    - name: Install LTS kernel
+      ansible.builtin.dnf:
+        enablerepo: elrepo-kernel
+        name:
+          - kernel-lt
+          - kernel-lt-devel
+        state: present
