@@ -1,5 +1,5 @@
 ---
-- name: Update Debian-based Hosts
+- name: Setup Media box
   hosts: smi-rl-02
   become: true
   tasks:
