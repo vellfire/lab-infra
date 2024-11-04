@@ -13,10 +13,30 @@
         name: elrepo-release
         state: present
 
-    - name: Install LTS kernel
+    - name: Install mainline kernel
       ansible.builtin.dnf:
         enablerepo: elrepo-kernel
         name:
-          - kernel-lt
-          - kernel-lt-devel
+          - kernel-ml
+          - kernel-ml-devel
         state: present
+
+    - name: Allow loading of GuC & HuC hardware for low-power encode
+      ansible.builtin.copy:
+        dest: /etc/modprobe.d/i915.conf
+        content: 'options i915 enable_guc=2'
+        mode: '0755'
+        owner: root
+
+    - name: Regen initramfs
+      ansible.builtin.command: dracut -fp --regenerate-all
+      register: 'draout'
+      changed_when: draout is succeeded
+
+    - name: Regen GRUB config
+      ansible.builtin.command: grub2-mkconfig -o /boot/grub2/grub.cfg
+      register: 'grubout'
+      changed_when: grubout is succeeded
+
+    - name: Reboot System
+      ansible.builtin.reboot:
