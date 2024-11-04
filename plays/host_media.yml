@@ -2,8 +2,13 @@
 - name: Setup Media box
   hosts: smi-rl-02
   become: true
+  roles:
+    - geerlingguy.docker
+    - geerlingguy.pip
+    - host_setup
+
   tasks:
-    - name: Install epel-release
+    - name: Install elrepo-release
       ansible.builtin.dnf:
         name: elrepo-release
         state: present
