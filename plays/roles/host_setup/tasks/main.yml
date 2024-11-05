@@ -21,6 +21,7 @@
           - tmux
           - rsync
           - git
+          - nfs-utils
         state: present
 
     - name: Cleanup DNF
