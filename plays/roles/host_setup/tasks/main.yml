@@ -22,6 +22,7 @@
           - rsync
           - git
           - nfs-utils
+          - nload
         state: present
 
     - name: Cleanup DNF
