@@ -23,7 +23,16 @@
           - git
           - nfs-utils
           - nload
+          - net-tools
+          - tcpdump
+          - cockpit
         state: present
+
+    - name: Start Cockpit
+      ansible.builtin.systemd_service:
+        name: cockpit
+        enabled: true
+        state: started
 
     - name: Cleanup DNF
       ansible.builtin.shell:
