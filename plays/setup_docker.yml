@@ -1,5 +1,5 @@
 ---
-- name: Run Geerlingguy Roles to Install Docker & Docker Python
+- name: Run Geerlingguy Roles to Install Docker & Python
   hosts: docker
   become: true
   roles:

@@ -1,0 +1,6 @@
+---
+- name: Run host setup play
+  hosts: rhel
+  become: true
+  roles:
+    - host_setup
