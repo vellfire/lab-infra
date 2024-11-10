@@ -1,48 +1,52 @@
 ---
-- name: Install Packages
-  when: ansible_os_family == 'RedHat'
-  block:
-    - name: Install epel-release
-      ansible.builtin.dnf:
-        name: epel-release
-        state: present
+- name: Install epel-release
+  ansible.builtin.dnf:
+    name: epel-release
+    state: present
 
-    - name: Install standard packages
-      ansible.builtin.dnf:
-        name:
-          - nano
-          - vim
-          - htop
-          - tmux
-          - PackageKit-command-not-found
-          - zsh
-          - thefuck
-          - autojump
-          - tmux
-          - rsync
-          - git
-          - nfs-utils
-          - nload
-          - net-tools
-          - tcpdump
-          - cockpit
-        state: present
+- name: Install standard packages
+  ansible.builtin.dnf:
+    name:
+      - nano
+      - vim
+      - htop
+      - tmux
+      - PackageKit-command-not-found
+      - zsh
+      - thefuck
+      - autojump
+      - tmux
+      - rsync
+      - git
+      - nfs-utils
+      - nload
+      - net-tools
+      - tcpdump
+      - cockpit
+    state: present
 
-    - name: Start Cockpit
-      ansible.builtin.systemd_service:
-        name: cockpit
-        enabled: true
-        state: started
+- name: Start Cockpit
+  ansible.builtin.systemd_service:
+    name: cockpit
+    enabled: true
+    state: started
 
-    - name: Cleanup DNF
-      ansible.builtin.shell:
-        cmd: "set -o pipefail && dnf clean all | awk '{print $1}'"
-      register: dnf_clean
-      changed_when: dnf_clean.rc > 0
+- name: Cleanup DNF
+  ansible.builtin.shell:
+    cmd: "set -o pipefail && dnf clean all | awk '{print $1}'"
+  register: dnf_clean
+  changed_when: dnf_clean.rc > 0
 
-- name: Add smithy group
-  become: true
+- name: Create smithy group
   ansible.builtin.group:
     name: smithy
-    state: present
     gid: 10337
+    state: present
+
+- name: Add user to Smithy group
+  ansible.builtin.user:
+    name: "{{ ansible_user }}"
+    groups: smithy
+    append: true
+  notify:
+    - Refresh SSH

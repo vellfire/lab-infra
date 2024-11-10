@@ -54,3 +54,14 @@ linux:
           ansible_host: smi-db-01.virt.lan
         smi-ui-01:
           ansible_host: smi-ui-01.mgt.lan
+
+    virt:
+      hosts:
+            # smi-rl-01:
+              # ansible_host: smi-rl-01.mgt.lan
+            smi-rl-02:
+              ansible_host: smi-rl-02.mgt.lan
+            smi-rl-03:
+              ansible_host: smi-rl-03.mgt.lan
+            smi-rl-04:
+              ansible_host: smi-rl-04.mgt.lan

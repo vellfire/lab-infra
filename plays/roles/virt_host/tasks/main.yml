@@ -1,0 +1,28 @@
+---
+- name: Install packages
+  ansible.builtin.dnf:
+    name:
+      - qemu-kvm
+      - qemu-img
+      - edk2-ovmf
+      - libvirt
+      - virt-install
+      - bridge-utils
+      - virt-top
+      - libguestfs-tools
+      - cockpit-machines
+    state: present
+
+- name: Start libvirtd
+  ansible.builtin.systemd_service:
+    name: libvirtd
+    state: started
+    enabled: true
+
+- name: Add groups
+  ansible.builtin.user:
+    name: "{{ ansible_user }}"
+    append: true
+    groups: libvirt,kvm
+  notify:
+    - Refresh SSH

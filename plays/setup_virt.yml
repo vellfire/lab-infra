@@ -1,0 +1,13 @@
+---
+- name: Run Docker play
+  import_playbook: setup_docker.yml
+- name: Run host setup play
+  hosts: virt
+  become: true
+  roles:
+    - host_setup
+    - virt_host
+
+  handlers:
+    - name: Refresh SSH
+      ansible.builtin.meta: reset_connection
