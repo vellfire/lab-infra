@@ -25,23 +25,23 @@ linux:
               ansible_host: smi-do-02.virt.lan
             smi-db-01:
               ansible_host: smi-db-01.virt.lan
-            smi-rl-01:
-              ansible_host: smi-rl-01.mgt.lan
+            # smi-rl-01:
+              # ansible_host: smi-rl-01.mgt.lan
             smi-rl-02:
               ansible_host: smi-rl-02.mgt.lan
-            # smi-rl-03:
-              # ansible_host: smi-rl-03.mgt.lan
+            smi-rl-03:
+              ansible_host: smi-rl-03.mgt.lan
             smi-rl-04:
               ansible_host: smi-rl-04.mgt.lan
 
     docker:
       hosts:
-        smi-rl-01:
-          ansible_host: smi-rl-01.mgt.lan
+        # smi-rl-01:
+          # ansible_host: smi-rl-01.mgt.lan
         smi-rl-02:
           ansible_host: smi-rl-02.mgt.lan
-        # smi-rl-03:
-          # ansible_host: smi-rl-03.mgt.lan
+        smi-rl-03:
+          ansible_host: smi-rl-03.mgt.lan
         smi-rl-04:
           ansible_host: smi-rl-04.mgt.lan
         smi-pi-01:
