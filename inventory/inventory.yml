@@ -33,6 +33,8 @@ linux:
               ansible_host: smi-rl-03.mgt.lan
             smi-rl-04:
               ansible_host: smi-rl-04.mgt.lan
+            ovh-rl-01:
+              ansible_host: ovh-rl-01.ovh.lan
 
     docker:
       hosts:
@@ -44,6 +46,8 @@ linux:
           ansible_host: smi-rl-03.mgt.lan
         smi-rl-04:
           ansible_host: smi-rl-04.mgt.lan
+        ovh-rl-01:
+          ansible_host: ovh-rl-01.ovh.lan
         smi-pi-01:
           ansible_host: smi-pi-01.mgt.lan
         smi-do-01:
