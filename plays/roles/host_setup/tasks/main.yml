@@ -23,6 +23,7 @@
       - net-tools
       - tcpdump
       - cockpit
+      - bind-utils
     state: present
 
 - name: Start Cockpit
