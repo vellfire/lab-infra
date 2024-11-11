@@ -3,8 +3,6 @@ linux:
   children:
     debian:
       hosts:
-        smi-md-01:
-          ansible_host: smi-md-01.mgt.lan
         smi-pi-01:
           ansible_host: smi-pi-01.mgt.lan
         smi-do-01:
@@ -27,19 +25,29 @@ linux:
               ansible_host: smi-do-02.virt.lan
             smi-db-01:
               ansible_host: smi-db-01.virt.lan
-            smi-rl-01:
-              ansible_host: smi-rl-01.mgt.lan
-            smi-rl-02.mgt.lan:
+            # smi-rl-01:
+              # ansible_host: smi-rl-01.mgt.lan
+            smi-rl-02:
               ansible_host: smi-rl-02.mgt.lan
+            smi-rl-03:
+              ansible_host: smi-rl-03.mgt.lan
+            smi-rl-04:
+              ansible_host: smi-rl-04.mgt.lan
+            ovh-rl-01:
+              ansible_host: ovh-rl-01.ovh.lan
 
     docker:
       hosts:
-        smi-md-01:
-          ansible_host: smi-md-01.mgt.lan
-        smi-rl-01:
-          ansible_host: smi-rl-01.mgt.lan
+        # smi-rl-01:
+          # ansible_host: smi-rl-01.mgt.lan
         smi-rl-02:
           ansible_host: smi-rl-02.mgt.lan
+        smi-rl-03:
+          ansible_host: smi-rl-03.mgt.lan
+        smi-rl-04:
+          ansible_host: smi-rl-04.mgt.lan
+        ovh-rl-01:
+          ansible_host: ovh-rl-01.ovh.lan
         smi-pi-01:
           ansible_host: smi-pi-01.mgt.lan
         smi-do-01:
@@ -50,3 +58,14 @@ linux:
           ansible_host: smi-db-01.virt.lan
         smi-ui-01:
           ansible_host: smi-ui-01.mgt.lan
+
+    virt:
+      hosts:
+            # smi-rl-01:
+              # ansible_host: smi-rl-01.mgt.lan
+            smi-rl-02:
+              ansible_host: smi-rl-02.mgt.lan
+            smi-rl-03:
+              ansible_host: smi-rl-03.mgt.lan
+            smi-rl-04:
+              ansible_host: smi-rl-04.mgt.lan

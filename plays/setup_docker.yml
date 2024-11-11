@@ -1,7 +1,36 @@
 ---
-- name: Run Geerlingguy Roles to Install Docker & Docker Python
+- name: Run Geerlingguy Roles to Install Docker & Python
   hosts: docker
   become: true
   roles:
     - geerlingguy.docker
     - geerlingguy.pip
+  vars:
+    override_content: |
+      [Service]
+      ExecStartPost=iptables -I DOCKER-USER -i br0 -o br0 -j ACCEPT
+  tasks:
+    - name: Create override directory for Docker service
+      ansible.builtin.file:
+        path: /usr/lib/systemd/system/docker.service.d
+        state: directory
+        owner: root
+        group: root
+        mode: '0755'
+
+    - name: Create override file for Docker service
+      ansible.builtin.copy:
+        content: "{{ override_content }}"
+        dest: /usr/lib/systemd/system/docker.service.d/override.conf
+        owner: root
+        group: root
+        mode: '0644'
+      notify:
+        - Restart Docker
+
+  handlers:
+    - name: Restart Docker
+      ansible.builtin.systemd_service:
+        daemon_reload: true
+        name: docker
+        state: restarted

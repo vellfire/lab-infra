@@ -1,0 +1,9 @@
+---
+- name: Run host setup play
+  hosts: rhel
+  become: true
+  roles:
+    - host_setup
+  handlers:
+    - name: Refresh SSH
+      ansible.builtin.meta: reset_connection

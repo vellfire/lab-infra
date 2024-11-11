@@ -1,0 +1,10 @@
+---
+- name: Gather & print facts
+  hosts: smi-rl-02
+  tasks:
+    - name: Gather facts
+      ansible.builtin.gather_facts:
+
+    - name: Print facts
+      ansible.builtin.debug:
+        var: ansible_facts
