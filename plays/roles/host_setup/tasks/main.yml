@@ -35,7 +35,7 @@
       - rpmfusion-free-release-tainted
     state: present
 
-- name: Start Cockpit
+- name: Start Cockpit & related services
   ansible.builtin.systemd_service:
     name: "{{ item }}"
     enabled: true
@@ -43,6 +43,7 @@
   loop:
     - cockpit.service
     - cockpit.socket
+    - pmlogger.service
 
 - name: Cleanup DNF
   ansible.builtin.shell:
