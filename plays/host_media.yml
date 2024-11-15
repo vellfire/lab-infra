@@ -1,6 +1,6 @@
 ---
 - name: Setup Media box
-  hosts: smi-rl-02
+  hosts: smi-rl-03
   become: true
   roles:
     - geerlingguy.docker
@@ -18,6 +18,14 @@
         content: 'options i915 enable_guc=2'
         mode: '0755'
         owner: root
+
+    - name: Add groups
+      ansible.builtin.user:
+        name: "{{ ansible_user }}"
+        append: true
+        groups: render,video,audio
+      notify:
+        - Refresh SSH
 
     - name: Mainline Kernel install
       when: ansible_facts['kernel'] is not search('elrepo')
@@ -42,3 +50,7 @@
 
         - name: Reboot System
           ansible.builtin.reboot:
+
+  handlers:
+    - name: Refresh SSH
+      ansible.builtin.meta: reset_connection

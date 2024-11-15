@@ -1,4 +1,8 @@
 ---
+- name: Enable CRB Repo
+  ansible.builtin.dnf:
+    enablerepo: crb
+
 - name: Install epel-release
   ansible.builtin.dnf:
     name: epel-release
@@ -23,7 +27,12 @@
       - net-tools
       - tcpdump
       - cockpit
+      - cockpit-pcp
       - bind-utils
+      - cifs-utils
+      - nfs-utils
+      - rpmfusion-free-release
+      - rpmfusion-free-release-tainted
     state: present
 
 - name: Start Cockpit
