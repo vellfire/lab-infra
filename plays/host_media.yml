@@ -7,10 +7,10 @@
     - geerlingguy.pip
     - host_setup
   tasks:
-    - name: Install elrepo-release
-      ansible.builtin.dnf:
-        name: elrepo-release
-        state: present
+    # - name: Install elrepo-release
+      # ansible.builtin.dnf:
+        # name: elrepo-release
+        # state: present
 
     - name: Allow loading of GuC & HuC hardware for low-power encode
       ansible.builtin.copy:
@@ -18,6 +18,8 @@
         content: 'options i915 enable_guc=2'
         mode: '0755'
         owner: root
+      register: r_i915
+      notify: Regen initramfs
 
     - name: Add groups
       ansible.builtin.user:
@@ -27,30 +29,16 @@
       notify:
         - Refresh SSH
 
-    - name: Mainline Kernel install
-      when: ansible_facts['kernel'] is not search('elrepo')
-      block:
-        - name: Install mainline kernel
-          ansible.builtin.dnf:
-            enablerepo: elrepo-kernel
-            name:
-              - kernel-ml
-              - kernel-ml-devel
-            state: present
-
-        - name: Regen initramfs
-          ansible.builtin.command: dracut -fp --regenerate-all
-          register: 'r_dracut'
-          changed_when: r_dracut is succeeded
-
-        - name: Regen GRUB config
-          ansible.builtin.command: grub2-mkconfig -o /boot/grub2/grub.cfg
-          register: 'r_grubcfg'
-          changed_when: r_grubcfg is succeeded
-
-        - name: Reboot System
-          ansible.builtin.reboot:
-
   handlers:
     - name: Refresh SSH
       ansible.builtin.meta: reset_connection
+
+    - name: Regen initramfs
+      ansible.builtin.command: dracut -fp --regenerate-all
+      register: 'r_dracut'
+      changed_when: r_dracut is succeeded
+      when: r_i915.changed
+      notify: Reboot System
+
+    - name: Reboot System
+      ansible.builtin.reboot:
