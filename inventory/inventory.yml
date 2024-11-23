@@ -69,3 +69,10 @@ linux:
               ansible_host: smi-rl-03.mgt.lan
             smi-rl-04:
               ansible_host: smi-rl-04.mgt.lan
+
+switches:
+  children:
+    juniper:
+      hosts:
+        smi-sw-02:
+          ansible_host: 10.141.1.202

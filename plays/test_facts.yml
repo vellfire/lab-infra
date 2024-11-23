@@ -1,0 +1,14 @@
+---
+- name: Gather & print facts
+  hosts: smi-sw-02
+  gather_facts: false
+  tasks:
+    - name: Gather legacy and resource facts
+      junipernetworks.junos.junos_facts:
+        gather_subset: all
+        # gather_network_resources: all
+      register: jfacts
+
+    - name: Print facts
+      ansible.builtin.debug:
+        var: jfacts
