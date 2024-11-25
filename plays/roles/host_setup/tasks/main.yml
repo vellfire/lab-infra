@@ -33,7 +33,23 @@
       - nfs-utils
       - rpmfusion-free-release
       - rpmfusion-free-release-tainted
+      - systemd-resolved
     state: present
+
+- name: Setup systemd-resolved
+  ansible.builtin.file:
+    src: /run/systemd/resolve/stub-resolv.conf
+    dest: /etc/resolv.conf
+    owner: root
+    group: root
+    state: link
+    force: true
+
+- name: Enable systemd-resolved
+  ansible.builtin.systemd_service:
+    name: systemd-resolved
+    enabled: true
+    state: started
 
 - name: Start Cockpit & related services
   ansible.builtin.systemd_service:
@@ -41,7 +57,6 @@
     enabled: true
     state: started
   loop:
-    - cockpit.service
     - cockpit.socket
     - pmlogger.service
 

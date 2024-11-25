@@ -5,6 +5,3 @@
   roles:
     - host_setup
     - community.sops.install
-  handlers:
-    - name: Refresh SSH
-      ansible.builtin.meta: reset_connection

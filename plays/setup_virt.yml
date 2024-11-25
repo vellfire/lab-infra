@@ -7,7 +7,3 @@
   roles:
     - host_setup
     - virt_host
-
-  handlers:
-    - name: Refresh SSH
-      ansible.builtin.meta: reset_connection
