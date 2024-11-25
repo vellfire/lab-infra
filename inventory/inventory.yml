@@ -67,6 +67,9 @@ unix:
             smi-rl-04:
               ansible_host: smi-rl-04.mgt.lan
 
+        media:
+          hosts:
+            smi-rl-03:
 
 switches:
   children:

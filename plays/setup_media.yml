@@ -1,0 +1,9 @@
+---
+- name: Setup Media box
+  hosts: media
+  become: true
+  roles:
+    - geerlingguy.docker
+    - geerlingguy.pip
+    - setup_host
+    - setup_media

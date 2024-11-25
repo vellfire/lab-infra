@@ -3,5 +3,5 @@
   hosts: rhel
   become: true
   roles:
-    - host_setup
+    - setup_host
     - community.sops.install

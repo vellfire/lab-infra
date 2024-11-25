@@ -1,0 +1,17 @@
+---
+- name: Allow loading of GuC & HuC hardware for low-power encode
+  ansible.builtin.copy:
+    dest: /etc/modprobe.d/i915.conf
+    content: 'options i915 enable_guc=2'
+    mode: '0755'
+    owner: root
+  register: r_i915
+  notify: Regen initramfs
+
+- name: Add groups
+  ansible.builtin.user:
+    name: "{{ ansible_user }}"
+    append: true
+    groups: render,video,audio
+  notify:
+    - Refresh SSH
