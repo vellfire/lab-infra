@@ -22,8 +22,6 @@ unix:
                   ansible_host: amstamps-web.virt.lan
                 bntva-web:
                   ansible_host: bntva-web.virt.lan
-                smi-do-02:
-                  ansible_host: smi-do-02.virt.lan
                 # smi-rl-01:
                   # ansible_host: smi-rl-01.mgt.lan
                 smi-rl-02:
@@ -51,8 +49,6 @@ unix:
               ansible_host: smi-rl-05.mgt.lan
             smi-do-01:
               ansible_host: smi-do-01.virt.lan
-            smi-do-02:
-              ansible_host: smi-do-02.virt.lan
 
         virt:
           hosts:
