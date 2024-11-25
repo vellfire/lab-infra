@@ -53,8 +53,6 @@ unix:
               ansible_host: smi-do-01.virt.lan
             smi-do-02:
               ansible_host: smi-do-02.virt.lan
-            smi-db-01:
-              ansible_host: smi-db-01.virt.lan
 
         virt:
           hosts:
