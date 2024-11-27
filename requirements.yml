@@ -9,3 +9,4 @@ roles:
   - name: geerlingguy.docker
   - name: geerlingguy.git
   - name: geerlingguy.pip
+  - name: artis3n.tailscale

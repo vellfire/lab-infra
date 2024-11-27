@@ -3,5 +3,7 @@
   hosts: rhel
   become: true
   roles:
-    - setup_host
-    - community.sops.install
+    # - setup_host
+    # - community.sops.install
+    - remove_netbird
+    - artis3n.tailscale

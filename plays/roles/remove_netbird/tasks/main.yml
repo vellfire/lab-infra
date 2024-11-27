@@ -6,10 +6,6 @@
     autoremove: true
 
 - name: Remove NetBird repository
-  ansible.builtin.dnf_config_manager:
+  community.general.dnf_config_manager:
     name: NetBird
     state: disabled
-
-- name: Add Tailscale repository
-  ansible.builtin.dnf_config_manager:
-
