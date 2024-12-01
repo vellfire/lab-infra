@@ -3,7 +3,41 @@
   hosts: rhel
   become: true
   roles:
-    # - setup_host
-    # - community.sops.install
-    - remove_netbird
-    - artis3n.tailscale
+    - role: setup_host
+    # - role: community.sops.install
+  tasks:
+    - name: Load sops variables
+      community.sops.load_vars:
+        file: tail.sops.yaml
+
+    - name: Set IPv4 forward
+      ansible.posix.sysctl:
+        name: net.ipv4.ip_forward
+        value: 1
+        sysctl_set: true
+        state: present
+        reload: true
+
+    - name: Set IPv6 forward
+      ansible.posix.sysctl:
+        name: net.ipv6.conf.all.forwarding
+        value: 1
+        sysctl_set: true
+        state: present
+        reload: true
+
+    - name: Allow masq
+      ansible.posix.firewalld:
+        masquerade: true
+        state: enabled
+        permanent: true
+
+    - name: Initialise tailscale role
+      ansible.builtin.import_role:
+        name: artis3n.tailscale
+      vars:
+        tailscale_authkey: "{{ ansible_facts['tailscale_oauthtoken'] }}"
+        tailscale_tags:
+          - ansible
+        tailscale_oauth_ephemeral: false
+        tailscale_args: "--advertise-exit-node"

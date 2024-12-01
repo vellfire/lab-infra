@@ -24,12 +24,6 @@
           ansible.builtin.dnf:
             autoremove: true
 
-        - name: Cleanup DNF
-          ansible.builtin.shell:
-            cmd: "set -o pipefail && dnf clean packages | awk '{print $1}'"
-          register: dnf_clean
-          changed_when: dnf_clean.rc > 0
-
     - name: Check if reboot is required
       ansible.builtin.stat:
         path: /run/reboot-required

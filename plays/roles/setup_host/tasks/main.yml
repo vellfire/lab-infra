@@ -1,4 +1,8 @@
 ---
+- name: Refresh DNF cache
+  ansible.builtin.dnf:
+    update_cache: true
+
 - name: Enable CRB Repo
   ansible.builtin.dnf:
     enablerepo: crb
@@ -34,6 +38,8 @@
       - rpmfusion-free-release
       - rpmfusion-free-release-tainted
       - systemd-resolved
+      - firewalld
+      - python-firewall
     state: present
 
 - name: Setup systemd-resolved
@@ -59,12 +65,6 @@
   loop:
     - cockpit.socket
     - pmlogger.service
-
-- name: Cleanup DNF
-  ansible.builtin.shell:
-    cmd: "set -o pipefail && dnf clean all | awk '{print $1}'"
-  register: dnf_clean
-  changed_when: dnf_clean.rc > 0
 
 - name: Create smithy group
   ansible.builtin.group:

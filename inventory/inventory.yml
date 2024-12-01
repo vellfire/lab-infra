@@ -9,11 +9,6 @@ unix:
 
     linux:
       children:
-        debian:
-          hosts:
-            smi-do-01:
-              ansible_host: smi-do-01.virt.lan
-
         rhel:
           children:
             rocky:
@@ -30,10 +25,16 @@ unix:
                   ansible_host: smi-rl-03.mgt.lan
                 smi-rl-04:
                   ansible_host: smi-rl-04.mgt.lan
-                smi-rl-05:
-                  ansible_host: smi-rl-05.mgt.lan
-                ovh-rl-01:
-                  ansible_host: ovh-rl-01.ovh.lan
+                # smi-rl-05:
+                #   ansible_host: smi-rl-05.mgt.lan
+                # ovh-rl-01:
+                #   ansible_host: ovh-rl-01.ovh.lan
+                # ovh-rl-01:
+                #   ansible_host:
+                # ovh-rl-02:
+                #   ansible_host:
+                # ovh-rl-03:
+                #   ansible_host:
 
         docker:
           hosts:
@@ -47,8 +48,6 @@ unix:
               ansible_host: smi-rl-04.mgt.lan
             smi-rl-05:
               ansible_host: smi-rl-05.mgt.lan
-            smi-do-01:
-              ansible_host: smi-do-01.virt.lan
 
         virt:
           hosts:
