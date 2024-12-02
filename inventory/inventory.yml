@@ -60,6 +60,13 @@ unix:
             smi-rl-04:
               ansible_host: smi-rl-04.mgt.lan
 
+        web:
+          hosts:
+            ovh-rl-02:
+              ansible_host: ovh-rl-02
+            ovh-rl-03:
+              ansible_host: ovh-rl-03
+
         media:
           hosts:
             smi-rl-03:

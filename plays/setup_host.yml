@@ -40,4 +40,4 @@
         tailscale_tags:
           - ansible
         tailscale_oauth_ephemeral: false
-        tailscale_args: "--advertise-exit-node"
+        tailscale_args: "--advertise-exit-node --advertise-routes=10.141.0.0/19"

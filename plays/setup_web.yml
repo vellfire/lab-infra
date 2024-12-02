@@ -1,0 +1,6 @@
+---
+- name: Setup webservers
+  hosts: web
+  become: true
+  roles:
+    - setup_web
