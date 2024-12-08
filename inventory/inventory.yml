@@ -13,10 +13,6 @@ unix:
           children:
             rocky:
               hosts:
-                amstamps-web:
-                  ansible_host: amstamps-web.virt.lan
-                bntva-web:
-                  ansible_host: bntva-web.virt.lan
                 # smi-rl-01:
                   # ansible_host: smi-rl-01.mgt.lan
                 smi-rl-02:
@@ -25,16 +21,10 @@ unix:
                   ansible_host: smi-rl-03.mgt.lan
                 smi-rl-04:
                   ansible_host: smi-rl-04.mgt.lan
-                # smi-rl-05:
-                #   ansible_host: smi-rl-05.mgt.lan
-                # ovh-rl-01:
-                #   ansible_host: ovh-rl-01.ovh.lan
-                # ovh-rl-01:
-                #   ansible_host:
-                # ovh-rl-02:
-                #   ansible_host:
-                # ovh-rl-03:
-                #   ansible_host:
+                ovh-rl-02:
+                  ansible_host: 57.128.169.187
+                ovh-rl-03:
+                  ansible_host: ovh-rl-03
 
         docker:
           hosts:
@@ -46,8 +36,6 @@ unix:
               ansible_host: smi-rl-03.mgt.lan
             smi-rl-04:
               ansible_host: smi-rl-04.mgt.lan
-            smi-rl-05:
-              ansible_host: smi-rl-05.mgt.lan
 
         virt:
           hosts:
@@ -63,13 +51,33 @@ unix:
         web:
           hosts:
             ovh-rl-02:
-              ansible_host: ovh-rl-02
+              ansible_host: 57.128.169.187
             ovh-rl-03:
               ansible_host: ovh-rl-03
 
         media:
           hosts:
             smi-rl-03:
+
+home:
+  hosts:
+    # smi-rl-01:
+      # ansible_host: smi-rl-01.mgt.lan
+    smi-rl-02:
+      ansible_host: smi-rl-02.mgt.lan
+    smi-rl-03:
+      ansible_host: smi-rl-03.mgt.lan
+    smi-rl-04:
+      ansible_host: smi-rl-04.mgt.lan
+
+ovh:
+  hosts:
+    ovh-rl-01:
+      ansible_host: ovh-rl-01
+    ovh-rl-02:
+      ansible_host: 57.128.169.187
+    ovh-rl-03:
+      ansible_host: ovh-rl-03
 
 switches:
   children:

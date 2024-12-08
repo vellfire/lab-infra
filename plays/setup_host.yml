@@ -38,6 +38,7 @@
       vars:
         tailscale_authkey: "{{ ansible_facts['tailscale_oauthtoken'] }}"
         tailscale_tags:
+          - "{{ tailtag }}"
           - ansible
         tailscale_oauth_ephemeral: false
-        tailscale_args: "--advertise-exit-node --advertise-routes=10.141.0.0/19"
+        tailscale_args: "{{ tailup }}"

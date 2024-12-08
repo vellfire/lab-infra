@@ -1,0 +1,3 @@
+---
+tailup: '--advertise-exit-node --accept-routes'
+tailtag: 'ovh'

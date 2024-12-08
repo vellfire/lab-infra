@@ -46,8 +46,8 @@
   ansible.builtin.file:
     src: /run/systemd/resolve/stub-resolv.conf
     dest: /etc/resolv.conf
-    owner: root
-    group: root
+    owner: 193
+    group: 193
     state: link
     force: true
 
