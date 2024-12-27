@@ -21,6 +21,8 @@ unix:
                   ansible_host: smi-rl-03
                 smi-rl-04:
                   ansible_host: smi-rl-04
+                smi-rl-05:
+                  ansible_host: smi-rl-05
                 ovh-rl-01:
                   ansible_host: ovh-rl-01
                 ovh-rl-02:
@@ -38,6 +40,8 @@ unix:
               ansible_host: smi-rl-03
             smi-rl-04:
               ansible_host: smi-rl-04
+            smi-rl-05:
+              ansible_host: smi-rl-05
 
         virt:
           hosts:
@@ -49,6 +53,8 @@ unix:
               ansible_host: smi-rl-03
             smi-rl-04:
               ansible_host: smi-rl-04
+            smi-rl-05:
+              ansible_host: smi-rl-05
 
         web:
           hosts:
@@ -71,6 +77,8 @@ home:
       ansible_host: smi-rl-03
     smi-rl-04:
       ansible_host: smi-rl-04
+    smi-rl-05:
+      ansible_host: smi-rl-05
 
 ovh:
   hosts:
