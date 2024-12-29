@@ -44,6 +44,7 @@
       - systemd-resolved
       - firewalld
       - python-firewall
+      - lm_sensors
     state: present
 
 - name: Setup systemd-resolved
