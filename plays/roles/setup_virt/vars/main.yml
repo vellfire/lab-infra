@@ -1,0 +1,10 @@
+---
+setup_virt_libvirt_guests: |
+  URIS=default
+  ON_BOOT=start
+  START_DELAY=20
+  ON_SHUTDOWN=shutdown
+  PARALLEL_SHUTDOWN=0
+  SHUTDOWN_TIMEOUT=300
+  BYPASS_CACHE=0
+  PERSISTENT_ONLY=default

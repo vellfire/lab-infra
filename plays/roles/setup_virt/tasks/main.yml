@@ -13,9 +13,23 @@
       - cockpit-machines
     state: present
 
-- name: Start libvirtd
+- name: Enable & Start 'libvirtd' service
   ansible.builtin.systemd_service:
     name: libvirtd
+    state: started
+    enabled: true
+
+- name: Copy libvirt-guests config to sysconfig
+  ansible.builtin.copy:
+    content: "{{ setup_virt_libvirt_guests }}"
+    dest: /etc/sysconfig/libvirt-guests
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Enable & Start 'libvirt-guests' service
+  ansible.builtin.systemd_service:
+    name: libvirt-guests
     state: started
     enabled: true
 
