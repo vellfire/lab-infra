@@ -5,6 +5,7 @@
   roles:
     - role: setup_host
     # - role: community.sops.install
+    - role: prometheus.prometheus.node_exporter
   tasks:
     - name: Load sops variables
       community.sops.load_vars:

@@ -4,6 +4,7 @@ collections:
   - name: community.general
   - name: community.docker
   - name: community.sops
+  - name: prometheus.prometheus
 
 roles:
   - name: geerlingguy.docker
