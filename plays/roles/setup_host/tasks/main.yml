@@ -45,6 +45,7 @@
       - firewalld
       - python-firewall
       - lm_sensors
+      - lldpd
     state: present
 
 - name: Setup systemd-resolved
@@ -70,6 +71,7 @@
   loop:
     - cockpit.socket
     - pmlogger.service
+    - lldpd.service
 
 - name: Create smithy group
   ansible.builtin.group:

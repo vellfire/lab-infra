@@ -24,11 +24,11 @@ unix:
                 smi-rl-05:
                   ansible_host: smi-rl-05
                 ovh-rl-01:
-                  ansible_host: ovh-rl-01
+                  ansible_host: 172.16.0.0
                 ovh-rl-02:
-                  ansible_host: ovh-rl-02
+                  ansible_host: 172.16.0.2
                 ovh-rl-03:
-                  ansible_host: ovh-rl-03
+                  ansible_host: 172.16.0.3
 
         docker:
           hosts:
@@ -59,9 +59,9 @@ unix:
         web:
           hosts:
             ovh-rl-02:
-              ansible_host: ovh-rl-02
+              ansible_host: 172.16.0.2
             ovh-rl-03:
-              ansible_host: ovh-rl-03
+              ansible_host: 172.16.0.3
 
         media:
           hosts:
@@ -83,11 +83,11 @@ home:
 ovh:
   hosts:
     ovh-rl-01:
-      ansible_host: ovh-rl-01
+      ansible_host: 172.16.0.0
     ovh-rl-02:
-      ansible_host: ovh-rl-02
+      ansible_host: 172.16.0.2
     ovh-rl-03:
-      ansible_host: ovh-rl-03
+      ansible_host: 172.16.0.3
 
 switches:
   children:

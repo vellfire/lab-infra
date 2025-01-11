@@ -6,6 +6,9 @@
     - role: setup_host
     # - role: community.sops.install
     - role: prometheus.prometheus.node_exporter
+    - role: artis3n.tailscale
+      vars:
+        state: absent
   tasks:
     - name: Load sops variables
       community.sops.load_vars:
@@ -33,13 +36,13 @@
         state: enabled
         permanent: true
 
-    - name: Initialise tailscale role
-      ansible.builtin.import_role:
-        name: artis3n.tailscale
-      vars:
-        tailscale_authkey: "{{ ansible_facts['tailscale_oauthtoken'] }}"
-        tailscale_tags:
-          - "{{ tailtag }}"
-          - ansible
-        tailscale_oauth_ephemeral: false
-        tailscale_args: "{{ tailup }}"
+    # - name: Initialise tailscale role
+    #   ansible.builtin.import_role:
+    #     name: artis3n.tailscale
+    #   vars:
+    #     tailscale_authkey: "{{ ansible_facts['tailscale_oauthtoken'] }}"
+    #     tailscale_tags:
+    #       - "{{ tailtag }}"
+    #       - ansible
+    #     tailscale_oauth_ephemeral: false
+    #     tailscale_args: "{{ tailup }}"
