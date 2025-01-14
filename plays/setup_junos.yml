@@ -25,6 +25,13 @@
             - server: 216.239.35.4
         state: replaced
 
+    - name: Enable snmp
+      junipernetworks.junos.junos_snmp_server:
+        config:
+          communities:
+            - name: public
+              authorization: read-only
+
     - name: Enable lldp
       junipernetworks.junos.junos_lldp_global:
         config:
