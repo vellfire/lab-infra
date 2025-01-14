@@ -1,0 +1,40 @@
+---
+- name: Gather & print facts
+  hosts: switches
+  gather_facts: false
+  tasks:
+    - name: Collect default set of facts
+      junipernetworks.junos.junos_facts:
+
+    - name: Set hostname and DNS
+      junipernetworks.junos.junos_system:
+        hostname: "{{ inventory_hostname }}"
+        domain_name: mgt.lan
+        domain_search:
+          - mgt.lan
+        name_servers:
+          - 172.16.16.2
+        state: absent
+
+    - name: Enable lldp
+      junipernetworks.junos.junos_lldp_global:
+        config:
+          address: "{{ ansible_host }}"
+          enabled: true
+        state: replaced
+
+    # - name: "Delete given options for the interface (Note: This won't delete the interface itself if any other values are configured for interface)"
+    #   junipernetworks.junos.junos_interfaces:
+    #     config:
+    #       - name: ge-0/0/1
+    #         description: Configured by Ansible-1
+    #         speed: 1g
+    #         mtu: 1800
+    #       - name: ge-0/0/2
+    #         description: Configured by Ansible -2
+    #     state: deleted
+
+    - name: Update rescue config
+      junipernetworks.junos.junos_command:
+        commands:
+          - request system configuration rescue save

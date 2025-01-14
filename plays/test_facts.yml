@@ -1,6 +1,6 @@
 ---
 - name: Gather & print facts
-  hosts: smi-sw-02
+  hosts: switches
   gather_facts: false
   tasks:
     - name: Gather legacy and resource facts
