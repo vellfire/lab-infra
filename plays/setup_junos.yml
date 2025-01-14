@@ -16,6 +16,15 @@
           - 172.16.16.2
         state: absent
 
+    - name: Set ntp servers
+      junipernetworks.junos.junos_ntp_global:
+        config:
+          servers:
+            - server: 216.239.35.0
+              prefer: true
+            - server: 216.239.35.4
+        state: replaced
+
     - name: Enable lldp
       junipernetworks.junos.junos_lldp_global:
         config:
