@@ -95,7 +95,7 @@ switches:
       hosts:
         smi-sw-01:
           ansible_host: 10.141.97.201
-        smi-sw-02:
-          ansible_host: 10.141.97.202
-        smi-sw-03:
-          ansible_host: 10.141.97.203
+        # smi-sw-02:
+        #   ansible_host: 10.141.97.202
+        # smi-sw-03:
+        #   ansible_host: 10.141.97.203

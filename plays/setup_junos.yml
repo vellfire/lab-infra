@@ -40,6 +40,70 @@
           enabled: true
         state: replaced
 
+    - name: Configure VLANs
+      junipernetworks.junos.junos_vlans:
+        config:
+          - name: mgt
+            vlan_id: 97
+            l3_interface: irb.97
+          - name: home
+            vlan_id: 98
+            l3_interface: irb.98
+          - name: transit
+            vlan_id: 172
+            l3_interface: irb.172
+          - name: will-work
+            vlan_id: 990
+            l3_interface: irb.990
+          - name: john-work
+            vlan_id: 991
+            l3_interface: irb.991
+          - name: WAN
+            vlan_id: 998
+          - name: WAN2
+            vlan_id: 999
+        state: replaced
+
+    - name: Configure L2 interfaces
+      junipernetworks.junos.junos_l2_interfaces:
+        config:
+          - name: ge-0/0/0
+            trunk:
+              allowed_vlans:
+                - mgt
+                - home
+                - transit
+                - will-work
+                - john-work
+                - WAN
+                - WAN2
+            unit: 0
+        state: replaced
+
+    - name: Configure IRBs # THIS DOESNT WORK
+      junipernetworks.junos.junos_interfaces:
+        config:
+          # - name: irb.97
+          #   description: Management VLAN
+          #   unit: 97
+          - name: irb.98
+            description: Home VLAN
+            units:
+              - name: 98
+          - name: irb.172
+            description: Transit VLAN
+            units:
+              - name: 99
+          - name: irb.990
+            description: Will's Work VLAN
+            units:
+              - name: 990
+          - name: irb.991
+            description: John's Work VLAN
+            units:
+              - name: 991
+        state: replaced
+
     # - name: "Delete given options for the interface (Note: This won't delete the interface itself if any other values are configured for interface)"
     #   junipernetworks.junos.junos_interfaces:
     #     config:
