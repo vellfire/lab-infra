@@ -93,11 +93,11 @@ switches:
   children:
     juniper:
       hosts:
-        smi-sw-00:
+        smi-sw-00: # temporary name
           ansible_host: 10.141.97.200
-        # smi-sw-01:
-          # ansible_host: 10.141.97.201
-        # smi-sw-02:
-        #   ansible_host: 10.141.97.202
-        # smi-sw-03:
-        #   ansible_host: 10.141.97.203
+        smi-sw-01:
+          ansible_host: 10.141.97.201
+        smi-sw-02:
+          ansible_host: 10.141.97.202
+        smi-sw-03:
+          ansible_host: 10.141.97.203

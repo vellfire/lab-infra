@@ -49,7 +49,7 @@
           enabled: true
         state: replaced
 
-    - name: Configure VLANs
+    - name: Configure VLANs for ex4300
       junipernetworks.junos.junos_vlans:
         config:
           - name: mgt
@@ -72,6 +72,7 @@
           - name: WAN2
             vlan_id: 999
         state: replaced
+      when: "'ex4300' in ansible_net_model"
 
     - name: Configure L2 interfaces
       junipernetworks.junos.junos_l2_interfaces:
@@ -109,6 +110,7 @@
             ipv4:
               - address: 10.141.99.9/29
         state: replaced
+      when: switch_role == 'core'
 
     # - name: "Delete given options for the interface (Note: This won't delete the interface itself if any other values are configured for interface)"
     #   junipernetworks.junos.junos_interfaces:

@@ -3,15 +3,6 @@
   hosts: linux
   become: true
   tasks:
-    - name: Update APT cache, upgrade hosts, clean up
-      when: ansible_os_family == 'Debian'
-      ansible.builtin.apt:
-        update_cache: true
-        cache_valid_time: 3600
-        upgrade: full
-        autoremove: true
-        autoclean: true
-
     - name: Update RHEL Hosts
       when: ansible_os_family == 'RedHat'
       block:
