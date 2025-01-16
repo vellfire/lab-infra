@@ -1,5 +1,5 @@
 ---
-- name: Update Debian-based Hosts
+- name: Update Linux hosts
   hosts: linux
   become: true
   tasks:
