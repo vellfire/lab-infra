@@ -5,10 +5,9 @@
   tasks:
     - name: Gather legacy and resource facts
       junipernetworks.junos.junos_facts:
-        gather_subset: all
+        # gather_subset: all
         # gather_network_resources: all
-      register: jfacts
 
-    - name: Print facts
+    - name: Print all available facts
       ansible.builtin.debug:
-        var: jfacts
+        var: ansible_facts

@@ -6,6 +6,15 @@
     - name: Collect default set of facts
       junipernetworks.junos.junos_facts:
 
+    - name: Remove virtual chassis ports
+      junipernetworks.junos.junos_command:
+        commands:
+          - request virtual-chassis vc-port delete pic-slot 1 port 0
+          - request virtual-chassis vc-port delete pic-slot 1 port 1
+          - request virtual-chassis vc-port delete pic-slot 1 port 2
+          - request virtual-chassis vc-port delete pic-slot 1 port 3
+      when: "'ex4300' in ansible_net_model"
+
     - name: Set hostname and DNS
       junipernetworks.junos.junos_system:
         hostname: "{{ inventory_hostname }}"
@@ -80,28 +89,25 @@
             unit: 0
         state: replaced
 
-    - name: Configure IRBs # THIS DOESNT WORK
-      junipernetworks.junos.junos_interfaces:
+    - name: Configure IRBs
+      junipernetworks.junos.junos_l3_interfaces:
         config:
-          # - name: irb.97
-          #   description: Management VLAN
-          #   unit: 97
-          - name: irb.98
-            description: Home VLAN
-            units:
-              - name: 98
-          - name: irb.172
-            description: Transit VLAN
-            units:
-              - name: 99
-          - name: irb.990
-            description: Will's Work VLAN
-            units:
-              - name: 990
-          - name: irb.991
-            description: John's Work VLAN
-            units:
-              - name: 991
+          - name: irb
+            unit: 98
+            ipv4:
+              - address: 10.141.98.1/24
+          - name: irb
+            unit: 172
+            ipv4:
+              - address: 172.16.16.1/30
+          - name: irb
+            unit: 990
+            ipv4:
+              - address: 10.141.99.1/29
+          - name: irb
+            unit: 991
+            ipv4:
+              - address: 10.141.99.9/29
         state: replaced
 
     # - name: "Delete given options for the interface (Note: This won't delete the interface itself if any other values are configured for interface)"
