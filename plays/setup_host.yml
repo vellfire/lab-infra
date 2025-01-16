@@ -6,9 +6,9 @@
     - role: setup_host
     # - role: community.sops.install
     - role: prometheus.prometheus.node_exporter
-    - role: artis3n.tailscale
-      vars:
-        state: absent
+    # - role: artis3n.tailscale
+    #   vars:
+    #     state: absent
   tasks:
     - name: Load sops variables
       community.sops.load_vars:
