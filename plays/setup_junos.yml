@@ -110,7 +110,7 @@
             ipv4:
               - address: 10.141.99.9/29
         state: replaced
-      when: switch_role == 'core'
+      when: hostvars[inventory_hostname].switch_role == 'core'
 
     # - name: "Delete given options for the interface (Note: This won't delete the interface itself if any other values are configured for interface)"
     #   junipernetworks.junos.junos_interfaces:

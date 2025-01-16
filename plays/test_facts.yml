@@ -8,6 +8,10 @@
         # gather_subset: all
         # gather_network_resources: all
 
-    - name: Print all available facts
+    # - name: Print all available facts
+    #   ansible.builtin.debug:
+    #     var: ansible_facts
+
+    - name: Print hostvars
       ansible.builtin.debug:
-        var: ansible_facts
+        msg: "{{ switch_role }}"
