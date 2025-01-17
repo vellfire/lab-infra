@@ -72,7 +72,7 @@
           - name: WAN2
             vlan_id: 999
         state: replaced
-      when: "'ex4300' in ansible_net_model"
+      when: "'ex4300' in ansible_net_model" # Temporary as EX2200-C doesn't support this
 
     - name: Configure L2 interfaces
       junipernetworks.junos.junos_l2_interfaces:
@@ -89,6 +89,7 @@
                 - WAN2
             unit: 0
         state: replaced
+      when: "'ex4300' in ansible_net_model" # Temporary as EX2200-C doesn't support this
 
     - name: Configure IRBs
       junipernetworks.junos.junos_l3_interfaces:
@@ -112,16 +113,12 @@
         state: replaced
       when: hostvars[inventory_hostname].switch_role == 'core'
 
-    # - name: "Delete given options for the interface (Note: This won't delete the interface itself if any other values are configured for interface)"
-    #   junipernetworks.junos.junos_interfaces:
-    #     config:
-    #       - name: ge-0/0/1
-    #         description: Configured by Ansible-1
-    #         speed: 1g
-    #         mtu: 1800
-    #       - name: ge-0/0/2
-    #         description: Configured by Ansible -2
-    #     state: deleted
+    - name: Merge interfaces test
+      junipernetworks.junos.junos_interfaces:
+        config:
+          "{{ hostvars[inventory_hostname].interface_config }}"
+        state: merged
+      when: hostvars[inventory_hostname].switch_role == 'core'
 
     - name: Update rescue config
       junipernetworks.junos.junos_command:
