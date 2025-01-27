@@ -15,12 +15,8 @@ unix:
               hosts:
                 smi-rl-01:
                   ansible_host: smi-rl-01
-                smi-rl-02:
-                  ansible_host: smi-rl-02
-                smi-rl-03:
-                  ansible_host: smi-rl-03
-                smi-rl-04:
-                  ansible_host: smi-rl-04
+                smi-pi-01:
+                  ansible_host: 10.141.97.22
                 smi-rl-05:
                   ansible_host: smi-rl-05
                 ovh-rl-01:
@@ -33,26 +29,13 @@ unix:
         docker:
           hosts:
             smi-rl-01:
-              ansible_host: smi-rl-01
-            smi-rl-02:
-              ansible_host: smi-rl-02
-            smi-rl-03:
-              ansible_host: smi-rl-03
-            smi-rl-04:
-              ansible_host: smi-rl-04
+            smi-pi-01:
             smi-rl-05:
-              ansible_host: smi-rl-05
 
         virt:
           hosts:
             smi-rl-01:
               ansible_host: smi-rl-01
-            smi-rl-02:
-              ansible_host: smi-rl-02
-            smi-rl-03:
-              ansible_host: smi-rl-03
-            smi-rl-04:
-              ansible_host: smi-rl-04
             smi-rl-05:
               ansible_host: smi-rl-05
 
@@ -65,18 +48,12 @@ unix:
 
         media:
           hosts:
-            smi-rl-03:
+            smi-rl-01:
 
 home:
   hosts:
     smi-rl-01:
       ansible_host: smi-rl-01
-    smi-rl-02:
-      ansible_host: smi-rl-02
-    smi-rl-03:
-      ansible_host: smi-rl-03
-    smi-rl-04:
-      ansible_host: smi-rl-04
     smi-rl-05:
       ansible_host: smi-rl-05
 
@@ -88,14 +65,3 @@ ovh:
       ansible_host: 172.16.0.2
     ovh-rl-03:
       ansible_host: 172.16.0.3
-
-switches:
-  hosts:
-    smi-sw-00: # temporary name
-      ansible_host: 10.141.97.200
-    smi-sw-01:
-      ansible_host: 10.141.97.201
-    smi-sw-02:
-      ansible_host: 10.141.97.202
-    smi-sw-03:
-      ansible_host: 10.141.97.203

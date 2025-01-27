@@ -1,4 +1,0 @@
----
-ansible_connection: netconf
-ansible_network_os: junipernetworks.junos.junos
-ansible_user: admin

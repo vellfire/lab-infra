@@ -5,8 +5,6 @@ collections:
   - name: community.docker
   - name: community.sops
   - name: prometheus.prometheus
-  - name: netbox.netbox
-  - name: napalm.napalm
 
 roles:
   - name: geerlingguy.docker
