@@ -12,8 +12,6 @@ collections:
     version: 0.24.1
 
 roles:
-  - name: artis3n.tailscale
-    version: 4.6.0
   - name: geerlingguy.docker
     version: 7.4.4
   - name: geerlingguy.git
