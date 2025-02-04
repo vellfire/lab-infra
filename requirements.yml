@@ -9,7 +9,7 @@ collections:
   - name: community.sops
     version: 2.0.1
   - name: prometheus.prometheus
-    version: 0.24.0
+    version: 0.24.1
 
 roles:
   - name: artis3n.tailscale
