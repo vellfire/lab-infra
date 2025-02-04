@@ -1,6 +1,7 @@
 ---
 - name: Run Docker play
-  import_playbook: setup_docker.yml
+  ansible.builtin.import_playbook: setup_docker.yml
+
 - name: Run host setup play
   hosts: virt
   become: true
