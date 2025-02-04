@@ -31,14 +31,3 @@
         masquerade: true
         state: enabled
         permanent: true
-
-    # - name: Initialise tailscale role
-    #   ansible.builtin.import_role:
-    #     name: artis3n.tailscale
-    #   vars:
-    #     tailscale_authkey: "{{ ansible_facts['tailscale_oauthtoken'] }}"
-    #     tailscale_tags:
-    #       - "{{ tailtag }}"
-    #       - ansible
-    #     tailscale_oauth_ephemeral: false
-    #     tailscale_args: "{{ tailup }}"
