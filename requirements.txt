@@ -62,7 +62,7 @@ ttp==0.9.5
 ttp-templates==0.3.7
 typing_extensions==4.12.2
 urllib3==2.3.0
-virtualenv==20.29.1
+virtualenv==20.29.2
 wcmatch==10.0
 xmltodict==0.14.2
 yamllint==1.35.1
