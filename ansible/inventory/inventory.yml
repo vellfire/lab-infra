@@ -20,9 +20,9 @@ unix:
                 ovh-rl-01:
                   ansible_host: 172.16.0.0
                 ovh-rl-02:
-                  ansible_host: 172.16.0.2
+                  ansible_host: 172.16.0.11
                 ovh-rl-03:
-                  ansible_host: 172.16.0.3
+                  ansible_host: 172.16.0.13
 
         debian:
           hosts:
@@ -31,10 +31,10 @@ unix:
             smixrx01:
               ansible_host: smixrx01.mgt.lan
 
-        ubuntu:
-          hosts:
-            eclipse:
-              ansible_host: eclipse.home.lan
+        # ubuntu:
+        #   hosts:
+        #     eclipse:
+        #       ansible_host: eclipse.home.lan
 
         docker:
           hosts:
