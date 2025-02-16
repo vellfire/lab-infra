@@ -30,7 +30,7 @@ unix:
               ansible_host: smixws01.mgt.lan
             smixrx01:
               ansible_host: smixrx01.mgt.lan
-        
+
         ubuntu:
           hosts:
             eclipse:
