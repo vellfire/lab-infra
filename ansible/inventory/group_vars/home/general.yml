@@ -1,3 +1,0 @@
----
-tailup: '--advertise-exit-node --advertise-routes=10.141.0.0/19 --accept-routes=false'
-tailtag: 'home'

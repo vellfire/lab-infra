@@ -1,0 +1,50 @@
+---
+- name: Install virt packages
+  ansible.builtin.apt:
+    name:
+      - qemu-system
+      - qemu-system-arm
+      - qemu-system-x86
+      - qemu-user
+      - qemu-user-static
+      - qemu-utils
+      - qemu-efi-aarch64
+      - qemu-efi-arm
+      - qemu-block-extra
+      - ovmf
+      - ovmf-ia32
+      - libvirt-daemon
+      - libvirt-daemon-driver-qemu
+      - libvirt-daemon-system
+      - libvirt-daemon-system-systemd
+      - libvirt-dbus
+      - virtinst
+      - virtnbdbackup
+      - binfmt-support
+      - prometheus-libvirt-exporter
+    state: present
+
+- name: Copy libvirt-guests config to sysconfig
+  ansible.builtin.copy:
+    content: "{{ deb_kvm_libvirt_guests }}"
+    dest: /etc/default/libvirt-guests
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Enable & Start 'libvirtd' service
+  ansible.builtin.systemd_service:
+    name: "{{ item }}"
+    state: started
+    enabled: true
+  loop:
+    - libvirtd
+    - libvirt-guests
+
+- name: Add groups
+  ansible.builtin.user:
+    name: "{{ ansible_user }}"
+    groups: libvirt-qemu
+    append: true
+  notify:
+    - Refresh SSH

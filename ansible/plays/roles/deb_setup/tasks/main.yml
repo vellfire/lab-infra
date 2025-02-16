@@ -1,0 +1,59 @@
+---
+- name: Update host
+  ansible.builtin.apt:
+    update_cache: true
+    cache_valid_time: 3600
+    upgrade: full
+    autoremove: true
+    autoclean: true
+
+- name: Install standard packages
+  ansible.builtin.apt:
+    name:
+      - git
+      - vim
+      - nano
+      - tmux
+      - htop
+      - smartmontools
+      - nload
+      - net-tools
+      - tcpdump
+      - bind9-utils
+      - nfs-common
+      - cifs-utils
+      - lm-sensors
+      - lldpd
+      - build-essential
+    state: present
+
+- name: Enable & start systemd services
+  ansible.builtin.systemd:
+    name: "{{ item }}"
+    enabled: true
+    state: started
+  loop:
+    - lldpd
+
+- name: Create custom group
+  ansible.builtin.group:
+    name: smithy
+    gid: 10337
+    state: present
+
+- name: Add user to custom group
+  ansible.builtin.user:
+    name: "{{ ansible_user }}"
+    groups: smithy
+    append: true
+  notify:
+    - Refresh SSH
+
+- name: Allow passwordless sudo for 'sudo' group
+  community.general.sudoers:
+    name: passwordless_sudo
+    group: sudo
+    nopassword: true
+    commands: ALL
+    runas: ALL:ALL
+    state: present

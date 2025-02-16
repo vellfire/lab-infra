@@ -1,5 +1,18 @@
 ---
-- name: Run Geerlingguy Roles to Install Docker & Python
+- name: Run host setup tasks
+  hosts: debian,ubuntu
+  become: true
+  roles:
+    - deb_setup
+    - prometheus.prometheus.node_exporter
+
+- name: Run KVM setup tasks
+  hosts: virt
+  become: true
+  roles:
+    - deb_kvm
+
+- name: Run docker setup tasks
   hosts: docker
   become: true
   roles:

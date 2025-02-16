@@ -1,5 +1,5 @@
 ---
-setup_virt_libvirt_guests: |
+deb_kvm_libvirt_guests: |
   URIS=default
   ON_BOOT=start
   START_DELAY=20
