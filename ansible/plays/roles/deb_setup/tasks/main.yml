@@ -25,6 +25,9 @@
       - lm-sensors
       - lldpd
       - build-essential
+      - tree
+      - rsync
+      - jq
     state: present
 
 - name: Enable & start systemd services
