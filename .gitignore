@@ -2,3 +2,4 @@
 .DS_Store
 *.sops.yaml
 .lock
+.venv
