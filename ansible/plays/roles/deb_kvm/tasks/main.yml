@@ -32,14 +32,30 @@
     group: root
     mode: '0644'
 
+- name: Enable 'libvirtd' services
+  ansible.builtin.systemd_service:
+    name: "{{ item }}"
+    enabled: true
+  loop:
+    - libvirtd.service
+    - libvirtd.socket
+    - libvirtd-ro.socket
+    - libvirtd-admin.socket
+    - virtlogd.service
+    - virtlockd.service
+    - libvirt-guests.service
+
 - name: Enable & Start 'libvirtd' service
   ansible.builtin.systemd_service:
     name: "{{ item }}"
     state: started
-    enabled: true
   loop:
-    - libvirtd
-    - libvirt-guests
+    - libvirtd.socket
+    - libvirtd-ro.socket
+    - libvirtd-admin.socket
+    - virtlogd.service
+    - virtlockd.service
+    - libvirt-guests.service
 
 - name: Add groups
   ansible.builtin.user:

@@ -31,10 +31,10 @@ unix:
             smixrx01:
               ansible_host: smixrx01.mgt.lan
 
-        # ubuntu:
-        #   hosts:
-        #     eclipse:
-        #       ansible_host: eclipse.home.lan
+        ubuntu:
+          hosts:
+            eclipse:
+              ansible_host: eclipse.home.lan
 
         docker:
           hosts:
