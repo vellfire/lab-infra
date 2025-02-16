@@ -1,7 +1,12 @@
 ---
 docker_apt_release_channel: stable
 docker_apt_arch: "{{ 'arm64' if ansible_architecture == 'aarch64' else 'amd64' }}"
-docker_apt_repository: "deb [arch={{ docker_apt_arch }}{{' signed-by=/etc/apt/keyrings/docker.asc' if add_repository_key is not failed}}] {{ docker_repo_url }}/{{ ansible_distribution | lower }} bookworm {{ docker_apt_release_channel }}"
+# Docker repository - hardcoded 'bookworm' as one host is running testing/trixie - will need to be updated once trixie is released and docker repos are updated
+docker_apt_repository: >-
+  deb [arch={{ docker_apt_arch }}{{' signed-by=/etc/apt/keyrings/docker.asc' if add_repository_key is not failed}}]
+  {{ docker_repo_url }}/{{ ansible_distribution | lower }}
+  bookworm
+  {{ docker_apt_release_channel }}
 docker_apt_ignore_key_error: True
 docker_apt_gpg_key: "{{ docker_repo_url }}/{{ ansible_distribution | lower }}/gpg"
 docker_apt_filename: "docker"
