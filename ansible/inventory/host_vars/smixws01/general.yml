@@ -7,6 +7,6 @@ docker_apt_repository: >-
   {{ docker_repo_url }}/{{ ansible_distribution | lower }}
   bookworm
   {{ docker_apt_release_channel }}
-docker_apt_ignore_key_error: True
+docker_apt_ignore_key_error: true
 docker_apt_gpg_key: "{{ docker_repo_url }}/{{ ansible_distribution | lower }}/gpg"
 docker_apt_filename: "docker"
