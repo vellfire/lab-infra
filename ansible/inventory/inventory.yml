@@ -30,6 +30,10 @@ unix:
               ansible_host: smixws01.mgt.lan
             smixrx01:
               ansible_host: smixrx01.mgt.lan
+            smiapi01:
+              ansible_host: smiapi01.mgt.lan
+            smiarx01:
+              ansible_host: smiarx01.mgt.lan
 
         ubuntu:
           hosts:
@@ -40,6 +44,8 @@ unix:
           hosts:
             smixws01:
             smixrx01:
+            smiarx01:
+            smiapi01:
 
         virt:
           hosts:
