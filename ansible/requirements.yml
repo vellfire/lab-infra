@@ -22,4 +22,5 @@ roles:
     version: 3.0.1
   - name: geerlingguy.pip
     version: 3.1.0
-
+  - name: geerlingguy.nut_client
+    version: 1.0.0
