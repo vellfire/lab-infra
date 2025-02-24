@@ -3,3 +3,4 @@
 *.sops.yaml
 .lock
 .venv
+.ansible
