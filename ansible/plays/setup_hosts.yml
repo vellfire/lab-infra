@@ -5,6 +5,7 @@
   roles:
     - deb_setup
     - prometheus.prometheus.node_exporter
+    - geerlingguy.nut_client
 
 - name: Run KVM setup tasks
   hosts: virt

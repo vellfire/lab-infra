@@ -16,9 +16,7 @@ unix:
                 smi-rl-01:
                   ansible_host: smi-rl-01.mgt.lan
                 smi-rl-05:
-                  ansible_host: smi-rl-05.mgt.lan
-                ovh-rl-01:
-                  ansible_host: 172.16.0.0
+                  ansible_host: 10.141.97.25
                 ovh-rl-02:
                   ansible_host: 172.16.0.11
                 ovh-rl-03:
@@ -26,30 +24,24 @@ unix:
 
         debian:
           hosts:
-            smixws01:
-              ansible_host: smixws01.mgt.lan
             smixrx01:
               ansible_host: smixrx01.mgt.lan
             smiapi01:
               ansible_host: smiapi01.mgt.lan
             smiarx01:
               ansible_host: smiarx01.mgt.lan
-
-        ubuntu:
-          hosts:
-            eclipse:
-              ansible_host: eclipse.home.lan
+            vps1:
+              ansible_host: 172.16.0.0
 
         docker:
           hosts:
-            smixws01:
             smixrx01:
             smiarx01:
             smiapi01:
+            vps1:
 
         virt:
           hosts:
-            smixws01:
             smixrx01:
 
         web:

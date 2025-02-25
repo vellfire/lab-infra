@@ -33,7 +33,6 @@
             autoclean: true
 
         - name: Check if reboot is required
-          when: ansible_hostname != 'eclipse'
           ansible.builtin.stat:
             path: /var/run/reboot-required
           register: reboot_required
