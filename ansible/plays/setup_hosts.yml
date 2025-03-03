@@ -1,17 +1,22 @@
 ---
 - name: Run host setup tasks
-  hosts: debian,ubuntu
+  hosts: debian
   become: true
   roles:
-    - deb_setup
-    - prometheus.prometheus.node_exporter
-    - geerlingguy.nut_client
+    - role: deb_setup
+
+- name: Run host setup tasks
+  hosts: linux
+  become: true
+  roles:
+    - role: geerlingguy.nut_client
+    - role: prometheus.prometheus.node_exporter
 
 - name: Run KVM setup tasks
   hosts: virt
   become: true
   roles:
-    - deb_kvm
+    - role: deb_kvm
 
 - name: Run docker setup tasks
   hosts: docker

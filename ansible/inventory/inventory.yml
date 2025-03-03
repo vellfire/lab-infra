@@ -13,44 +13,44 @@ unix:
           children:
             rocky:
               hosts:
-                smi-rl-01:
-                  ansible_host: smi-rl-01.mgt.lan
-                smi-rl-05:
-                  ansible_host: 10.141.97.25
-                ovh-rl-02:
-                  ansible_host: 172.16.0.11
-                ovh-rl-03:
-                  ansible_host: 172.16.0.13
+                sff1:
+                  ansible_host: sff1
+                nas1:
+                  ansible_host: nas1
+                vps2:
+                  ansible_host: vps2
+                vps3:
+                  ansible_host: vps3
 
         debian:
           hosts:
-            smixrx01:
-              ansible_host: smixrx01.mgt.lan
-            smiapi01:
-              ansible_host: smiapi01.mgt.lan
-            smiarx01:
-              ansible_host: smiarx01.mgt.lan
+            sbc2:
+              ansible_host: sbc2
+            sbc1:
+              ansible_host: sbc1
+            sbc3:
+              ansible_host: sbc3
             vps1:
-              ansible_host: 172.16.0.0
+              ansible_host: vps1
 
         docker:
           hosts:
-            smixrx01:
-            smiarx01:
-            smiapi01:
-            vps1:
+            sbc2:
+            sbc3:
+            sbc1:
+            # vps1:
 
         virt:
           hosts:
-            smixrx01:
+            sbc2:
 
         web:
           hosts:
-            ovh-rl-02:
-            ovh-rl-03:
+            vps2:
+            vps3:
 
 ovh:
   hosts:
-    ovh-rl-01:
-    ovh-rl-02:
-    ovh-rl-03:
+    vps1:
+    vps2:
+    vps3:
