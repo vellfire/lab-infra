@@ -28,6 +28,7 @@
       - tree
       - rsync
       - jq
+      - bind9-dnsutils
     state: present
 
 - name: Enable & start systemd services

@@ -6,7 +6,7 @@
     - role: deb_setup
 
 - name: Run host setup tasks
-  hosts: linux
+  hosts: debian
   become: true
   roles:
     - role: geerlingguy.nut_client
