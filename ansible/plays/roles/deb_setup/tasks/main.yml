@@ -61,3 +61,11 @@
     commands: ALL
     runas: ALL:ALL
     state: present
+
+- name: Create ~/.hushlogin for ansible_user
+  ansible.builtin.file:
+    path: "/home/{{ ansible_user }}/.hushlogin"
+    state: touch
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: '0644'
