@@ -15,6 +15,7 @@
       - nano
       - tmux
       - htop
+      - btop
       - smartmontools
       - nload
       - net-tools
