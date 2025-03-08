@@ -5,11 +5,11 @@ collections:
   - name: ansible.posix
     version: 2.0.0
   - name: community.docker
-    version: 4.4.0
+    version: 4.5.0
   - name: community.general
     version: 10.4.0
   - name: community.sops
-    version: 2.0.2
+    version: 2.0.3
   - name: prometheus.prometheus
     version: 0.25.0
   - name: community.libvirt
@@ -23,4 +23,4 @@ roles:
   - name: geerlingguy.pip
     version: 3.1.0
   - name: geerlingguy.nut_client
-    version: 1.0.0
+    version: 1.1.0
