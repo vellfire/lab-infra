@@ -30,6 +30,8 @@
       - rsync
       - jq
       - bind9-dnsutils
+      - curl
+      - wget
     state: present
 
 - name: Enable & start systemd services
