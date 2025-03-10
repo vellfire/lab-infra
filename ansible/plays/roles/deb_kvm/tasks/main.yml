@@ -60,7 +60,10 @@
 - name: Add groups
   ansible.builtin.user:
     name: "{{ ansible_user }}"
-    groups: libvirt-qemu
+    groups: " {{ item }}"
     append: true
+  loop:
+    - "libvirt"
+    - "libvirt-qemu"
   notify:
     - Refresh SSH
