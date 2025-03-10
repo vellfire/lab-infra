@@ -22,6 +22,8 @@
       - virtnbdbackup
       - binfmt-support
       - prometheus-libvirt-exporter
+      - cockpit
+      - cockpit-machines
     state: present
 
 - name: Copy libvirt-guests config to sysconfig
@@ -37,6 +39,7 @@
     name: "{{ item }}"
     enabled: true
   loop:
+    - cockpit.socket
     - libvirtd.service
     - libvirtd.socket
     - libvirtd-ro.socket
