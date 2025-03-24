@@ -2,7 +2,7 @@
 ansible_user: will
 
 nut_client_ups: will-office-eaton
-nut_client_server: sbc1.mgt.lan
+nut_client_server: sbc1
 nut_client_username: observer
 nut_client_password: upsdeez
 

@@ -15,7 +15,6 @@
       - nano
       - tmux
       - htop
-      - btop
       - smartmontools
       - nload
       - net-tools
@@ -24,7 +23,6 @@
       - nfs-common
       - cifs-utils
       - lm-sensors
-      - lldpd
       - build-essential
       - tree
       - rsync
@@ -32,7 +30,20 @@
       - bind9-dnsutils
       - curl
       - wget
+      - openvswitch-switch-dpdk
+      - netplan.io
+      - systemd-resolved
     state: present
+
+- name: Create systemd-resolved configuration
+  ansible.builtin.copy:
+    dest: /etc/systemd/resolved.conf
+    content: |
+      [Resolve]
+      DNSStubListener=no
+    owner: root
+    group: root
+    mode: '0644'
 
 - name: Enable & start systemd services
   ansible.builtin.systemd:
@@ -40,7 +51,14 @@
     enabled: true
     state: started
   loop:
-    - lldpd
+    - systemd-resolved
+
+- name: Set resolve.conf symlink
+  ansible.builtin.file:
+    src: /run/systemd/resolve/stub-resolv.conf
+    dest: /etc/resolv.conf
+    state: link
+    force: true
 
 - name: Create custom group
   ansible.builtin.group:
@@ -72,3 +90,5 @@
     owner: "{{ ansible_user }}"
     group: "{{ ansible_user }}"
     mode: '0644'
+    modification_time: preserve
+    access_time: preserve
