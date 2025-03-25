@@ -9,7 +9,7 @@
   hosts: debian
   become: true
   roles:
-    - role: geerlingguy.nut_client
+    # - role: geerlingguy.nut_client
     - role: prometheus.prometheus.node_exporter
 
 - name: Run KVM setup tasks
