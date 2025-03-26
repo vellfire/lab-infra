@@ -30,8 +30,8 @@ unix:
               ansible_host: sbc3
             sbc4:
               ansible_host: sbc4
-            vps1:
-              ansible_host: vps1
+            # vps1:
+            #   ansible_host: vps1
 
         docker:
           hosts:
@@ -39,7 +39,7 @@ unix:
             sbc2:
             sbc3:
             sbc4:
-            vps1:
+            # vps1:
 
         virt:
           hosts:
