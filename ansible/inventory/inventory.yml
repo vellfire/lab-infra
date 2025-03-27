@@ -30,6 +30,8 @@ unix:
               ansible_host: sbc3
             sbc4:
               ansible_host: sbc4
+            deb1:
+              ansible_host: 10.10.0.51
             # vps1:
             #   ansible_host: vps1
 
@@ -39,6 +41,7 @@ unix:
             sbc2:
             sbc3:
             sbc4:
+            deb1:
             # vps1:
 
         virt:
@@ -50,8 +53,8 @@ unix:
         #     vps2:
         #     vps3:
 
-ovh:
-  hosts:
-    vps1:
-    vps2:
-    vps3:
+# ovh:
+#   hosts:
+#     vps1:
+#     vps2:
+#     vps3:
