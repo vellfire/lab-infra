@@ -1,3 +1,0 @@
----
-- name: Refresh SSH
-  ansible.builtin.meta: reset_connection

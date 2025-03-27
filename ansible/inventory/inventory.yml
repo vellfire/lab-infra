@@ -1,60 +1,20 @@
 ---
-unix:
+linux:
   children:
-    macbook:
+    debian:
       hosts:
-        Will-MBP:
-          ansible_host: localhost
-          ansible_connection: local
+        sbc1:
+          ansible_host: sbc1
+        sbc2:
+          ansible_host: sbc2
+        sbc3:
+          ansible_host: sbc3
+        sbc4:
+          ansible_host: sbc4
 
-    linux:
-      children:
-        rhel:
-          children:
-            rocky:
-              hosts:
-                nas1:
-                  ansible_host: nas1
-                # vps2:
-                #   ansible_host: vps2
-                # vps3:
-                #   ansible_host: vps3
-
-        debian:
-          hosts:
-            sbc1:
-              ansible_host: sbc1
-            sbc2:
-              ansible_host: sbc2
-            sbc3:
-              ansible_host: sbc3
-            sbc4:
-              ansible_host: sbc4
-            deb1:
-              ansible_host: 10.10.0.51
-            # vps1:
-            #   ansible_host: vps1
-
-        docker:
-          hosts:
-            sbc1:
-            sbc2:
-            sbc3:
-            sbc4:
-            deb1:
-            # vps1:
-
-        virt:
-          hosts:
-            sbc2:
-
-        # web:
-        #   hosts:
-        #     vps2:
-        #     vps3:
-
-# ovh:
-#   hosts:
-#     vps1:
-#     vps2:
-#     vps3:
+    docker:
+      hosts:
+        sbc1:
+        sbc2:
+        sbc3:
+        sbc4:
