@@ -34,3 +34,6 @@ linux:
         pve3:
           ansible_host: pve3
           ansible_user: root
+
+    pve_init:
+      hosts:
