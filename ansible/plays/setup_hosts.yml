@@ -19,12 +19,6 @@
     # - role: geerlingguy.nut_client
     - role: prometheus.prometheus.node_exporter
 
-- name: Run KVM setup tasks
-  hosts: virt
-  become: true
-  roles:
-    - role: deb_kvm
-
 - name: Run docker setup tasks
   hosts: docker
   become: true
