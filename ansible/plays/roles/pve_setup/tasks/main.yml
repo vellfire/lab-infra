@@ -1,0 +1,37 @@
+---
+# - name: Modify proxmoxlib.js to include custom command
+#   ansible.builtin.lineinfile:
+#     path: /usr/share/javascript/proxmox-widget-toolkit/proxmoxlib.js
+#     regexp: '(function\(orig_cmd\) \{)'
+#     line: '\1\n\torig_cmd();\n\treturn;'
+#     backrefs: true
+#     backup: true
+
+# - name: Restart pveproxy service
+#   ansible.builtin.systemd:
+#     name: pveproxy
+#     state: restarted
+
+- name: Remove existing PVE repo
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: absent
+  loop:
+    - /etc/apt/sources.list.d/ceph.list
+    - /etc/apt/sources.list.d/pve-enterprise.list
+
+- name: PVE Repo Setup
+  ansible.builtin.copy:
+    dest: /etc/apt/sources.list.d/pve-sources.list
+    content: "{{ pve_setup_sources }}"
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Update packages
+  ansible.builtin.apt:
+    update_cache: true
+    cache_valid_time: 3600
+    upgrade: full
+    autoremove: true
+    autoclean: true

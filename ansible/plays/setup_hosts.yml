@@ -1,5 +1,12 @@
 ---
 - name: Run host setup tasks
+  hosts: pve
+  become: true
+  roles:
+    - role: pve_setup
+    - role: geerlingguy.nut_client
+
+- name: Run host setup tasks
   hosts: debian
   become: true
   roles:

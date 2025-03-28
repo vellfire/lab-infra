@@ -5,12 +5,16 @@ linux:
       hosts:
         sbc1:
           ansible_host: sbc1
+          ansible_user: will
         sbc2:
           ansible_host: sbc2
+          ansible_user: will
         sbc3:
           ansible_host: sbc3
+          ansible_user: will
         sbc4:
           ansible_host: sbc4
+          ansible_user: will
 
     docker:
       hosts:
@@ -18,3 +22,15 @@ linux:
         sbc2:
         sbc3:
         sbc4:
+
+    pve:
+      hosts:
+        pve1:
+          ansible_host: pve1
+          ansible_user: root
+        pve2:
+          ansible_host: pve2
+          ansible_user: root
+        pve3:
+          ansible_host: pve3
+          ansible_user: root

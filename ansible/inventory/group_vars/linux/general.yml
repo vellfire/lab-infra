@@ -1,6 +1,5 @@
 ---
-ansible_user: will
-
+# Nut Client Configuration
 nut_client_ups: will-office-eaton
 nut_client_server: sbc1
 nut_client_username: observer
