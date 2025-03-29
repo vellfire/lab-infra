@@ -15,6 +15,9 @@ linux:
         sbc4:
           ansible_host: sbc4
           ansible_user: will
+        nas1:
+          ansible_host: nas1
+          ansible_user: will
 
     docker:
       hosts:
@@ -22,6 +25,7 @@ linux:
         sbc2:
         sbc3:
         sbc4:
+        nas1:
 
     pve:
       hosts:
