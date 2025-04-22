@@ -1,4 +1,0 @@
----
-pve_setup_remove_prompt: false
-pve_setup_remove_repos: true
-pve_setup_add_repos: true

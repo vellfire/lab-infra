@@ -1,22 +1,16 @@
 ---
 - name: Run host setup tasks
-  hosts: pve_init
-  roles:
-    - role: pve_setup
-    - role: geerlingguy.nut_client
-
-- name: Run host setup tasks
   hosts: debian
   become: true
   roles:
     - role: deb_setup
-
-- name: Run host setup tasks
-  hosts: debian
-  become: true
-  roles:
-    # - role: geerlingguy.nut_client
     - role: prometheus.prometheus.node_exporter
+
+# - name: Install NUT client
+#   hosts: debian
+#   become: true
+#   roles:
+#     - role: geerlingguy.nut_client
 
 - name: Run docker setup tasks
   hosts: docker
@@ -27,7 +21,7 @@
   vars:
     override_content: |
       [Service]
-      ExecStartPost=iptables -I DOCKER-USER -i br0 -o br0 -j ACCEPT
+      ExecStartPost=iptables -I DOCKER-USER -i bri0 -o bri0 -j ACCEPT
   tasks:
     - name: Create override directory for Docker service
       ansible.builtin.file:

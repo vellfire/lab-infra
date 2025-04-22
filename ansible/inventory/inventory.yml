@@ -18,6 +18,12 @@ linux:
         nas1:
           ansible_host: nas1
           ansible_user: will
+        dl1:
+          ansible_host: dl1
+          ansible_user: will
+        kvm1:
+          ansible_host: kvm1
+          ansible_user: will
 
     docker:
       hosts:
@@ -26,18 +32,8 @@ linux:
         sbc3:
         sbc4:
         nas1:
+        dl1:
 
-    pve:
-      hosts:
-        pve1:
-          ansible_host: pve1
-          ansible_user: root
-        pve2:
-          ansible_host: pve2
-          ansible_user: root
-        pve3:
-          ansible_host: pve3
-          ansible_user: root
 
     pve_init:
       hosts:
