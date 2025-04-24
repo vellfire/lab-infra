@@ -6,34 +6,48 @@ linux:
         sbc1:
           ansible_host: sbc1
           ansible_user: will
+          req_nut: false
+          req_docker: true
+          req_virt: false
+
         sbc2:
           ansible_host: sbc2
           ansible_user: will
+          req_nut: true
+          req_docker: true
+          req_virt: false
+
         sbc3:
           ansible_host: sbc3
           ansible_user: will
+          req_nut: true
+          req_docker: true
+          req_virt: false
+
         sbc4:
           ansible_host: sbc4
           ansible_user: will
+          req_nut: true
+          req_docker: true
+          req_virt: false
+
         nas1:
           ansible_host: nas1
           ansible_user: will
-        dl1:
-          ansible_host: dl1
-          ansible_user: will
+          req_nut: true
+          req_docker: true
+          req_virt: false
+
+        # dl1:
+        #   ansible_host: dl1
+        #   ansible_user: will
+        #   req_nut: false
+        #   req_docker: true
+        #   req_virt: false
+
         kvm1:
           ansible_host: kvm1
           ansible_user: will
-
-    docker:
-      hosts:
-        sbc1:
-        sbc2:
-        sbc3:
-        sbc4:
-        nas1:
-        dl1:
-
-
-    pve_init:
-      hosts:
+          req_nut: true
+          req_docker: false
+          req_virt: true

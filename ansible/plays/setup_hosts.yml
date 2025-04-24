@@ -2,48 +2,22 @@
 - name: Run host setup tasks
   hosts: debian
   become: true
-  roles:
-    - role: deb_setup
-    - role: prometheus.prometheus.node_exporter
-
-# - name: Install NUT client
-#   hosts: debian
-#   become: true
-#   roles:
-#     - role: geerlingguy.nut_client
-
-- name: Run docker setup tasks
-  hosts: docker
-  become: true
-  roles:
-    - geerlingguy.docker
-    - geerlingguy.pip
-  vars:
-    override_content: |
-      [Service]
-      ExecStartPost=iptables -I DOCKER-USER -i bri0 -o bri0 -j ACCEPT
   tasks:
-    - name: Create override directory for Docker service
-      ansible.builtin.file:
-        path: /usr/lib/systemd/system/docker.service.d
-        state: directory
-        owner: root
-        group: root
-        mode: '0755'
+    - name: Run standard setup tasks
+      ansible.builtin.include_role:
+        name: deb_setup
+      when: ansible_os_family == 'Debian'
 
-    - name: Create override file for Docker service
-      ansible.builtin.copy:
-        content: "{{ override_content }}"
-        dest: /usr/lib/systemd/system/docker.service.d/override.conf
-        owner: root
-        group: root
-        mode: '0644'
-      notify:
-        - Restart Docker
+    - name: Install node exporter
+      ansible.builtin.include_role:
+        name: prometheus.prometheus.node_exporter
 
-  handlers:
-    - name: Restart Docker
-      ansible.builtin.systemd_service:
-        daemon_reload: true
-        name: docker
-        state: restarted
+    - name: Install NUT client
+      ansible.builtin.include_role:
+        name: geerlingguy.nut_client
+      when: req_nut
+
+    - name: Install docker
+      ansible.builtin.include_role:
+        name: geerlingguy.docker
+      when: req_docker
