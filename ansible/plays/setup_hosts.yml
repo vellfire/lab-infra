@@ -1,6 +1,6 @@
 ---
 - name: Run host setup tasks
-  hosts: debian
+  hosts: linux
   become: true
   tasks:
     - name: Run standard setup tasks
@@ -15,9 +15,9 @@
     - name: Install NUT client
       ansible.builtin.include_role:
         name: geerlingguy.nut_client
-      when: req_nut
+      when: req_nut | default(false)
 
     - name: Install docker
       ansible.builtin.include_role:
         name: geerlingguy.docker
-      when: req_docker
+      when: req_docker | default(false)

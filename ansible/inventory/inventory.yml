@@ -51,3 +51,10 @@ linux:
           req_nut: true
           req_docker: false
           req_virt: true
+
+        vps1:
+          ansible_host: vps1
+          ansible_user: will
+          req_nut: false
+          req_docker: true
+          req_virt: false
