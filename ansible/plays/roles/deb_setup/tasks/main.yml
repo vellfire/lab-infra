@@ -36,21 +36,16 @@
     owner: root
     group: root
     mode: '0644'
+  notify: Restart systemd-resolved
 
 - name: Set resolve.conf symlink
   ansible.builtin.file:
     src: /run/systemd/resolve/stub-resolv.conf
     dest: /etc/resolv.conf
     state: link
-    force: true
-
-- name: Enable & start systemd services
-  ansible.builtin.systemd:
-    name: "{{ item }}"
-    enabled: true
-    state: restarted
-  loop:
-    - systemd-resolved
+    owner: systemd-resolve
+    group: systemd-resolve
+    mode: '0644'
 
 - name: Allow passwordless sudo for 'sudo' group
   community.general.sudoers:

@@ -8,11 +8,8 @@
         name: update_hosts
         apply:
           tags: update
-
-    - name: Test tag
-      ansible.builtin.debug:
-        msg: "This is a test tag"
-      tags: update
+      tags:
+        - update
 
     - name: Run standard setup tasks
       when: ansible_os_family == 'Debian'
@@ -20,6 +17,8 @@
         name: deb_setup
         apply:
           tags: setup
+      tags:
+        - setup
 
     - name: Install node exporter
       when: req_monitor | default(false)
@@ -28,6 +27,8 @@
         apply:
           tags:
             - prometheus
+      tags:
+        - prometheus
 
     - name: Install NUT client
       when: req_nut | default(false)
@@ -36,6 +37,8 @@
         apply:
           tags:
             - nut
+      tags:
+        - nut
 
     - name: Install docker
       when: req_docker | default(false)
@@ -43,3 +46,5 @@
         name: geerlingguy.docker
         apply:
           tags: docker
+      tags:
+        - docker

@@ -1,3 +1,9 @@
 ---
 - name: Refresh SSH
   ansible.builtin.meta: reset_connection
+
+- name: Restart systemd-resolved
+  ansible.builtin.systemd:
+    name: systemd-resolved
+    enabled: true
+    state: restarted
