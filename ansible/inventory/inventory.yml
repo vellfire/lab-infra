@@ -9,6 +9,7 @@ linux:
           req_nut: false
           req_docker: true
           req_virt: false
+          req_monitor: true
 
         sbc2:
           ansible_host: sbc2
@@ -16,6 +17,7 @@ linux:
           req_nut: true
           req_docker: true
           req_virt: false
+          req_monitor: true
 
         sbc3:
           ansible_host: sbc3
@@ -23,6 +25,7 @@ linux:
           req_nut: true
           req_docker: true
           req_virt: false
+          req_monitor: true
 
         sbc4:
           ansible_host: sbc4
@@ -30,6 +33,7 @@ linux:
           req_nut: true
           req_docker: true
           req_virt: false
+          req_monitor: true
 
         nas1:
           ansible_host: nas1
@@ -37,6 +41,7 @@ linux:
           req_nut: true
           req_docker: true
           req_virt: false
+          req_monitor: true
 
         kvm1:
           ansible_host: kvm1
@@ -44,6 +49,7 @@ linux:
           req_nut: true
           req_docker: false
           req_virt: true
+          req_monitor: true
 
         vps1:
           ansible_host: vps1
@@ -51,6 +57,7 @@ linux:
           req_nut: false
           req_docker: true
           req_virt: false
+          req_monitor: true
 
         vps2:
           ansible_host: vps2
@@ -58,6 +65,7 @@ linux:
           req_nut: false
           req_docker: false
           req_virt: false
+          req_monitor: true
 
         vps3:
           ansible_host: vps3
@@ -65,3 +73,4 @@ linux:
           req_nut: false
           req_docker: false
           req_virt: false
+          req_monitor: true

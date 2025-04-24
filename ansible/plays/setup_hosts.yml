@@ -6,22 +6,40 @@
     - name: Update hosts
       ansible.builtin.include_role:
         name: update_hosts
+        apply:
+          tags: update
+
+    - name: Test tag
+      ansible.builtin.debug:
+        msg: "This is a test tag"
+      tags: update
 
     - name: Run standard setup tasks
+      when: ansible_os_family == 'Debian'
       ansible.builtin.include_role:
         name: deb_setup
-      when: ansible_os_family == 'Debian'
+        apply:
+          tags: setup
 
     - name: Install node exporter
+      when: req_monitor | default(false)
       ansible.builtin.include_role:
         name: prometheus.prometheus.node_exporter
+        apply:
+          tags:
+            - prometheus
 
     - name: Install NUT client
+      when: req_nut | default(false)
       ansible.builtin.include_role:
         name: geerlingguy.nut_client
-      when: req_nut | default(false)
+        apply:
+          tags:
+            - nut
 
     - name: Install docker
+      when: req_docker | default(false)
       ansible.builtin.include_role:
         name: geerlingguy.docker
-      when: req_docker | default(false)
+        apply:
+          tags: docker
