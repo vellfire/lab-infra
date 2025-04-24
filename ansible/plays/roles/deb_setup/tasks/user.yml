@@ -1,0 +1,19 @@
+---
+- name: Allow passwordless sudo for 'sudo' group
+  community.general.sudoers:
+    name: passwordless_sudo
+    group: sudo
+    nopassword: true
+    commands: ALL
+    runas: ALL:ALL
+    state: present
+
+- name: Create ~/.hushlogin for ansible_user
+  ansible.builtin.file:
+    path: "/home/{{ ansible_user }}/.hushlogin"
+    state: touch
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: '0644'
+    modification_time: preserve
+    access_time: preserve

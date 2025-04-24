@@ -1,0 +1,20 @@
+---
+- name: Create systemd-resolved configuration
+  ansible.builtin.copy:
+    dest: /etc/systemd/resolved.conf
+    content: |
+      [Resolve]
+      DNSStubListener=no
+    owner: root
+    group: root
+    mode: '0644'
+  notify: Restart systemd-resolved
+
+- name: Set resolve.conf symlink
+  ansible.builtin.file:
+    src: /run/systemd/resolve/stub-resolv.conf
+    dest: /etc/resolv.conf
+    state: link
+    owner: systemd-resolve
+    group: systemd-resolve
+    mode: '0644'

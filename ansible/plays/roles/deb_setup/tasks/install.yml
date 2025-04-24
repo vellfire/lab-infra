@@ -1,0 +1,30 @@
+---
+- name: Install standard packages
+  ansible.builtin.apt:
+    name:
+      - git
+      - vim
+      - nano
+      - tmux
+      - htop
+      - smartmontools
+      - nload
+      - net-tools
+      - tcpdump
+      - bind9-utils
+      - nfs-common
+      - cifs-utils
+      - lm-sensors
+      - build-essential
+      - tree
+      - rsync
+      - jq
+      - bind9-dnsutils
+      - curl
+      - wget
+      - lshw
+      - dmidecode
+      - openvswitch-switch-dpdk
+      - netplan.io
+      - systemd-resolved
+    state: present
