@@ -1,12 +1,4 @@
 ---
-- name: Update host
-  ansible.builtin.apt:
-    update_cache: true
-    cache_valid_time: 3600
-    upgrade: full
-    autoremove: true
-    autoclean: true
-
 - name: Install standard packages
   ansible.builtin.apt:
     name:
@@ -45,14 +37,6 @@
     group: root
     mode: '0644'
 
-- name: Enable & start systemd services
-  ansible.builtin.systemd:
-    name: "{{ item }}"
-    enabled: true
-    state: started
-  loop:
-    - systemd-resolved
-
 - name: Set resolve.conf symlink
   ansible.builtin.file:
     src: /run/systemd/resolve/stub-resolv.conf
@@ -60,19 +44,13 @@
     state: link
     force: true
 
-- name: Create custom group
-  ansible.builtin.group:
-    name: smithy
-    gid: 10337
-    state: present
-
-- name: Add user to custom group
-  ansible.builtin.user:
-    name: "{{ ansible_user }}"
-    groups: smithy
-    append: true
-  notify:
-    - Refresh SSH
+- name: Enable & start systemd services
+  ansible.builtin.systemd:
+    name: "{{ item }}"
+    enabled: true
+    state: restarted
+  loop:
+    - systemd-resolved
 
 - name: Allow passwordless sudo for 'sudo' group
   community.general.sudoers:

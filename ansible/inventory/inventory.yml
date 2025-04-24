@@ -38,13 +38,6 @@ linux:
           req_docker: true
           req_virt: false
 
-        # dl1:
-        #   ansible_host: dl1
-        #   ansible_user: will
-        #   req_nut: false
-        #   req_docker: true
-        #   req_virt: false
-
         kvm1:
           ansible_host: kvm1
           ansible_user: will
@@ -57,4 +50,18 @@ linux:
           ansible_user: will
           req_nut: false
           req_docker: true
+          req_virt: false
+
+        vps2:
+          ansible_host: vps2
+          ansible_user: will
+          req_nut: false
+          req_docker: false
+          req_virt: false
+
+        vps3:
+          ansible_host: vps3
+          ansible_user: will
+          req_nut: false
+          req_docker: false
           req_virt: false

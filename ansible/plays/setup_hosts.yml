@@ -3,6 +3,10 @@
   hosts: linux
   become: true
   tasks:
+    - name: Update hosts
+      ansible.builtin.include_role:
+        name: update_hosts
+
     - name: Run standard setup tasks
       ansible.builtin.include_role:
         name: deb_setup

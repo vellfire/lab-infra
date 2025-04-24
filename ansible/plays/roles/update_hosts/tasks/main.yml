@@ -1,0 +1,8 @@
+---
+- name: Update rhel hosts
+  ansible.builtin.include_tasks: rhel.yml
+  when: ansible_os_family == 'RedHat'
+
+- name: Update debian hosts
+  ansible.builtin.include_tasks: deb.yml
+  when: ansible_os_family == 'Debian'
