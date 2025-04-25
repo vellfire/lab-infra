@@ -6,3 +6,5 @@
     state: started
   loop:
     - libvirtd.service
+    - libvirt-guests.service
+    - prometheus-libvirt-exporter.service

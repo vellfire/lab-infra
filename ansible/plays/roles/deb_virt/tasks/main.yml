@@ -16,3 +16,6 @@
 
 - name: Configure libvirt
   ansible.builtin.include_tasks: config.yml
+
+- name: Start libvirt services
+  ansible.builtin.include_tasks: services.yml
