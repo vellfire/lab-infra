@@ -11,6 +11,29 @@
       tags:
         - update
 
+    - name: Get service facts
+      ansible.builtin.service_facts:
+      tags:
+        - service_facts
+
+    - name: Print service facts
+      ansible.builtin.debug:
+        var: ansible_facts.services
+      tags:
+        - service_facts
+
+    # - name: Gather facts about libvirt network
+    #   community.libvirt.virt_net:
+    #     command: facts
+    #   tags:
+    #     - virt_facts
+
+    # - name: Print virt network facts
+    #   ansible.builtin.debug:
+    #     var: ansible_facts.libvirt_networks
+    #   tags:
+    #     - virt_facts
+
     - name: Run standard setup tasks
       when: ansible_os_family == 'Debian'
       ansible.builtin.include_role:

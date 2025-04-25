@@ -1,18 +1,10 @@
 ---
+- name: Gather facts about libvirt network
+  community.libvirt.virt_net:
+    command: facts
+
 - name: Install apt packages
   ansible.builtin.include_tasks: install.yml
-
-- name: Add virtualization groups to user
-  ansible.builtin.user:
-    name: "{{ ansible_user }}"
-    groups: "{{ item }}"
-    append: true
-  loop:
-    - libvirt
-    - libvirt-qemu
-    - kvm
-  notify:
-    - Refresh SSH
 
 - name: Configure libvirt
   ansible.builtin.include_tasks: config.yml

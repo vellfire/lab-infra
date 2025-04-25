@@ -7,3 +7,28 @@
     group: root
     mode: '0644'
   notify: Restart libvirt
+
+- name: Remove default network
+  when: ansible_facts.libvirt_networks['default'] is defined
+  block:
+    - name: Stop default network
+      community.libvirt.virt_net:
+        command: destroy
+        name: default
+
+    - name: Remove default network
+      community.libvirt.virt_net:
+        command: undefine
+        name: default
+
+- name: Add virtualization groups to user
+  ansible.builtin.user:
+    name: "{{ ansible_user }}"
+    groups: "{{ item }}"
+    append: true
+  loop:
+    - libvirt
+    - libvirt-qemu
+    - kvm
+  notify:
+    - Refresh SSH

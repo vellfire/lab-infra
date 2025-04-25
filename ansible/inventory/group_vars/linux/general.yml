@@ -1,9 +1,21 @@
 ---
+# Standard Variables
+ansible_user: will
+
+# Docker Variables
+docker_edition: 'ce'
+docker_packages:
+  - "docker-{{ docker_edition }}"
+  - "docker-{{ docker_edition }}-cli"
+  - "docker-{{ docker_edition }}-rootless-extras"
+docker_packages_state: present
+docker_users:
+  - "{{ ansible_user }}"
+
 # Nut Client Configuration
 nut_client_ups: will-office-eaton
 nut_client_server: sbc1
 nut_client_username: observer
 nut_client_password: upsdeez
-
 nut_client_state: started
 nut_client_enabled: true
