@@ -1,3 +1,4 @@
+---
 deb_virt_guests_uris: default
 deb_virt_guests_boot: start
 deb_virt_guests_startup_delay: 20
