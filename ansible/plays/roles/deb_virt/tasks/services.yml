@@ -1,0 +1,8 @@
+---
+- name: Start libvirt services
+  ansible.builtin.systemd:
+    name: "{{ item }}"
+    enabled: true
+    state: started
+  loop:
+    - libvirtd.service

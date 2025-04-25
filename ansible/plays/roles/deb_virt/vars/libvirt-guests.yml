@@ -1,0 +1,8 @@
+deb_virt_guests_uris: default
+deb_virt_guests_boot: start
+deb_virt_guests_startup_delay: 20
+deb_virt_guests_shutdown_action: shutdown
+deb_virt_guests_shutdown_parallel: 0
+deb_virt_guests_shutdown_delay: 300
+deb_virt_guests_bypass_cache: 0
+deb_virt_guests_sync_time: 0

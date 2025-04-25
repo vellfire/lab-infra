@@ -48,3 +48,13 @@
           tags: docker
       tags:
         - docker
+
+    - name: Install libvirt
+      when: req_virt | default(false)
+      ansible.builtin.include_role:
+        name: deb_virt
+        apply:
+          tags:
+            - virt
+      tags:
+        - virt

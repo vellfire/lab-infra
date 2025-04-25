@@ -1,0 +1,9 @@
+---
+- name: Configure libvirt-guests
+  ansible.builtin.template:
+    src: libvirt-guests.j2
+    dest: /etc/default/libvirt-guests
+    owner: root
+    group: root
+    mode: '0644'
+  notify: Restart libvirt
