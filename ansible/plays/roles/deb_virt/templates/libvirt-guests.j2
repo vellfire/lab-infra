@@ -2,7 +2,7 @@
 
 # URIs to check for running guests
 # example: URIS='default xen:///system vbox+tcp://host/system lxc:///system'
-URIS={{ deb_virt_guests_uris | default('default') }}
+URIS={{ deb_virt_default_uri | default('default') }}
 
 # action taken on host boot
 # - start   all guests which were running on shutdown are started on boot

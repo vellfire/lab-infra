@@ -1,6 +1,8 @@
 ---
+# libvirt
+deb_virt_default_uri: qemu:///system
+
 # libvirt-guests
-deb_virt_guests_uris: default
 deb_virt_guests_boot: start
 deb_virt_guests_startup_delay: 20
 deb_virt_guests_shutdown_action: shutdown

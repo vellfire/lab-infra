@@ -21,7 +21,7 @@
         command: undefine
         name: default
 
-- name: Add virtualization groups to user
+- name: Add virtualisation groups to user
   ansible.builtin.user:
     name: "{{ ansible_user }}"
     groups: "{{ item }}"
