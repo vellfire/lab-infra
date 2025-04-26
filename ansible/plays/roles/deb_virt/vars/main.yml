@@ -1,4 +1,5 @@
 ---
+# libvirt-guests
 deb_virt_guests_uris: default
 deb_virt_guests_boot: start
 deb_virt_guests_startup_delay: 20
@@ -7,3 +8,12 @@ deb_virt_guests_shutdown_parallel: 0
 deb_virt_guests_shutdown_delay: 300
 deb_virt_guests_bypass_cache: 0
 deb_virt_guests_sync_time: 0
+
+# libvirt-network
+deb_virt_net_nics:
+  - name: lan
+    nic: vmbr0
+  - name: opnlan
+    nic: vmbr50
+  - name: opnwan
+    nic: vmbr998

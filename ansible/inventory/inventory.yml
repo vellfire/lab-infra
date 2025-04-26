@@ -3,10 +3,10 @@ linux:
   children:
     debian:
       hosts:
-        sbc[1-4]:
+        sbc[1:4]:
 
         nas1:
 
         kvm1:
 
-        vps[1-3]:
+        vps[1:3]:

@@ -7,7 +7,13 @@
   ansible.builtin.include_tasks: install.yml
 
 - name: Configure libvirt
-  ansible.builtin.include_tasks: config.yml
+  ansible.builtin.include_tasks: standard.yml
 
 - name: Start libvirt services
   ansible.builtin.include_tasks: services.yml
+
+- name: Configure libvirt network
+  ansible.builtin.include_tasks: network.yml
+  loop: "{{ deb_virt_net_nics }}"
+  loop_control:
+    label: "{{ item.name }}"

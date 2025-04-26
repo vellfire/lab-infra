@@ -1,0 +1,12 @@
+---
+- name: Configure libvirt networks
+  community.libvirt.virt_net:
+    name: "{{ item.name }}"
+    command: define
+    xml: "{{ lookup('template', 'libvirt-bridge.xml.j2') }}"
+    state: active
+
+- name: Enable autostart on libvirt networks
+  community.libvirt.virt_net:
+    name: "{{ item.name }}"
+    autostart: true
