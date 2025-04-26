@@ -8,6 +8,15 @@
     mode: '0644'
   notify: Restart libvirt
 
+- name: Configure libvirt/qemu
+  ansible.builtin.template:
+    src: qemu.conf.j2
+    dest: /etc/libvirt/qemu.conf
+    owner: root
+    group: root
+    mode: '0600'
+  notify: Restart libvirt
+
 - name: Remove default network
   when: ansible_facts.libvirt_networks['default'] is defined
   block:
