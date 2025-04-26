@@ -5,6 +5,7 @@
     content: |
       [Resolve]
       DNSStubListener=no
+      LLMNR=no
     owner: root
     group: root
     mode: '0644'
