@@ -3,3 +3,4 @@ ansible-compat==25.1.5
 ansible-core==2.18.5
 ansible-lint==25.2.1
 lxml==5.4.0
+passlib==1.7.4

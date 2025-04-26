@@ -1,6 +1,8 @@
 ---
 # Standard Variables
 ansible_user: will
+automation_user: automation
+automation_uid: 1337
 
 # Docker Variables
 docker_edition: 'ce'

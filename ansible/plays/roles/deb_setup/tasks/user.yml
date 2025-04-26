@@ -17,3 +17,20 @@
     mode: '0644'
     modification_time: preserve
     access_time: preserve
+
+- name: Create automation user
+  ansible.builtin.user:
+    name: "{{ automation_user }}"
+    uid: "{{ automation_uid }}"
+    password: "{{ lookup('ripplefcl.bwscache.secret', 'ef07303a-9a35-4955-8014-b2cb014c1fe3').value }}"
+    shell: /bin/bash
+    create_home: true
+    groups:
+      - sudo
+    state: present
+
+- name: Import ssh keys from github for automation user
+  ansible.posix.authorized_key:
+    user: "{{ automation_user }}"
+    key: https://github.com/vellfire.keys
+    state: present
