@@ -3,6 +3,7 @@
   ansible.builtin.apt:
     name:
       - binfmt-support
+      - dnsmasq
       - libguestfs-tools
       - libqcow-utils
       - libvirt-clients
