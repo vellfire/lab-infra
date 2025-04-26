@@ -16,20 +16,17 @@
       tags:
         - service_facts
 
-    - name: Print service facts
-      ansible.builtin.debug:
-        var: ansible_facts.services
-      tags:
-        - service_facts
-
     - name: Run standard setup tasks
       when: ansible_os_family == 'Debian'
       ansible.builtin.include_role:
         name: deb_setup
         apply:
-          tags: setup
+          tags:
+            - setup
+            - all
       tags:
         - setup
+        - all
 
     - name: Install node exporter
       when:
@@ -40,8 +37,10 @@
         apply:
           tags:
             - prometheus
+            - all
       tags:
         - prometheus
+        - all
 
     - name: Install NUT client
       when: req_nut | default(false)
@@ -50,24 +49,36 @@
         apply:
           tags:
             - nut
+            - all
       tags:
         - nut
+        - all
 
     - name: Install docker
-      when: req_docker | default(false)
+      when:
+        - req_docker | default(false)
+        - ansible_facts.services['docker.service'] is not defined
       ansible.builtin.include_role:
         name: geerlingguy.docker
         apply:
-          tags: docker
+          tags:
+            - docker
+            - all
       tags:
         - docker
+        - all
 
     - name: Install libvirt
-      when: req_virt | default(false)
+      when:
+        - req_virt | default(false)
+        - ansible_os_family == 'Debian'
+        - ansible_facts.services['libvirtd.service'] is not defined
       ansible.builtin.include_role:
         name: deb_virt
         apply:
           tags:
             - virt
+            - all
       tags:
         - virt
+        - all
