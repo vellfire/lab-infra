@@ -27,3 +27,5 @@ deb_virt_storage_pools:
     path: /opt/virt/images
   - name: iso
     path: /opt/shares/virt/iso
+  - name: templates
+    path: /opt/shares/virt/templates

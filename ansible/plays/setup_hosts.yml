@@ -50,7 +50,7 @@
       block:
         - name: Lookup NUT secret
           ansible.builtin.set_fact:
-            nut_client_password: "{{ lookup('ripplefcl.bwscache.secret', 'nut-password').value }}"
+            nut_client_password: "{{ lookup('ripplefcl.bwscache.secret', 'nut').value }}"
           no_log: true
 
         - name: Install NUT client
