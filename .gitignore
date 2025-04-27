@@ -4,3 +4,4 @@
 .lock
 .venv
 .ansible
+.terraform*
