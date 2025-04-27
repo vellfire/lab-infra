@@ -1,5 +1,5 @@
 ---
-# libvirt
+# libvirt-main
 deb_virt_default_uri: qemu:///system
 deb_virt_bridge_helper: /usr/lib/qemu/qemu-bridge-helper
 
@@ -20,3 +20,10 @@ deb_virt_net_nics:
     nic: vmbr50
   - name: opnwan
     nic: vmbr998
+
+# libvirt-storage
+deb_virt_storage_pools:
+  - name: images
+    path: /opt/virt/images
+  - name: iso
+    path: /opt/shares/virt/iso

@@ -1,1 +1,26 @@
 ---
+- name: Create share directories
+  ansible.builtin.file:
+    path: "{{ item.dest_path }}"
+    state: directory
+    recurse: true
+    owner: root
+    group: root
+    mode: '0755'
+  failed_when: false
+  changed_when: false
+  loop: "{{ shares }}"
+  loop_control:
+    label: "{{ item.name }}"
+
+- name: Mount shares
+  ansible.posix.mount:
+    src: "{{ item.src_path }}"
+    path: "{{ item.dest_path }}"
+    boot: true
+    fstype: nfs
+    state: mounted
+    opts: rw,vers=3,nolock,hard,intr,nofail
+  loop: "{{ shares }}"
+  loop_control:
+    label: "{{ item.name }}"

@@ -1,1 +1,23 @@
 ---
+- name: Create /opt/libvirt directory
+  ansible.builtin.file:
+    path: /opt/virt/images
+    state: directory
+    recurse: true
+    mode: '0755'
+
+- name: Create storage pool
+  community.libvirt.virt_pool:
+    name: "{{ item.name }}"
+    command: define
+    xml: "{{ lookup('template', 'libvirt-pool.xml.j2') }}"
+
+- name: Start storage pools
+  community.libvirt.virt_pool:
+    name: "{{ item.name }}"
+    state: active
+
+- name: Autostart storage pools
+  community.libvirt.virt_pool:
+    name: "{{ item.name }}"
+    autostart: true

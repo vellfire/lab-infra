@@ -8,3 +8,7 @@
 - name: Configure user
   ansible.builtin.include_tasks: user.yml
   when: ansible_user is defined and ansible_user != 'root'
+
+- name: Configure shares
+  ansible.builtin.include_tasks: shares.yml
+  when: shares is defined
