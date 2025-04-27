@@ -42,17 +42,25 @@
         - prometheus
         - all
 
-    - name: Install NUT client
+    - name: Setup NUT client
       when: req_nut | default(false)
-      ansible.builtin.include_role:
-        name: geerlingguy.nut_client
-        apply:
-          tags:
-            - nut
-            - all
       tags:
         - nut
         - all
+      block:
+        - name: Lookup NUT secret
+          ansible.builtin.set_fact:
+            nut_client_password: "{{ lookup('ripplefcl.bwscache.secret', 'nut-password').value }}"
+          no_log: true
+
+        - name: Install NUT client
+          ansible.builtin.include_role:
+            name: geerlingguy.nut_client
+            apply:
+              tags:
+                - nut
+                - all
+              no_log: true
 
     - name: Install docker
       when:

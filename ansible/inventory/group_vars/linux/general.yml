@@ -18,6 +18,5 @@ docker_users:
 nut_client_ups: will-office-eaton
 nut_client_server: sbc1
 nut_client_username: observer
-nut_client_password: upsdeez
 nut_client_state: started
 nut_client_enabled: true
