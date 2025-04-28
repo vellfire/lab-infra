@@ -1,7 +1,7 @@
 resource "libvirt_volume" "deb-gc" {
     name                  = "debian-gc-bookworm.qcow2"
     pool                  = "images"
-    source                = "https://files.int.mcda.dev/debian-12-genericcloud-amd64.qcow2"
+    source                = "https://cloud.debian.org/images/cloud/bookworm/latest/debian-12-genericcloud-amd64.qcow2"
     format                = "qcow2"
 }
 
