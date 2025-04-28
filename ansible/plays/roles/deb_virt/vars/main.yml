@@ -2,6 +2,7 @@
 # libvirt-main
 deb_virt_default_uri: qemu:///system
 deb_virt_bridge_helper: /usr/lib/qemu/qemu-bridge-helper
+deb_virt_gid: kvm
 
 # libvirt-guests
 deb_virt_guests_boot: start

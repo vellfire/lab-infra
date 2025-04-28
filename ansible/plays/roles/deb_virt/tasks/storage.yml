@@ -1,10 +1,12 @@
 ---
-- name: Create /opt/libvirt directory
+- name: Create /opt/virt directory
   ansible.builtin.file:
     path: "{{ item.path }}"
     state: directory
     recurse: true
-    mode: '0755'
+    mode: '0775'
+    owner: libvirt-qemu
+    group: kvm
   failed_when: false
   changed_when: false
 

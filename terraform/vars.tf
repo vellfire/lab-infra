@@ -3,3 +3,9 @@ variable "libvirt_uri" {
     type        = string
     default     = "qemu+ssh://will@kvm1/system"
 }
+
+variable "worker_count" {
+    description = "Number of workers"
+    type        = number
+    default     = 3
+}
