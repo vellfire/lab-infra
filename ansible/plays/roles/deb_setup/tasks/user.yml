@@ -31,6 +31,9 @@
 
 - name: Import ssh keys from github for automation user
   ansible.posix.authorized_key:
-    user: "{{ automation_user }}"
+    user: "{{ item }}"
     key: https://github.com/vellfire.keys
     state: present
+  loop:
+    - "{{ automation_user }}"
+    - "{{ ansible_user }}"

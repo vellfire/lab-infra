@@ -1,0 +1,16 @@
+---
+req_nut: false
+req_docker: true
+req_virt: false
+req_monitor: true
+
+shares:
+  - name: common
+    src_path: nas1:/tank/common
+    dest_path: /opt/shares/common
+  - name: backup
+    src_path: nas1:/tank/backup
+    dest_path: /opt/shares/backup
+  - name: virt
+    src_path: nas1:/tank/virt
+    dest_path: /opt/shares/virt
