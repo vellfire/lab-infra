@@ -9,5 +9,5 @@ terraform {
 }
 
 provider "libvirt" {
-    uri = vars.libvirt_uri
+    uri = var.libvirt_uri
 }
