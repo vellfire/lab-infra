@@ -22,3 +22,10 @@ provider "registry.terraform.io/dmacvicar/libvirt" {
     "zh:d4188a343ff32c0e03ff28c7e84abce0f43cad2fdbcd9046eaafc247429039ff",
   ]
 }
+
+provider "registry.terraform.io/hashicorp/template" {
+  version = "2.2.0"
+  hashes = [
+    "h1:sZDnEMKrSQY9IBW1jImKrdArlG5mgpe3U0zC7QZnLuo=",
+  ]
+}
