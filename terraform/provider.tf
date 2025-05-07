@@ -8,4 +8,6 @@ terraform {
     }
 }
 
-provider "libvirt" {}
+provider "libvirt" {
+    uri = vars.libvirt_uri
+}
