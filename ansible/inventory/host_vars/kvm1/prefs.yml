@@ -14,3 +14,8 @@ shares:
   - name: virt
     src_path: nas1:/tank/virt
     dest_path: /opt/shares/virt
+
+mnt_backup: true
+mnt_common: true
+mnt_pods: false
+mnt_virt: true

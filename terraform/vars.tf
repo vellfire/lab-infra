@@ -1,5 +1,5 @@
 variable "libvirt_uri" {
-    description = "Libvirt URI"
+    description = "Libvirt uri"
     type        = string
     default     = "qemu+ssh://will@kvm1/system"
 }
@@ -29,7 +29,7 @@ variable "automation_user_id" {
 } 
 
 variable "git_ssh_keys" {
-    description = "Github SSH keys to import"
+    description = "Github ssh keys to import"
     type        = string
     default     = "gh:vellfire"
 }

@@ -14,3 +14,8 @@ shares:
   - name: pods
     src_path: nas1:/tank/pods
     dest_path: /opt/shares/pods
+
+mnt_backup: true
+mnt_common: true
+mnt_pods: true
+mnt_virt: false

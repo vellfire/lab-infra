@@ -3,3 +3,8 @@ req_nut: true
 req_docker: true
 req_virt: false
 req_monitor: true
+
+mnt_backup: false
+mnt_common: false
+mnt_pods: false
+mnt_virt: false
