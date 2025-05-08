@@ -38,4 +38,4 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
 
       - name: Run TFLint
-        run: tflint -f compact --chdir terraform
+        run: tflint -f compact --recursive --chdir terraform
