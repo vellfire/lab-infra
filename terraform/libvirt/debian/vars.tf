@@ -1,7 +1,7 @@
 variable "libvirt_uri" {
     description = "Libvirt uri"
     type        = string
-    default     = "qemu+ssh://will@kvm1/system"
+    default     = "qemu+ssh://will@kvm1/system?sshauth=privkey&no_verify=1"
 }
 
 variable "wkr_count" {
