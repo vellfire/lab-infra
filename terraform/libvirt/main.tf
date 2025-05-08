@@ -83,29 +83,30 @@ resource "libvirt_domain" "deb-wkr" {
     cpu {
         mode              = "custom"
     }
-    
+
     disk {
         volume_id         = libvirt_volume.deb-wkr-os[count.index].id
     }
-    
+
     boot_device {
         dev = [ "hd", "cdrom" , "network"]
     }
 
     network_interface {
         bridge            = "vmbr0"
+        mac               = "96:1f:f6:00:00:0${count.index + 1}"
     }
-    
+
     graphics {
         type              = "vnc"
         listen_type       = "address"
         autoport          = true
     }
-    
+
     video {
         type              = "vga"
     }
-    
+
     console {
         type = "pty"
         target_port = 0
