@@ -68,6 +68,10 @@ resource "libvirt_cloudinit_disk" "deb-wkr-init" {
     })}"
 }
 
+resource "macaddress" "vm_mac" {
+    prefix = [52, 54, 00]
+}
+
 resource "libvirt_domain" "deb-wkr" {
     name                  = "debwkr${count.index + 1}"
     count                 = var.wkr_count
@@ -94,7 +98,7 @@ resource "libvirt_domain" "deb-wkr" {
 
     network_interface {
         bridge            = "vmbr0"
-        mac               = "96:1f:f6:00:00:0${count.index + 1}"
+        mac               = upper(macaddress.vm_mac.address)
     }
 
     graphics {
