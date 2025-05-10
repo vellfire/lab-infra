@@ -5,7 +5,7 @@ variable "libvirt_uri" {
 }
 
 variable "vm_name" {
-    description = "VM Name (for hostname and files)"
+    description = "VM name (for hostname and files)"
     type        = string
     default     = "debwkr"
 }
@@ -29,7 +29,7 @@ variable "vm_timezone" {
 }
 
 variable "vm_net_default" {
-    description = "Default VM bridge"
+    description = "Default vm bridge"
     type        = string
     default     = "vmbr0"
 }

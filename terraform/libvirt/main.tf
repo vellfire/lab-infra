@@ -8,7 +8,7 @@ resource "libvirt_volume" "vm-template" {
 resource "libvirt_volume" "vm-vol-os" {
     name            = "${var.vm_name}${count.index + 1}.qcow2"
     count           = var.vm_count
-    pool            = "templates"
+    pool            = "images"
     size            = 16 * 1024 * 1024 * 1024
     format          = "qcow2"
     base_volume_id  = libvirt_volume.vm-template.id
@@ -16,7 +16,7 @@ resource "libvirt_volume" "vm-vol-os" {
 
 resource "libvirt_cloudinit_disk" "vm-init" {
     name        = "${var.vm_name}${count.index + 1}-init.iso"
-    pool        = "default"
+    pool        = "templates"
     count       = var.vm_count
     user_data   = "#cloud-config\n${yamlencode({
         hostname = "${var.vm_name}${count.index + 1}"
