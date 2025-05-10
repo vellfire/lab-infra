@@ -4,7 +4,25 @@ variable "libvirt_uri" {
     default     = "qemu+ssh://will@kvm1/system?sshauth=privkey&no_verify=1"
 }
 
-variable "wkr_count" {
+variable "vm_name" {
+    description = "VM Name (for hostname and files)"
+    type        = string
+    default     = "debwkr"
+}
+
+variable "vm_template" {
+    description = "Source template image"
+    type        = string
+    default     = "https://cloud.debian.org/images/cloud/bookworm/daily/latest/debian-12-genericcloud-amd64-daily.qcow2"
+}
+
+variable "vm_timezone" {
+    description = "Timezone"
+    type        = string
+    default     = "Europe/London"
+}
+
+variable "vm_count" {
     description = "Number of workers"
     type        = number
     default     = 3

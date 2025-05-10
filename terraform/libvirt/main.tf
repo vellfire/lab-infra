@@ -1,25 +1,25 @@
-resource "libvirt_volume" "debian-template" {
-    name    = "bookworm.qcow2"
+resource "libvirt_volume" "vm-template" {
+    name    = "vm-template.qcow2"
     pool    = "images"
-    source  = "https://cloud.debian.org/images/cloud/bookworm/daily/latest/debian-12-genericcloud-amd64-daily.qcow2"
+    source  = var.vm_template
     format  = "qcow2"
 }
 
-resource "libvirt_volume" "deb-wkr-os" {
-    name            = "debwkr${count.index + 1}.qcow2"
-    count           = var.wkr_count
+resource "libvirt_volume" "vm-vol-os" {
+    name            = "${var.vm_name}${count.index + 1}.qcow2"
+    count           = var.vm_count
     pool            = "images"
     size            = 16 * 1024 * 1024 * 1024
     format          = "qcow2"
-    base_volume_id  = libvirt_volume.debian-template.id
+    base_volume_id  = libvirt_volume.vm-template.id
 }
 
-resource "libvirt_cloudinit_disk" "deb-wkr-init" {
-    name        = "debwkr${count.index + 1}-init.iso"
+resource "libvirt_cloudinit_disk" "vm-init" {
+    name        = "${var.vm_name}${count.index + 1}-init.iso"
     pool        = "default"
-    count       = var.wkr_count
+    count       = var.vm_count
     user_data   = "#cloud-config\n${yamlencode({
-        hostname = "debwkr${count.index + 1}"
+        hostname = "${var.vm_name}${count.index + 1}"
         timezone = "Europe/London"
         users = [{
             name = var.standard_user_name,
@@ -54,7 +54,7 @@ resource "libvirt_cloudinit_disk" "deb-wkr-init" {
             ens3 = {
                 dhcp4 = true,
                 dhcp4-overrides = {
-                    hostname = "debwkr${count.index + 1}"
+                    hostname = "${var.vm_name}${count.index + 1}"
                     use-dns = true,
                     use-ntp = true,
                     send-hostname = true,
@@ -68,19 +68,20 @@ resource "libvirt_cloudinit_disk" "deb-wkr-init" {
     })}"
 }
 
-resource "macaddress" "vm_mac" {
-    prefix = [52, 54, 00]
+resource "macaddress" "vm-mac" {
+    count = var.vm_count
+    prefix = [52, 54, 0]
 }
 
-resource "libvirt_domain" "deb-wkr" {
-    name                  = "debwkr${count.index + 1}"
-    count                 = var.wkr_count
+resource "libvirt_domain" "vm-def" {
+    name                  = "${var.vm_name}${count.index + 1}"
+    count                 = var.vm_count
     memory                = 2048
     vcpu                  = 2
     autostart             = true
     arch                  = "x86_64"
     qemu_agent            = true
-    cloudinit             = libvirt_cloudinit_disk.deb-wkr-init[count.index].id
+    cloudinit             = libvirt_cloudinit_disk.vm-init[count.index].id
 
     firmware              = "/usr/share/OVMF/OVMF_CODE_4M.fd"
 
@@ -89,7 +90,7 @@ resource "libvirt_domain" "deb-wkr" {
     }
 
     disk {
-        volume_id         = libvirt_volume.deb-wkr-os[count.index].id
+        volume_id         = libvirt_volume.vm-vol-os[count.index].id
     }
 
     boot_device {
@@ -98,7 +99,7 @@ resource "libvirt_domain" "deb-wkr" {
 
     network_interface {
         bridge            = "vmbr0"
-        mac               = upper(macaddress.vm_mac.address)
+        mac               = macaddress.vm-mac[count.index].address
     }
 
     graphics {
