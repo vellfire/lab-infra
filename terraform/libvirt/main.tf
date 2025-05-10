@@ -98,7 +98,7 @@ resource "libvirt_domain" "vm-def" {
     }
 
     network_interface {
-        bridge            = "vmbr0"
+        bridge            = var.vm_net_default
         mac               = macaddress.vm-mac[count.index].address
     }
 

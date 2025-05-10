@@ -10,6 +10,12 @@ variable "vm_name" {
     default     = "debwkr"
 }
 
+variable "vm_count" {
+    description = "Number of workers"
+    type        = number
+    default     = 3
+}
+
 variable "vm_template" {
     description = "Source template image"
     type        = string
@@ -22,11 +28,23 @@ variable "vm_timezone" {
     default     = "Europe/London"
 }
 
-variable "vm_count" {
-    description = "Number of workers"
-    type        = number
-    default     = 3
+variable "vm_net_default" {
+    description = "Default VM bridge"
+    type        = string
+    default     = "vmbr0"
 }
+
+# variable "vm_net_vlan50" {
+#     description = "VLAN 50 bridge"
+#     type        = string
+#     default     = "vmbr50"
+# }
+
+# variable "vm_net_vlan998" {
+#     description = "VLAN 998 bridge"
+#     type        = string
+#     default     = "vmbr998"
+# }
 
 variable "standard_user_name" {
     description = "Standard user"
