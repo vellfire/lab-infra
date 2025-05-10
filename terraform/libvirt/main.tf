@@ -20,7 +20,7 @@ resource "libvirt_cloudinit_disk" "vm-init" {
     count       = var.vm_count
     user_data   = "#cloud-config\n${yamlencode({
         hostname = "${var.vm_name}${count.index + 1}"
-        timezone = "Europe/London"
+        timezone = var.vm_timezone
         users = [{
             name = var.standard_user_name,
             ssh_import_id = [
