@@ -1,6 +1,6 @@
 resource "libvirt_volume" "vm-template" {
     name    = "vm-template.qcow2"
-    pool    = "images"
+    pool    = "templates"
     source  = var.vm_template
     format  = "qcow2"
 }
@@ -8,7 +8,7 @@ resource "libvirt_volume" "vm-template" {
 resource "libvirt_volume" "vm-vol-os" {
     name            = "${var.vm_name}${count.index + 1}.qcow2"
     count           = var.vm_count
-    pool            = "images"
+    pool            = "templates"
     size            = 16 * 1024 * 1024 * 1024
     format          = "qcow2"
     base_volume_id  = libvirt_volume.vm-template.id
