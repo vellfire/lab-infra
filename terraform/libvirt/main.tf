@@ -6,12 +6,23 @@ resource "libvirt_volume" "vm-template" {
 }
 
 resource "libvirt_volume" "vm-vol-os" {
-    name            = "${var.vm_name}${count.index + 1}.qcow2"
+    name            = "${var.vm_name}${count.index + 1}-os.qcow2"
     count           = var.vm_count
     pool            = "images"
     size            = 16 * 1024 * 1024 * 1024
     format          = "qcow2"
     base_volume_id  = libvirt_volume.vm-template.id
+}
+
+resource "libvirt_volume" "vm-vol-data" {
+    name            = "${var.vm_name}${count.index + 1}-data.qcow2"
+    count           = var.vm_count
+    pool            = "images"
+    size            = 32 * 1024 * 1024 * 1024
+    format          = "qcow2"
+    lifecycle {
+        prevent_destroy = true
+    }
 }
 
 resource "libvirt_cloudinit_disk" "vm-init" {
@@ -59,6 +70,10 @@ resource "libvirt_domain" "vm-def" {
         volume_id         = libvirt_volume.vm-vol-os[count.index].id
     }
 
+    disk {
+        volume_id         = libvirt_volume.vm-vol-data[count.index].id
+    }
+
     boot_device {
         dev = [ "hd", "cdrom" , "network"]
     }
@@ -92,7 +107,8 @@ resource "libvirt_domain" "vm-def" {
 
     lifecycle {
         ignore_changes = [
-            network_interface["mac"]
+            network_interface["mac"],
+            disk[1].volume_id
         ]
     }
 }
