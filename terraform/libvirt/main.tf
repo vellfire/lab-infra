@@ -14,37 +14,27 @@ resource "libvirt_volume" "vm-vol-os" {
     base_volume_id  = libvirt_volume.vm-template.id
 }
 
-data template_file "vm-init-user-data" {
-    template = file("${path.module}/templates/user-data.yml")
-    count = var.vm_count
-    vars = {
-        hostname = "${var.vm_name}${count.index + 1}"
-        timezone = var.vm_timezone
-        standard_username = var.standard_username
-        automation_username = var.automation_username
-        automation_uid = var.automation_uid
-        ssh_keys = var.git_ssh_keys
-    }
-}
-
-data template_file "vm-init-network-config" {
-    template = file("${path.module}/templates/network-config.yml")
-    count = var.vm_count
-    vars = {
-        hostname = "${var.vm_name}${count.index + 1}"
-    }
-}
-
 resource "libvirt_cloudinit_disk" "vm-init" {
-    name        = "${var.vm_name}${count.index + 1}-init.iso"
-    pool        = "iso"
-    count       = var.vm_count
-    user_data   = data.template_file.vm-init-user-data[count.index].rendered
-    network_config = data.template_file.vm-init-network-config[count.index].rendered
+    name           = "${var.vm_name}${count.index + 1}-init.iso"
+    pool           = "iso"
+    count          = var.vm_count
+
+    user_data      = templatefile("${path.module}/templates/user-data",{
+        hostname = "${var.vm_name}${count.index + 1}",
+        timezone = var.vm_timezone,
+        standard_username = var.standard_username,
+        automation_username = var.automation_username,
+        automation_uid = var.automation_uid,
+        ssh_keys = var.git_ssh_keys
+    })
+
+    network_config = templatefile("${path.module}/templates/network-config",{
+        hostname = "${var.vm_name}${count.index + 1}"
+    })
 }
 
 resource "macaddress" "vm-mac" {
-    count = var.vm_count
+    count  = var.vm_count
     prefix = [82, 84, 0] # 52:54:00 (KVM)
 }
 
