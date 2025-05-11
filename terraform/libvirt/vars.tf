@@ -23,7 +23,7 @@ variable "vm_template" {
 }
 
 variable "vm_timezone" {
-    description = "Timezone"
+    description = "System timezone"
     type        = string
     default     = "Europe/London"
 }

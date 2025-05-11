@@ -6,8 +6,8 @@ terraform {
             version = "0.8.3"
         }
         macaddress = {
-        source = "ivoronin/macaddress"
-        version = "0.3.2"
+            source = "ivoronin/macaddress"
+            version = "0.3.2"
         }
     }
 }

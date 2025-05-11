@@ -16,7 +16,7 @@ resource "libvirt_volume" "vm-vol-os" {
 
 resource "libvirt_cloudinit_disk" "vm-init" {
     name        = "${var.vm_name}${count.index + 1}-init.iso"
-    pool        = "templates"
+    pool        = "iso"
     count       = var.vm_count
     user_data   = "#cloud-config\n${yamlencode({
         hostname = "${var.vm_name}${count.index + 1}"
