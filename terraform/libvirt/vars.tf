@@ -19,7 +19,7 @@ variable "vm_count" {
 variable "vm_template" {
     description = "Source template image"
     type        = string
-    default     = "https://cloud.debian.org/images/cloud/bookworm/daily/latest/debian-12-genericcloud-amd64-daily.qcow2"
+    default     = "https://files.int.mcda.dev/debian-12-genericcloud-amd64.qcow2"
 }
 
 variable "vm_timezone" {
