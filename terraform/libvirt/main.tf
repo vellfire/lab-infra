@@ -14,7 +14,7 @@ resource "libvirt_volume" "vm-vol-os" {
     base_volume_id  = libvirt_volume.vm-template.id
 }
 
-data template_file "vm_init_user_data" {
+data template_file "vm-init-user-data" {
     template = file("${path.module}/templates/user-data.yml")
     count = var.vm_count
     vars = {
@@ -27,7 +27,7 @@ data template_file "vm_init_user_data" {
     }
 }
 
-data template_file "vm_init_network_config" {
+data template_file "vm-init-network-config" {
     template = file("${path.module}/templates/network-config.yml")
     count = var.vm_count
     vars = {
@@ -39,8 +39,8 @@ resource "libvirt_cloudinit_disk" "vm-init" {
     name        = "${var.vm_name}${count.index + 1}-init.iso"
     pool        = "iso"
     count       = var.vm_count
-    user_data   = data.template_file.vm_init_user_data[count.index].rendered
-    network_config = data.template_file.vm_init_network_config[count.index].rendered
+    user_data   = data.template_file.vm-init-user-data[count.index].rendered
+    network_config = data.template_file.vm-init-network-config[count.index].rendered
 }
 
 resource "macaddress" "vm-mac" {
