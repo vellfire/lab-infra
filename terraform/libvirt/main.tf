@@ -45,7 +45,7 @@ resource "libvirt_cloudinit_disk" "vm-init" {
 
 resource "macaddress" "vm-mac" {
     count = var.vm_count
-    prefix = [52, 54, 0]
+    prefix = [82, 84, 0] # 52:54:00 (KVM)
 }
 
 resource "libvirt_domain" "vm-def" {
@@ -97,5 +97,11 @@ resource "libvirt_domain" "vm-def" {
         type = "pty"
         target_port = 1
         target_type = "virtio"
+    }
+
+    lifecycle {
+        ignore_changes = [
+            network_interface["mac"]
+        ]
     }
 }
