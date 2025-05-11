@@ -46,19 +46,19 @@ variable "vm_net_default" {
 #     default     = "vmbr998"
 # }
 
-variable "standard_user_name" {
+variable "standard_username" {
     description = "Standard user"
     type        = string
     default     = "will"
 }
 
-variable "automation_user_name" {
+variable "automation_username" {
     description = "Automation user name"
     type        = string
     default     = "automation"
 }
 
-variable "automation_user_id" {
+variable "automation_uid" {
     description = "Automation user id"
     type        = number
     default     = 1337

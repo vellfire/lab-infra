@@ -1,0 +1,14 @@
+#cloud-config
+"ethernets":
+  "ens3":
+    "accept-ra": true
+    "dhcp4": true
+    "dhcp4-overrides":
+      "hostname": "${hostname}"
+      "send-hostname": true
+      "use-dns": true
+      "use-domains": true
+      "use-ntp": true
+      "use-routes": true
+    "dhcp6": false
+"version": 2

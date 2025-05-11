@@ -23,6 +23,13 @@ provider "registry.terraform.io/dmacvicar/libvirt" {
   ]
 }
 
+provider "registry.terraform.io/hashicorp/template" {
+  version = "2.2.0"
+  hashes = [
+    "h1:sZDnEMKrSQY9IBW1jImKrdArlG5mgpe3U0zC7QZnLuo=",
+  ]
+}
+
 provider "registry.terraform.io/ivoronin/macaddress" {
   version     = "0.3.2"
   constraints = "0.3.2"

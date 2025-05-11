@@ -14,58 +14,33 @@ resource "libvirt_volume" "vm-vol-os" {
     base_volume_id  = libvirt_volume.vm-template.id
 }
 
+data template_file "vm_init_user_data" {
+    template = file("${path.module}/templates/user-data.yml")
+    count = var.vm_count
+    vars = {
+        hostname = "${var.vm_name}${count.index + 1}"
+        timezone = var.vm_timezone
+        standard_username = var.standard_username
+        automation_username = var.automation_username
+        automation_uid = var.automation_uid
+        ssh_keys = var.git_ssh_keys
+    }
+}
+
+data template_file "vm_init_network_config" {
+    template = file("${path.module}/templates/network-config.yml")
+    count = var.vm_count
+    vars = {
+        hostname = "${var.vm_name}${count.index + 1}"
+    }
+}
+
 resource "libvirt_cloudinit_disk" "vm-init" {
     name        = "${var.vm_name}${count.index + 1}-init.iso"
     pool        = "iso"
     count       = var.vm_count
-    user_data   = "#cloud-config\n${yamlencode({
-        hostname = "${var.vm_name}${count.index + 1}"
-        timezone = var.vm_timezone
-        users = [{
-            name = var.standard_user_name,
-            ssh_import_id = [
-                var.git_ssh_keys,
-            ]
-            shell = "/bin/bash",
-            sudo = "ALL=(ALL) NOPASSWD:ALL",
-        },
-        {
-            name = var.automation_user_name,
-            uid = var.automation_user_id,
-            ssh_import_id = [
-                var.git_ssh_keys,
-            ]
-            shell = "/bin/bash",
-            sudo = "ALL=(ALL) NOPASSWD:ALL",
-        }],
-        package_update = true,
-        package_upgrade = true,
-        packages = [
-            "qemu-guest-agent"
-        ],
-        runcmd = [
-            "systemctl enable --now qemu-guest-agent"
-        ]
-    })}"
-
-    network_config  = "#cloud-config\n${yamlencode({
-        version = 2,
-        ethernets = {
-            ens3 = {
-                dhcp4 = true,
-                dhcp4-overrides = {
-                    hostname = "${var.vm_name}${count.index + 1}"
-                    use-dns = true,
-                    use-ntp = true,
-                    send-hostname = true,
-                    use-routes = true,
-                    use-domains = true,
-                }
-                accept-ra = true
-                dhcp6 = false
-            }
-        }
-    })}"
+    user_data   = data.template_file.vm_init_user_data[count.index].rendered
+    network_config = data.template_file.vm_init_network_config[count.index].rendered
 }
 
 resource "macaddress" "vm-mac" {

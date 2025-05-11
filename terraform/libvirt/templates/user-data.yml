@@ -1,0 +1,21 @@
+#cloud-config
+"hostname": "${hostname}"
+"package_update": true
+"package_upgrade": true
+"packages":
+- "qemu-guest-agent"
+"runcmd":
+- "systemctl enable --now qemu-guest-agent"
+"timezone": "${timezone}"
+"users":
+- "name": "${standard_username}"
+  "shell": "/bin/bash"
+  "ssh_import_id":
+  - ${ssh_keys}
+  "sudo": "ALL=(ALL) NOPASSWD:ALL"
+- "name": "${automation_username}"
+  "shell": "/bin/bash"
+  "ssh_import_id":
+  - ${ssh_keys}
+  "sudo": "ALL=(ALL) NOPASSWD:ALL"
+  "uid": "${automation_uid}"
