@@ -4,6 +4,8 @@
     'config:recommended',
   ],
   ansible: {
-    fileMatch: ['(^|/)(plays|inventory)/.*?[^/]+\\.ya?ml$',],
+    managerFilePatterns: [
+      '/(^|/)(plays|inventory)/.*?[^/]+\\.ya?ml$/',
+    ],
   },
 }
