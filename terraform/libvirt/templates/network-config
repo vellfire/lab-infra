@@ -1,6 +1,8 @@
 #cloud-config
 "ethernets":
   "ens3":
+    "match":
+      "macaddress": "${mac}"
     "accept-ra": true
     "dhcp4": true
     "dhcp4-overrides":

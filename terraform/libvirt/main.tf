@@ -30,6 +30,7 @@ resource "libvirt_cloudinit_disk" "vm-init" {
 
     network_config = templatefile("${path.module}/templates/network-config",{
         hostname = "${var.vm_name}${count.index + 1}"
+        mac      = macaddress.vm-mac[count.index].address
     })
 }
 
