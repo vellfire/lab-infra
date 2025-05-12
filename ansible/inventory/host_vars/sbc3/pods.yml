@@ -43,7 +43,7 @@ pods:
       - ~/pods/hass/hass/data:/config
 
   - name: unifi-db
-    image: docker.io/mongo:4.4.18
+    image: docker.io/mongo:4.4.29
     restart: unless-stopped
     state: started
     networks:
