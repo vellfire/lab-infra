@@ -1,7 +1,7 @@
 ---
 - name: Create network if applicable
   community.docker.docker_network:
-    name: "{{ item.network }}"
+    name: "{{ item.name }}"
     state: present
-  when: item.network is defined
+  register: result
   failed_when: false

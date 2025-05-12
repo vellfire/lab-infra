@@ -14,3 +14,24 @@ shares:
   - name: pods
     src_path: nas1:/tank/pods
     dest_path: /opt/shares/pods
+
+pods:
+  - name: gravity
+    hostname: "{{ inventory_hostname }}"
+    image: ghcr.io/beryju/gravity:v0.26.5
+    restart: unless-stopped
+    state: started
+    network_mode: host
+    env:
+      LOG_LEVEL: info
+      INSTANCE_IP: "{{ ansible_default_ipv4.address }}"
+    log_driver: json-file
+    log_options:
+      max-size: "10m"
+      max-file: "3"
+    volumes:
+      gravity_data:/data
+
+pod_volumes:
+  - name: gravity_data
+    driver: local

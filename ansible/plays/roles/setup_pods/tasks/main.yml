@@ -13,8 +13,15 @@
 
 - name: Create docker networks
   ansible.builtin.include_tasks: networks.yml
-  when: item.network is defined
-  loop: "{{ pods }}"
+  when: pod_networks is defined
+  loop: "{{ pod_networks }}"
+  loop_control:
+    label: "{{ item.name }}"
+
+- name: Create docker volumes
+  ansible.builtin.include_tasks: volumes.yml
+  when: pod_volumes is defined
+  loop: "{{ pod_volumes }}"
   loop_control:
     label: "{{ item.name }}"
 

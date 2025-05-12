@@ -77,3 +77,7 @@ pods:
     env:
       NGINX_HOST: "{{ lookup('ripplefcl.bwscache.secret', 'domain_files').value }}"
       NGINX_PORT: "80"
+
+pod_networks:
+  - name: nut
+    driver: local

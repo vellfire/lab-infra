@@ -1,1 +1,13 @@
 ---
+- name: Poll docker volume
+  community.docker.docker_volume_info:
+    name: "{{ item.name }}"
+  register: volume
+  failed_when: false
+
+- name: Create volume
+  when: volume.exists is false
+  community.docker.docker_volume:
+    name: "{{ item.name }}"
+    driver: "{{ item.driver }}"
+    state: present
