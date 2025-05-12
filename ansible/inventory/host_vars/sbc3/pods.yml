@@ -28,7 +28,7 @@ pods:
       - ~/pods/hass/z2m/data:/app/data
 
   - name: hass
-    image: ghcr.io/linuxserver/homeassistant:2025.5.0
+    image: ghcr.io/linuxserver/homeassistant:2025.5.1
     restart: unless-stopped
     state: started
     networks:
