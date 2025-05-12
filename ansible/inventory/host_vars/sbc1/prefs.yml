@@ -51,7 +51,7 @@ pods:
           outlet.power,output.power,output.voltage,ups.load,ups.realpower.nominal,ups.status
 
   - name: nginx-uptime
-    image: public.ecr.aws/nginx/nginx:1.27.4
+    image: public.ecr.aws/nginx/nginx:1.28.0
     restart: unless-stopped
     state: started
     directory: true
@@ -65,7 +65,7 @@ pods:
       NGINX_PORT: "80"
 
   - name: nginx-files
-    image: public.ecr.aws/nginx/nginx:1.27.4
+    image: public.ecr.aws/nginx/nginx:1.28.0
     restart: unless-stopped
     state: started
     directory: true
