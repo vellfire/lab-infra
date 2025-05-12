@@ -1,26 +1,36 @@
 ---
 - name: Run host setup tasks
   hosts: linux
-  become: true
+  gather_facts: true
   tasks:
     - name: Update hosts
       ansible.builtin.include_role:
         name: update_hosts
         apply:
-          tags: update
+          become: true
+          tags:
+            - update
+            - all
       tags:
         - update
+        - all
 
     - name: Get service facts
       ansible.builtin.service_facts:
       tags:
         - service_facts
+        - setup
+        - prometheus
+        - docker
+        - virt
+        - all
 
     - name: Run standard setup tasks
       when: ansible_os_family == 'Debian'
       ansible.builtin.include_role:
         name: deb_setup
         apply:
+          become: true
           tags:
             - setup
             - all
@@ -35,6 +45,7 @@
       ansible.builtin.include_role:
         name: prometheus.prometheus.node_exporter
         apply:
+          become: true
           tags:
             - prometheus
             - all
@@ -57,23 +68,41 @@
           ansible.builtin.include_role:
             name: geerlingguy.nut_client
             apply:
+              become: true
               tags:
                 - nut
                 - all
               no_log: true
 
-    - name: Install docker
+    - name: Setup docker
       when:
         - req_docker | default(false)
         - ansible_facts.services['docker.service'] is not defined
       ansible.builtin.include_role:
         name: geerlingguy.docker
         apply:
+          become: true
           tags:
             - docker
             - all
       tags:
         - docker
+        - all
+
+    - name: Setup pods
+      when:
+        - pods is defined
+      ansible.builtin.include_role:
+        name: setup_pods
+        apply:
+          become: false
+          tags:
+            - docker
+            - pods
+            - all
+      tags:
+        - docker
+        - pods
         - all
 
     - name: Install libvirt
@@ -84,6 +113,7 @@
       ansible.builtin.include_role:
         name: deb_virt
         apply:
+          become: true
           tags:
             - virt
             - all

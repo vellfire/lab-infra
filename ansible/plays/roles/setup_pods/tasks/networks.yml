@@ -1,0 +1,7 @@
+---
+- name: Create network if applicable
+  community.docker.docker_network:
+    name: "{{ item.network }}"
+    state: present
+  when: item.network is defined
+  failed_when: false

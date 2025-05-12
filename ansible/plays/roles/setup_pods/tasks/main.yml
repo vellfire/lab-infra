@@ -1,0 +1,25 @@
+---
+- name: Create folders
+  ansible.builtin.file:
+    path: "~/pods/{{ item.name }}"
+    state: directory
+    mode: '0755'
+  failed_when: false
+  changed_when: false
+  when: item.directory is defined
+  loop: "{{ pods }}"
+  loop_control:
+    label: "{{ item.name }}"
+
+- name: Create docker networks
+  ansible.builtin.include_tasks: networks.yml
+  when: item.network is defined
+  loop: "{{ pods }}"
+  loop_control:
+    label: "{{ item.name }}"
+
+- name: Create docker containers
+  ansible.builtin.include_tasks: pods.yml
+  loop: "{{ pods }}"
+  loop_control:
+    label: "{{ item.name }}"
