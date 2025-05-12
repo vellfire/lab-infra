@@ -1,0 +1,116 @@
+---
+pods:
+  - name: mqtt
+    image: docker.io/eclipse-mosquitto:2.0.21
+    restart: unless-stopped
+    state: started
+    networks:
+      - name: home
+    user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
+    volumes:
+      - "~/pods/hass/mqtt/config:/mosquitto/config"
+      - "~/pods/hass/mqtt/data:/mosquitto/data"
+      - "~/pods/hass/mqtt/log:/mosquitto/log"
+    directory: true
+
+  - name: z2m
+    image: ghcr.io/koenkk/zigbee2mqtt:2.3.0
+    restart: unless-stopped
+    state: started
+    networks:
+      - name: home
+    ports:
+      - 8081:8080
+    user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
+    env:
+      TZ: "Europe/London"
+    volumes:
+      - ~/pods/hass/z2m/data:/app/data
+
+  - name: hass
+    image: ghcr.io/linuxserver/homeassistant:2025.5.0
+    restart: unless-stopped
+    state: started
+    networks:
+      - name: home
+    ports:
+      - 8123:8123
+    env:
+      PUID: "{{ ansible_facts.user_uid }}"
+      PGID: "{{ ansible_facts.user_gid }}"
+      TZ: "Europe/London"
+    volumes:
+      - ~/pods/hass/hass/data:/config
+
+  - name: unifi-db
+    image: docker.io/mongo:4.4.18
+    restart: unless-stopped
+    state: started
+    networks:
+      - name: unifi-net
+    ports:
+      - 27017:27017
+    env:
+      MONGO_INITDB_ROOT_USERNAME: "root"
+      MONGO_INITDB_ROOT_PASSWORD: "{{ lookup('ripplefcl.bwscache.secret', 'unifi-db-password').value }}"
+      MONGO_USER: "unifi"
+      MONGO_PASS: "{{ lookup('ripplefcl.bwscache.secret', 'unifi-db-password').value }}"
+      MONGO_DBNAME: "unifi"
+      MONGO_AUTHSOURCE: "admin"
+    volumes:
+      - ~/pods/unifi/data/db:/data/db
+      - ~/pods/unifi/init-mongo.sh:/docker-entrypoint-initdb.d/init-mongo.sh:ro
+
+  - name: unifi-app
+    image: ghcr.io/linuxserver/unifi-network-application:9.1.120
+    restart: unless-stopped
+    state: started
+    networks:
+      - name: unifi-net
+    ports:
+      - 8080:8080
+      - 8443:8443
+      - 8880:8880
+      - 8843:8843
+      - 27117:27117
+      - 3478:3478/udp
+      - 10001:10001/udp
+    env:
+      PUID: "{{ ansible_facts.user_uid }}"
+      PGID: "{{ ansible_facts.user_gid }}"
+      TZ: "Europe/London"
+      MONGO_INITDB_ROOT_USERNAME: "root"
+      MONGO_INITDB_ROOT_PASSWORD: "{{ lookup('ripplefcl.bwscache.secret', 'unifi-db-password').value }}"
+      MONGO_USER: "unifi"
+      MONGO_PASS: "{{ lookup('ripplefcl.bwscache.secret', 'unifi-db-password').value }}"
+      MONGO_DBNAME: "unifi"
+      MONGO_AUTHSOURCE: "admin"
+      MONGO_HOST: "unifi-db"
+      MONGO_PORT: "27017"
+      MEM_STARTUP: "512"
+      MEM_LIMIT: "1024"
+    volumes:
+      - ~/pods/unifi/data/unifi:/config
+
+  - name: unpoller
+    image: ghcr.io/unpoller/unpoller:v2.15.3
+    restart: unless-stopped
+    state: started
+    networks:
+      - name: unifi-net
+    ports:
+      - 9130:9130
+    env:
+      UP_UNIFI_DEFAULT_USER: unpoller
+      UP_UNIFI_DEFAULT_PASS: "{{ lookup('ripplefcl.bwscache.secret', 'unpoller').value }}"
+      UP_UNIFI_DYNAMIC: "true"
+      UP_UNIFI_DEFAULT_URL: "https://unifi-app:8443"
+      UP_UNIFI_DEFAULT_VERIFY_SSL: "false"
+      UP_INFLUXDB_DISABLE: "true"
+      UP_POLLER_DEBUG: "false"
+
+pod_networks:
+  - name: home
+    driver: local
+  - name: unifi-net
+    driver: local

@@ -1,10 +1,11 @@
 ---
-- name: Create docker containers
+- name: "Create docker container: {{ item.name }}"
   community.docker.docker_container:
     name: "{{ item.name }}"
     image: "{{ item.image }}"
     state: "{{ item.state | default('started') }}"
     restart_policy: "{{ item.restart | default('unless-stopped') }}"
+    networks: "{{ item.networks | default(omit) }}"
     network_mode: "{{ item.network_mode | default(omit) }}"
     ports: "{{ item.ports | default(omit) }}"
     user: "{{ item.user | default(omit) }}"

@@ -27,4 +27,5 @@
       - openvswitch-switch-dpdk
       - netplan.io
       - systemd-resolved
+      - python3-requests
     state: present
