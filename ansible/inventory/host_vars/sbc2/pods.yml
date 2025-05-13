@@ -162,7 +162,7 @@ pods:
     env:
       TZ: "Europe/London"
     volumes:
-      - "~/pods/media/maintainer/config:/config"
+      - "~/pods/media/maintainerr/data:/opt/data"
 
   - name: tautulli
     image: ghcr.io/tautulli/tautulli:v2.15.2
