@@ -179,6 +179,17 @@ pods:
       - "~/pods/media/tautulli/config:/config"
       - "/opt/shares/pods/tautulli/backup:/config/backups"
 
+  - name: vaultwarden
+    image: ghcr.io/dani-garcia/vaultwarden:1.33.2
+    restart: unless-stopped
+    state: started
+    networks:
+      - name: proxy
+    env:
+      DOMAIN: "{{ lookup('ripplefcl.bwscache.secret', 'vw-domain').value }}"
+    volumes:
+      - "~/pods/vaultwarden/data:/data"
+
 pod_networks:
   - name: proxy
     driver: local
