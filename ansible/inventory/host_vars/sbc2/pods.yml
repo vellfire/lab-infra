@@ -8,7 +8,6 @@ pods:
       - name: scrutiny
     volumes:
       - "~/pods/scrutiny/db:/var/lib/influxdb2"
-    directory: true
 
   - name: scrutiny-web
     image: ghcr.io/analogj/scrutiny:v0.8.1-web
@@ -21,7 +20,6 @@ pods:
       SCRUTINY_WEB_INFLUXDB_HOST: scrutiny-db
     volumes:
       - "~/pods/scrutiny/config:/opt/scrutiny/config"
-    directory: true
 
   - name: scrutiny-collector
     image: ghcr.io/analogj/scrutiny:v0.8.1-collector
