@@ -4,7 +4,8 @@ pods:
     image: ghcr.io/tigattack/nut-upsd:2.8.2
     restart: unless-stopped
     state: started
-    network: nut
+    networks:
+      - name: nut
     ports:
       3493:3493
     env:
@@ -20,7 +21,8 @@ pods:
     image: ghcr.io/druggeri/nut_exporter:3.2.0
     restart: unless-stopped
     state: started
-    network: nut
+    networks:
+      - name: nut
     user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
     ports:
       9199:9199

@@ -1,0 +1,49 @@
+---
+pods:
+  - name: scrutiny-db
+    image: public.ecr.aws/docker/library/influxdb:2.2
+    restart: unless-stopped
+    state: started
+    networks:
+      - name: scrutiny
+    volumes:
+      - "~/pods/scrutiny/db:/var/lib/influxdb2"
+    directory: true
+
+  - name: scrutiny-web
+    image: ghcr.io/analogj/scrutiny:v0.8.1-web
+    restart: unless-stopped
+    state: started
+    networks:
+      - name: scrutiny
+      - name: proxy
+    env:
+      SCRUTINY_WEB_INFLUXDB_HOST: scrutiny-db
+    volumes:
+      - "~/pods/scrutiny/config:/opt/scrutiny/config"
+    directory: true
+
+  - name: scrutiny-collector
+    image: ghcr.io/analogj/scrutiny:v0.8.1-collector
+    restart: unless-stopped
+    state: started
+    networks:
+      - name: scrutiny
+    capabilities:
+      - SYS_ADMIN
+      - SYS_RAWIO
+    env:
+      COLLECTOR_API_ENDPOINT: "http://scrutiny-web:8080"
+      COLLECTOR_HOST_ID: "{{ ansible_hostname }}"
+      COLLECTOR_CRON_SCHEDULE: "0 * * * *"
+      COLLECTOR_RUN_STARTUP: "true"
+    volumes:
+      - "/run/udev:/run/udev:ro"
+    devices:
+      - /dev/nvme0
+
+pod_networks:
+  - name: proxy
+    driver: local
+  - name: scrutiny
+    driver: local

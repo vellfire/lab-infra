@@ -7,6 +7,7 @@
     restart_policy: "{{ item.restart | default('unless-stopped') }}"
     networks: "{{ item.networks | default(omit) }}"
     network_mode: "{{ item.network_mode | default(omit) }}"
+    capabilities: "{{ item.capabilities | default(omit) }}"
     ports: "{{ item.ports | default(omit) }}"
     user: "{{ item.user | default(omit) }}"
     env: "{{ item.env | default(omit) }}"
