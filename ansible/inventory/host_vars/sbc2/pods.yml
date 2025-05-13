@@ -1,7 +1,7 @@
 ---
 pods:
   - name: scrutiny-db
-    image: public.ecr.aws/docker/library/influxdb:2.2
+    image: public.ecr.aws/docker/library/influxdb:2.7
     restart: unless-stopped
     state: started
     networks:
