@@ -123,7 +123,7 @@ pods:
       - "/opt/shares/pods/radarr:/backup"
 
   - name: sabnzbd
-    image: lscr.io/linuxserver/prowlarr:1.35.1
+    image: lscr.io/linuxserver/sabnzbd:4.5.1
     restart: unless-stopped
     state: started
     networks:
