@@ -10,6 +10,9 @@ pods:
       - "no-new-privileges:true"
     networks:
       - name: proxy
+    ports:
+      - 80:80
+      - 443:443
     env:
       CF_API_EMAIL: "{{ lookup('ripplefcl.bwscache.secret', 'cf-api-email').value }}"
       CF_API_KEY: "{{ lookup('ripplefcl.bwscache.secret', 'cf-api-key').value }}"
