@@ -1,4 +1,6 @@
 ---
+default_host_ip: ""
+
 pods:
   - name: nut
     image: ghcr.io/tigattack/nut-upsd:2.8.2

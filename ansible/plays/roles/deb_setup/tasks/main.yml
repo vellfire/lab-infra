@@ -4,6 +4,7 @@
 
 - name: Configure systemd-resolved
   ansible.builtin.include_tasks: resolved.yml
+  when: ansible_hostname is not 'vps1'
 
 - name: Configure user
   ansible.builtin.include_tasks: user.yml
