@@ -2,6 +2,57 @@
 default_host_ip: ""
 
 pods:
+  - name: traefik
+    image: docker.io/traefik:v3.3.6
+    restart: unless-stopped
+    security_opt:
+      - "no-new-privileges:true"
+    networks:
+      - name: proxy
+    ports:
+      - 80:80
+      - 443:443
+    user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
+    env:
+      BUNNY_API_KEY: "{{ lookup('ripplefcl.bwscache.secret', 'bunny-api').value }}"
+      BUNNY_POLLING_TIMEOUT: "600"
+      BUNNY_POLLING_INTERVAL: "5"
+      BUNNY_TTL: "3600"
+      CF_API_EMAIL: "{{ lookup('ripplefcl.bwscache.secret', 'cf-api-email').value }}"
+      CF_API_KEY: "{{ lookup('ripplefcl.bwscache.secret', 'cf-api-key').value }}"
+    volumes:
+      - "/etc/localtime:/etc/localtime:ro"
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - "~/pods/traefik/config/traefik.yml:/traefik.yml:ro"
+      - "~/pods/traefik/config/providers:/providers:ro"
+      - "~/pods/traefik/config/acme.json:/acme.json"
+
+  - name: pma_ams
+    image: docker.io/phpmyadmin/phpmyadmin:5.2.2-apache
+    restart: unless-stopped
+    networks:
+      - name: proxy
+    env:
+      PMA_HOST: "{{ lookup('ripplefcl.bwscache.secret', 'pma_host_ams').value }}"
+      PMA_USER: "pma"
+      PMA_PASSWORD: "{{ lookup('ripplefcl.bwscache.secret', 'pma_pass').value }}"
+
+  - name: pma_bnt
+    image: docker.io/phpmyadmin/phpmyadmin:5.2.2-apache
+    restart: unless-stopped
+    networks:
+      - name: proxy
+    env:
+      PMA_HOST: "{{ lookup('ripplefcl.bwscache.secret', 'pma_host_bnt').value }}"
+      PMA_USER: "pma"
+      PMA_PASSWORD: "{{ lookup('ripplefcl.bwscache.secret', 'pma_pass').value }}"
+
+  - name: it-tools
+    image: docker.io/corentinth/it-tools:2024.10.22-7ca5933
+    restart: unless-stopped
+    networks:
+      - name: proxy
+
   - name: scrutiny-db
     image: public.ecr.aws/docker/library/influxdb:2.7
     restart: unless-stopped
