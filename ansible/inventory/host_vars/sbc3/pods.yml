@@ -3,7 +3,7 @@ default_host_ip: ""
 
 pods:
   - name: mqtt
-    image: docker.io/eclipse-mosquitto:2.0.21
+    image: public.ecr.aws/docker/library/eclipse-mosquitto:2.0.21
     restart: unless-stopped
     state: started
     networks:
@@ -45,7 +45,7 @@ pods:
       - ~/pods/hass/hass/data:/config
 
   - name: unifi-db
-    image: docker.io/mongo:4.4.18
+    image: public.ecr.aws/docker/library/mongo:4.4.18
     restart: unless-stopped
     state: started
     networks:
