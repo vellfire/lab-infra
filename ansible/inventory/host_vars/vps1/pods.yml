@@ -1,0 +1,27 @@
+---
+default_host_ip: ""
+
+pods:
+  - name: traefik
+    image: docker.io/traefik:v3.3.6
+    restart: always
+    state: started
+    security_opt:
+      - "no-new-privileges:true"
+    network_mode: host
+    env:
+      BUNNY_API_KEY: "{{ lookup('ripplefcl.bwscache.secret', 'bunny-api').value }}"
+    volumes:
+      - "/etc/localtime:/etc/localtime:ro"
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - "~/pods/traefik/config/traefik.yml:/traefik.yml:ro"
+      - "~/pods/traefik/config/providers:/providers:ro"
+      - "~/pods/traefik/config/acme.json:/acme.json"
+
+  - name: immich-public-proxy
+    image: ghcr.io/alangrainger/immich-public-proxy:1.11.1
+    restart: unless-stopped
+    state: started
+    network_mode: host
+    env:
+      IMMICH_URL: "http://[fd72:1432:d17a:0:be24:11ff:fe8a:aa24]:2283"

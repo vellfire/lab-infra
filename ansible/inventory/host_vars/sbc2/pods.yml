@@ -5,6 +5,7 @@ pods:
   - name: traefik
     image: docker.io/traefik:v3.3.6
     restart: unless-stopped
+    state: started
     security_opt:
       - "no-new-privileges:true"
     networks:
@@ -28,8 +29,9 @@ pods:
       - "~/pods/traefik/config/acme.json:/acme.json"
 
   - name: pma_ams
-    image: docker.io/phpmyadmin/phpmyadmin:5.2.2-apache
+    image: docker.io/phpmyadmin/phpmyadmin:5.2.2
     restart: unless-stopped
+    state: started
     networks:
       - name: proxy
     env:
@@ -38,8 +40,9 @@ pods:
       PMA_PASSWORD: "{{ lookup('ripplefcl.bwscache.secret', 'pma_pass').value }}"
 
   - name: pma_bnt
-    image: docker.io/phpmyadmin/phpmyadmin:5.2.2-apache
+    image: docker.io/phpmyadmin/phpmyadmin:5.2.2
     restart: unless-stopped
+    state: started
     networks:
       - name: proxy
     env:
@@ -50,6 +53,7 @@ pods:
   - name: it-tools
     image: docker.io/corentinth/it-tools:2024.10.22-7ca5933
     restart: unless-stopped
+    state: started
     networks:
       - name: proxy
 
