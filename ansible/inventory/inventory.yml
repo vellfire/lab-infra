@@ -1,10 +1,5 @@
 ---
-unix:
-  macos:
-    hosts:
-      Wills-MBP:
-        ansible_connection: localhost
-
+linux:
   children:
     debian:
       hosts:
