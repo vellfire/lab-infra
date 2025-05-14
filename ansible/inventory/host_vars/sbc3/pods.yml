@@ -45,7 +45,7 @@ pods:
       - ~/pods/hass/hass/data:/config
 
   - name: unifi-db
-    image: public.ecr.aws/docker/library/mongo:4.4.18
+    image: public.ecr.aws/docker/library/mongo:4.4.29
     restart: unless-stopped
     state: started
     networks:
