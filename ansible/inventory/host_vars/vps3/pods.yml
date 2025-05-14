@@ -1,0 +1,25 @@
+---
+default_host_ip: ""
+
+pods:
+  - name: traefik
+    image: docker.io/traefik:v3.3.6
+    restart: always
+    state: stopped
+    security_opt:
+      - "no-new-privileges:true"
+    networks:
+      - name: proxy
+    env:
+      CF_API_EMAIL: "{{ lookup('ripplefcl.bwscache.secret', 'cf-api-email').value }}"
+      CF_API_KEY: "{{ lookup('ripplefcl.bwscache.secret', 'cf-api-key').value }}"
+    volumes:
+      - "/etc/localtime:/etc/localtime:ro"
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - "~/pods/traefik/config/traefik.yml:/traefik.yml:ro"
+      - "~/pods/traefik/config/providers:/providers:ro"
+      - "~/pods/traefik/config/acme.json:/acme.json"
+
+pod_networks:
+  - name: proxy
+    driver: local
