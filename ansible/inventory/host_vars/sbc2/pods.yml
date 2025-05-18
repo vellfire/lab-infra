@@ -171,7 +171,7 @@ pods:
       - "/opt/shares/pods/sonarr:/backup"
 
   - name: radarr
-    image: ghcr.io/linuxserver/radarr:5.22.4
+    image: ghcr.io/linuxserver/radarr:5.23.3
     restart: unless-stopped
     state: started
     networks:
