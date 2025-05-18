@@ -57,6 +57,13 @@ pods:
     networks:
       - name: proxy
 
+  - name: cyberchef
+    image: ghcr.io/gchq/cyberchef:10.19.4
+    restart: unless-stopped
+    state: started
+    networks:
+      - name: proxy
+
   - name: scrutiny-db
     image: public.ecr.aws/docker/library/influxdb:2.7
     restart: unless-stopped
@@ -111,7 +118,7 @@ pods:
       - "~/pods/media/db/pgdata:/var/lib/postgresql/data"
 
   - name: plex
-    image: lscr.io/linuxserver/plex:1.41.6
+    image: ghcr.io/linuxserver/plex:1.41.6
     restart: unless-stopped
     state: started
     networks:
@@ -132,7 +139,7 @@ pods:
       - "/opt/shares/pods/plex:/backup"
 
   - name: overseerr
-    image: lscr.io/linuxserver/overseerr:develop
+    image: ghcr.io/linuxserver/overseerr:develop
     restart: unless-stopped
     state: started
     networks:
@@ -148,7 +155,7 @@ pods:
       - "~/pods/media/overseerr/config:/config"
 
   - name: sonarr
-    image: lscr.io/linuxserver/sonarr:4.0.14
+    image: ghcr.io/linuxserver/sonarr:4.0.14
     restart: unless-stopped
     state: started
     networks:
@@ -164,7 +171,7 @@ pods:
       - "/opt/shares/pods/sonarr:/backup"
 
   - name: radarr
-    image: lscr.io/linuxserver/radarr:5.22.4
+    image: ghcr.io/linuxserver/radarr:5.22.4
     restart: unless-stopped
     state: started
     networks:
@@ -180,7 +187,7 @@ pods:
       - "/opt/shares/pods/radarr:/backup"
 
   - name: sabnzbd
-    image: lscr.io/linuxserver/sabnzbd:4.5.1
+    image: ghcr.io/linuxserver/sabnzbd:4.5.1
     restart: unless-stopped
     state: started
     networks:
@@ -196,7 +203,7 @@ pods:
       - "/opt/shares/pods/sabnzbd:/backup"
 
   - name: prowlarr
-    image: lscr.io/linuxserver/prowlarr:1.35.1
+    image: ghcr.io/linuxserver/prowlarr:1.35.1
     restart: unless-stopped
     state: started
     networks:
