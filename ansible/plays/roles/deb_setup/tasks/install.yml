@@ -28,4 +28,5 @@
       - netplan.io
       - systemd-resolved
       - python3-requests
+      - tuned
     state: present
