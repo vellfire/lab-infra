@@ -118,7 +118,7 @@ pods:
       - "~/pods/media/db/pgdata:/var/lib/postgresql/data"
 
   - name: plex
-    image: ghcr.io/linuxserver/plex:1.41.6
+    image: ghcr.io/linuxserver/plex:1.41.7
     restart: unless-stopped
     state: started
     networks:
