@@ -101,13 +101,14 @@ pods:
     ports:
       - 9130:9130
     env:
-      UP_UNIFI_DEFAULT_USER: unifipoller
+      UP_UNIFI_DEFAULT_USER: poller
       UP_UNIFI_DEFAULT_PASS: "{{ lookup('ripplefcl.bwscache.secret', 'unpoller').value }}"
-      UP_UNIFI_DYNAMIC: "true"
+      UP_UNIFI_DYNAMIC: "false"
       UP_UNIFI_DEFAULT_URL: "https://unifi-app:8443"
       UP_UNIFI_DEFAULT_VERIFY_SSL: "false"
+      UP_UNIFI_DEFAULT_SAVE_SITES: "true"
       UP_INFLUXDB_DISABLE: "true"
-      UP_POLLER_DEBUG: "false"
+      UP_POLLER_DEBUG: "true"
 
 pod_networks:
   - name: home
