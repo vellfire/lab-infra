@@ -50,8 +50,6 @@ pods:
     state: started
     networks:
       - name: unifi-net
-    ports:
-      - 27017:27017
     env:
       MONGO_INITDB_ROOT_USERNAME: "root"
       MONGO_INITDB_ROOT_PASSWORD: "{{ lookup('ripplefcl.bwscache.secret', 'unifi-db-password').value }}"
@@ -60,8 +58,8 @@ pods:
       MONGO_DBNAME: "unifi"
       MONGO_AUTHSOURCE: "admin"
     volumes:
-      - ~/pods/unifi/data/db:/data/db
-      - ~/pods/unifi/init-mongo.sh:/docker-entrypoint-initdb.d/init-mongo.sh:ro
+      - /opt/pods/unifi/db:/data/db
+      - /opt/pods/unifi/init-mongo.sh:/docker-entrypoint-initdb.d/init-mongo.sh:ro
 
   - name: unifi-app
     image: ghcr.io/linuxserver/unifi-network-application:9.1.120
@@ -92,7 +90,7 @@ pods:
       MEM_STARTUP: "512"
       MEM_LIMIT: "1024"
     volumes:
-      - ~/pods/unifi/data/unifi:/config
+      - /opt/pods/unifi/app:/config
 
   - name: unpoller
     image: ghcr.io/unpoller/unpoller:v2.15.3
@@ -103,7 +101,7 @@ pods:
     ports:
       - 9130:9130
     env:
-      UP_UNIFI_DEFAULT_USER: unpoller
+      UP_UNIFI_DEFAULT_USER: unifipoller
       UP_UNIFI_DEFAULT_PASS: "{{ lookup('ripplefcl.bwscache.secret', 'unpoller').value }}"
       UP_UNIFI_DYNAMIC: "true"
       UP_UNIFI_DEFAULT_URL: "https://unifi-app:8443"
