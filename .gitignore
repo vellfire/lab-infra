@@ -1,4 +1,5 @@
 .vscode
+.fleet
 .DS_Store
 .lock
 .venv
