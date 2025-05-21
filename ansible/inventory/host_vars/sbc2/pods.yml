@@ -72,7 +72,7 @@ pods:
     networks:
       - name: scrutiny
     volumes:
-      - "~/pods/scrutiny/db:/var/lib/influxdb2"
+      - "/opt/pods/scrutiny-db/data:/var/lib/influxdb2"
     directory: true
 
   - name: scrutiny-web
@@ -85,7 +85,7 @@ pods:
     env:
       SCRUTINY_WEB_INFLUXDB_HOST: scrutiny-db
     volumes:
-      - "~/pods/scrutiny/config:/opt/scrutiny/config"
+      - "/opt/pods/scrutiny-web/config:/opt/scrutiny/config"
     directory: true
 
   - name: scrutiny-collector
@@ -266,7 +266,7 @@ pods:
     env:
       DOMAIN: "{{ lookup('ripplefcl.bwscache.secret', 'vw-domain').value }}"
     volumes:
-      - "~/pods/vaultwarden/data:/data"
+      - "/opt/pods/vaultwarden/data:/data"
     directory: true
 
 
