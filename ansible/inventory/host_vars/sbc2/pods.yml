@@ -238,7 +238,7 @@ pods:
     env:
       TZ: "Europe/London"
     volumes:
-      - "/opt/pods/maintainerr/data:/opt/data"
+      - "/opt/pods/maintainerr/config:/opt/data"
     directory: true
 
   - name: tautulli
