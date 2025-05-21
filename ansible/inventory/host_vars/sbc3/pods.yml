@@ -28,6 +28,7 @@ pods:
       TZ: "Europe/London"
     volumes:
       - ~/pods/hass/z2m/data:/app/data
+    directory: true
 
   - name: hass
     image: ghcr.io/linuxserver/homeassistant:2025.5.2
@@ -43,6 +44,7 @@ pods:
       TZ: "Europe/London"
     volumes:
       - ~/pods/hass/hass/data:/config
+    directory: true
 
   - name: unifi-db
     image: public.ecr.aws/docker/library/mongo:4.4.18
@@ -60,6 +62,7 @@ pods:
     volumes:
       - /opt/pods/unifi/db:/data/db
       - /opt/pods/unifi/init-mongo.sh:/docker-entrypoint-initdb.d/init-mongo.sh:ro
+    directory: true
 
   - name: unifi-app
     image: ghcr.io/linuxserver/unifi-network-application:9.1.120
@@ -91,6 +94,7 @@ pods:
       MEM_LIMIT: "1024"
     volumes:
       - /opt/pods/unifi/app:/config
+    directory: true
 
   - name: unpoller
     image: ghcr.io/unpoller/unpoller:v2.15.3

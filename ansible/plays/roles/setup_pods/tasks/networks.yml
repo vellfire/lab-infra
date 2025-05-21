@@ -1,5 +1,5 @@
 ---
-- name: Create network if applicable
+- name: "Create network: {{ item.name }}"
   community.docker.docker_network:
     name: "{{ item.name }}"
     state: present

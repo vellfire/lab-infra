@@ -17,6 +17,7 @@ pods:
       - "~/pods/traefik/config/traefik.yml:/traefik.yml:ro"
       - "~/pods/traefik/config/providers:/providers:ro"
       - "~/pods/traefik/config/acme.json:/acme.json"
+    directory: true
 
   - name: immich-public-proxy
     image: ghcr.io/alangrainger/immich-public-proxy:1.11.1

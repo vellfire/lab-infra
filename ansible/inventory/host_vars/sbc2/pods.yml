@@ -27,6 +27,7 @@ pods:
       - "~/pods/traefik/config/traefik.yml:/traefik.yml:ro"
       - "~/pods/traefik/config/providers:/providers:ro"
       - "~/pods/traefik/config/acme.json:/acme.json"
+    directory: true
 
   - name: pma_ams
     image: public.ecr.aws/docker/library/phpmyadmin:5.2.2
@@ -72,6 +73,7 @@ pods:
       - name: scrutiny
     volumes:
       - "~/pods/scrutiny/db:/var/lib/influxdb2"
+    directory: true
 
   - name: scrutiny-web
     image: ghcr.io/analogj/scrutiny:v0.8.1-web
@@ -84,6 +86,7 @@ pods:
       SCRUTINY_WEB_INFLUXDB_HOST: scrutiny-db
     volumes:
       - "~/pods/scrutiny/config:/opt/scrutiny/config"
+    directory: true
 
   - name: scrutiny-collector
     image: ghcr.io/analogj/scrutiny:v0.8.1-collector
@@ -115,7 +118,8 @@ pods:
       POSTGRES_USER: "media"
       POSTGRES_PASSWORD: "{{ lookup('ripplefcl.bwscache.secret', 'media-db-password').value }}"
     volumes:
-      - "~/pods/media/db/pgdata:/var/lib/postgresql/data"
+      - "/opt/pods/media-db/pgdata:/var/lib/postgresql/data"
+    directory: true
 
   - name: plex
     image: ghcr.io/linuxserver/plex:1.41.7
@@ -133,10 +137,11 @@ pods:
       VERSION: "latest"
       # - PLEX_CLAIM=
     volumes:
-      - "~/pods/media/plex/config:/config"
-      - "~/pods/media/plex/transcode:/transcode"
+      - "/opt/pods/plex/config:/config"
+      - "/opt/pods/plex/transcode:/transcode"
       - "/opt/shares/pods/media:/media"
       - "/opt/shares/pods/plex:/backup"
+    directory: true
 
   - name: overseerr
     image: ghcr.io/linuxserver/overseerr:develop
@@ -152,7 +157,8 @@ pods:
       PGID: "{{ ansible_facts.user_gid }}"
       TZ: "Europe/London"
     volumes:
-      - "~/pods/media/overseerr/config:/config"
+      - "/opt/pods/overseerr/config:/config"
+    directory: true
 
   - name: sonarr
     image: ghcr.io/linuxserver/sonarr:4.0.14
@@ -166,9 +172,10 @@ pods:
       PGID: "{{ ansible_facts.user_gid }}"
       TZ: "Europe/London"
     volumes:
-      - "~/pods/media/sonarr/tv/config:/config"
+      - "/opt/pods/sonarr/config:/config"
       - "/opt/shares/pods/media:/media"
       - "/opt/shares/pods/sonarr:/backup"
+    directory: true
 
   - name: radarr
     image: ghcr.io/linuxserver/radarr:5.23.3
@@ -182,9 +189,10 @@ pods:
       PGID: "{{ ansible_facts.user_gid }}"
       TZ: "Europe/London"
     volumes:
-      - "~/pods/media/radarr/config:/config"
+      - "/opt/pods/radarr/config:/config"
       - "/opt/shares/pods/media:/media"
       - "/opt/shares/pods/radarr:/backup"
+    directory: true
 
   - name: sabnzbd
     image: ghcr.io/linuxserver/sabnzbd:4.5.1
@@ -198,9 +206,10 @@ pods:
       PGID: "{{ ansible_facts.user_gid }}"
       TZ: "Europe/London"
     volumes:
-      - "~/pods/media/sabnzbd/config:/config"
+      - "/opt/pods/sabnzbd/config:/config"
       - "/opt/shares/pods/media:/media"
       - "/opt/shares/pods/sabnzbd:/backup"
+    directory: true
 
   - name: prowlarr
     image: ghcr.io/linuxserver/prowlarr:1.35.1
@@ -214,8 +223,9 @@ pods:
       PGID: "{{ ansible_facts.user_gid }}"
       TZ: "Europe/London"
     volumes:
-      - "~/pods/media/prowlarr/config:/config"
+      - "/opt/pods/prowlarr/config:/config"
       - "/opt/shares/pods/prowlarr:/backup"
+    directory: true
 
   - name: maintainerr
     image: ghcr.io/jorenn92/maintainerr:2.14.0
@@ -228,7 +238,8 @@ pods:
     env:
       TZ: "Europe/London"
     volumes:
-      - "~/pods/media/maintainerr/data:/opt/data"
+      - "/opt/pods/maintainerr/data:/opt/data"
+    directory: true
 
   - name: tautulli
     image: ghcr.io/tautulli/tautulli:v2.15.2
@@ -242,8 +253,9 @@ pods:
       PGID: "{{ ansible_facts.user_gid }}"
       TZ: "Europe/London"
     volumes:
-      - "~/pods/media/tautulli/config:/config"
+      - "/opt/pods/tautulli/config:/config"
       - "/opt/shares/pods/tautulli/backup:/config/backups"
+    directory: true
 
   - name: vaultwarden
     image: ghcr.io/dani-garcia/vaultwarden:1.33.2
@@ -255,6 +267,8 @@ pods:
       DOMAIN: "{{ lookup('ripplefcl.bwscache.secret', 'vw-domain').value }}"
     volumes:
       - "~/pods/vaultwarden/data:/data"
+    directory: true
+
 
 pod_networks:
   - name: proxy

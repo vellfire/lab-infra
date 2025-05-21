@@ -42,7 +42,6 @@ pods:
     image: public.ecr.aws/nginx/nginx:1.28.0
     restart: unless-stopped
     state: started
-    directory: true
     volumes:
       - "~/pods/nginx-uptime/www:/var/www"
       - "~/pods/nginx-uptime/nginx.conf:/etc/nginx/nginx.conf"
@@ -51,12 +50,12 @@ pods:
     env:
       NGINX_HOST: "{{ lookup('ripplefcl.bwscache.secret', 'domain_lab').value }}"
       NGINX_PORT: "80"
+    directory: true
 
   - name: nginx-files
     image: public.ecr.aws/nginx/nginx:1.28.0
     restart: unless-stopped
     state: started
-    directory: true
     volumes:
       - "~/pods/nginx-files/www:/var/www"
       - "~/pods/nginx-files/nginx.conf:/etc/nginx/nginx.conf"
@@ -65,6 +64,7 @@ pods:
     env:
       NGINX_HOST: "{{ lookup('ripplefcl.bwscache.secret', 'domain_files').value }}"
       NGINX_PORT: "80"
+    directory: true
 
 pod_networks:
   - name: nut

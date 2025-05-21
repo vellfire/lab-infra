@@ -22,6 +22,7 @@ pods:
       - "~/pods/traefik/config/traefik.yml:/traefik.yml:ro"
       - "~/pods/traefik/config/providers:/providers:ro"
       - "~/pods/traefik/config/acme.json:/acme.json"
+    directory: true
 
 pod_networks:
   - name: proxy

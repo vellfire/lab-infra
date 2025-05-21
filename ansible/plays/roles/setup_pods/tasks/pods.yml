@@ -1,4 +1,16 @@
 ---
+- name: "Create directory: {{ item.name }}"
+  when: item.directory is defined
+  become: true
+  changed_when: false
+  ansible.builtin.file:
+    path: "/opt/pods/{{ item.name }}"
+    state: directory
+    recurse: true
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: '0755'
+
 - name: "Create docker container: {{ item.name }}"
   community.docker.docker_container:
     name: "{{ item.name }}"
