@@ -8,8 +8,6 @@ collections:
     version: 4.6.0
   - name: community.general
     version: 10.7.0
-  - name: community.sops
-    version: 2.0.5
   - name: prometheus.prometheus
     version: 0.26.2
   - name: community.libvirt
