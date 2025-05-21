@@ -18,3 +18,5 @@ unix:
         nas1:
         kvm1:
         dl1:
+    remote:
+      vps[1:3]:
