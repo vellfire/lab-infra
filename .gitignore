@@ -1,10 +1,10 @@
 .vscode
-.fleet
 .DS_Store
 .lock
 .venv
 .ansible
 
+.fleet
 .idea
 lab-infra.iml
 
@@ -45,6 +45,3 @@ override.tf.json
 # Ignore CLI configuration files
 .terraformrc
 terraform.rc
-
-# OCI
-terraform/oci/vars.tf
