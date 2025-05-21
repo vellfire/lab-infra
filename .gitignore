@@ -5,6 +5,9 @@
 .venv
 .ansible
 
+.idea
+lab-infra.iml
+
 # Local .terraform directories
 .terraform/
 
