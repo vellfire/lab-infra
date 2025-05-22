@@ -1,9 +1,9 @@
 ---
 - name: "Checking for volume: {{ item.name }}"
-  community.docker.docker_volume_info:
-    name: "{{ item.name }}"
   register: volume
   failed_when: false
+  community.docker.docker_volume_info:
+    name: "{{ item.name }}"
 
 - name: "Create volume: {{ item.name }}"
   when: volume.exists is false
