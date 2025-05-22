@@ -15,14 +15,18 @@
     group: root
     mode: '0640'
 
-- name: Configure libvirt networks
+- name: "Configure libvirt network: {{ item.name }}"
   community.libvirt.virt_net:
     name: "{{ item.name }}"
     command: define
     xml: "{{ lookup('template', 'libvirt-bridge.xml.j2') }}"
+
+- name: "Start libvirt network: {{ item.name }}"
+  community.libvirt.virt_net:
+    name: "{{ item.name }}"
     state: active
 
-- name: Enable autostart on libvirt networks
+- name: "Enable autostart on libvirt network: {{ item.name }}"
   community.libvirt.virt_net:
     name: "{{ item.name }}"
     autostart: true

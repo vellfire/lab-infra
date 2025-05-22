@@ -4,7 +4,6 @@ req_docker: false
 req_virt: true
 req_monitor: true
 
-
 shares:
   - name: common
     src_path: nas1:/tank/common

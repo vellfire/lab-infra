@@ -105,11 +105,10 @@
         - pods
         - all
 
-    - name: Install libvirt
+    - name: Setup libvirt
       when:
         - req_virt | default(false)
         - ansible_os_family == 'Debian'
-        - ansible_facts.services['libvirtd.service'] is not defined
       ansible.builtin.include_role:
         name: deb_virt
         apply:

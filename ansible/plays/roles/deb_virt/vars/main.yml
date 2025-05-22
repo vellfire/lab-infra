@@ -19,6 +19,8 @@ deb_virt_net_nics:
     nic: vmbr0
   - name: opnlan
     nic: vmbr50
+  - name: opngst
+    nic: vmbr240
   - name: opnwan
     nic: vmbr998
 
