@@ -314,7 +314,7 @@ pods:
     mktxp_pass: "{{ lookup('ripplefcl.bwscache.secret', 'mktxp_pass').value }}"
 
   - name: grafana
-    image: docker.io/grafana/grafana:11.6.1
+    image: docker.io/grafana/grafana:11.6.2
     container_name: grafana
     restart: unless-stopped
     state: started
