@@ -286,7 +286,7 @@ pods:
     directory: true
 
   - name: prometheus
-    image: quay.io/prometheus/prometheus:v3.3.1
+    image: quay.io/prometheus/prometheus:v3.4.0
     container_name: prometheus
     restart: unless-stopped
     state: started
