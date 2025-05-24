@@ -270,7 +270,7 @@ pods:
     directory: true
 
   - name: xoa
-    image: ronivay/xen-orchestra:5.177.0
+    image: ronivay/xen-orchestra:5.177.2
     restart: unless-stopped
     capabilities:
       - SYS_ADMIN
