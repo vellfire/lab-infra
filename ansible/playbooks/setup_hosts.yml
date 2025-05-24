@@ -6,37 +6,34 @@
     - name: Update hosts
       ansible.builtin.include_role:
         name: update_hosts
+        tags:
+          - update
         apply:
           become: true
           tags:
             - update
-            - all
-      tags:
-        - update
-        - all
+
 
     - name: Get service facts
       ansible.builtin.service_facts:
       tags:
-        - service_facts
         - setup
         - prometheus
         - docker
         - virt
-        - all
 
     - name: Run standard setup tasks
       when: ansible_os_family == 'Debian'
       ansible.builtin.include_role:
         name: deb_setup
+        tags:
+          - setup
+          - all
         apply:
           become: true
           tags:
             - setup
             - all
-      tags:
-        - setup
-        - all
 
     - name: Install node exporter
       when:
@@ -44,20 +41,19 @@
         - ansible_facts.services['node_exporter.service'] is not defined
       ansible.builtin.include_role:
         name: prometheus.prometheus.node_exporter
+        tags:
+          - prometheus
+          - all
         apply:
           become: true
           tags:
             - prometheus
             - all
-      tags:
-        - prometheus
-        - all
 
     - name: Setup NUT client
       when: req_nut | default(false)
       tags:
         - nut
-        - all
       block:
         - name: Lookup NUT secret
           ansible.builtin.set_fact:
@@ -71,27 +67,27 @@
               become: true
               tags:
                 - nut
-                - all
               no_log: true
 
     - name: Setup docker
       when:
         - req_docker | default(false)
         - ansible_facts.services['docker.service'] is not defined
+      tags:
+        - docker
       ansible.builtin.include_role:
         name: geerlingguy.docker
         apply:
           become: true
           tags:
             - docker
-            - all
-      tags:
-        - docker
-        - all
 
     - name: Setup pods
       when:
         - pods is defined
+      tags:
+        - docker
+        - pods
       ansible.builtin.include_role:
         name: setup_pods
         apply:
@@ -99,23 +95,16 @@
           tags:
             - docker
             - pods
-            - all
-      tags:
-        - docker
-        - pods
-        - all
 
     - name: Setup libvirt
       when:
         - req_virt | default(false)
         - ansible_os_family == 'Debian'
+      tags:
+        - virt
       ansible.builtin.include_role:
         name: deb_virt
         apply:
           become: true
           tags:
             - virt
-            - all
-      tags:
-        - virt
-        - all
