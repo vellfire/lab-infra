@@ -5,7 +5,7 @@
   ],
   ansible: {
     managerFilePatterns: [
-      '/(^|/)(plays|inventory)/.*?[^/]+\\.ya?ml$/',
+      '/(^|/)(playbooks|inventory)/.*?[^/]+\\.ya?ml$/',
     ],
   },
 }
