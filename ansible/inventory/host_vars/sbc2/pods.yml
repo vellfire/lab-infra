@@ -5,7 +5,7 @@ pods:
   - name: traefik
     image: public.ecr.aws/docker/library/traefik:3.4.0
     restart: unless-stopped
-    state: started
+    state: healthy
     security_opt:
       - "no-new-privileges:true"
     networks:
@@ -269,6 +269,21 @@ pods:
       - "/opt/pods/vaultwarden/data:/data"
     directory: true
 
+  - name: xoa
+    image: ronivay/xen-orchestra:5.177.0
+    restart: unless-stopped
+    capabilities:
+      - SYS_ADMIN
+      - DAC_READ_SEARCH
+    state: started
+    security_opt:
+      - "apparmor:unconfined"
+    networks:
+      - name: proxy
+    volumes:
+      - "/opt/pods/xoa/config:/var/lib/xo-server"
+      - "/opt/pods/xoa/db:/var/lib/redis"
+    directory: true
 
 pod_networks:
   - name: proxy
