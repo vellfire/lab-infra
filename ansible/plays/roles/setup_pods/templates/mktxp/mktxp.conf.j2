@@ -1,0 +1,56 @@
+[fw1]
+    # for specific configuration on the router level, overload the defaults here
+    hostname = 10.10.0.1
+
+[default]
+    check_for_updates = True
+    installed_packages = True
+    gre = False
+    interface = True
+    capsman = False
+    routing_stats = True
+    ssl_certificate_verify = False
+    ipsec = True
+    firewall = True
+    switch_port = True
+    ipv6_neighbor = True
+    certificate = False
+    lte = False
+    use_comments_over_names = True
+    ipip = False
+    wireless_clients = False
+    plaintext_login = True
+    poe = True
+    connections = True
+    no_ssl_certificate = False
+    kid_control_dynamic = False
+    netwatch = True
+    dhcp_lease = True
+    queue = True
+    route = True
+    capsman_clients = False
+    pool = True
+    ipv6_firewall = True
+    eoip = False
+    monitor = True
+    user = True
+    ipv6_route = True
+    dns = True
+    bfd = False
+    bgp = False
+    ipv6_pool = True
+    neighbor = True
+    kid_control_assigned = False
+    public_ip = True
+    health = True
+    dhcp = False
+    connection_stats = True
+    use_ssl = False
+    wireless = False
+    enabled = True
+    hostname = 10.10.0.1
+    username = {{ item.mktxp_user }}
+    password = {{ item.mktxp_pass }}
+    remote_dhcp_entry = None
+    remote_capsman_entry = None
+    port = 8728

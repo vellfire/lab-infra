@@ -1,0 +1,9 @@
+[
+    {
+        "targets": ["dl1:9100", "vps1.ext.mcda.dev:9100", "vps2.ovh.mcda.dev:9100", "vps3.ovh.mcda.dev:9100"],
+        "labels": {
+            "__meta_host_type": "vm",
+            "__meta_prometheus_job": "node"
+        }
+    }
+]

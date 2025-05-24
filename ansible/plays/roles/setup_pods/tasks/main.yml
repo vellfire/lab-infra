@@ -13,16 +13,17 @@
   loop_control:
     label: "{{ item.name }}"
 
-- name: Configure docker containers
-  when: pod_config is defined
-  ansible.builtin.include_tasks: config.yml
-  loop: "{{ pods_config }}"
-  loop_control:
-    label: "{{ item.name }}"
-
 - name: Create docker containers
   when: pods is defined
-  ansible.builtin.include_tasks: pods.yml
-  loop: "{{ pods }}"
-  loop_control:
-    label: "{{ item.name }}"
+  block:
+    - name: Import config task
+      ansible.builtin.include_tasks: config.yml
+      loop: "{{ pods }}"
+      loop_control:
+        label: "{{ item.name }}"
+
+    - name: Import pods task
+      ansible.builtin.include_tasks: pods.yml
+      loop: "{{ pods }}"
+      loop_control:
+        label: "{{ item.name }}"

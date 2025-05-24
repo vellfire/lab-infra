@@ -1,0 +1,9 @@
+[
+    {
+        "targets": ["sbc1:9100", "sbc2:9100", "sbc3:9100", "sbc4:9100", "nas1:9100", "kvm1:9100"],
+        "labels": {
+            "__meta_host_type": "servers",
+            "__meta_prometheus_job": "node"
+        }
+    }
+]

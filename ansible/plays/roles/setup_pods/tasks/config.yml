@@ -1,40 +1,108 @@
 ---
-- name: Setup traefik
-  when: item.name == "traefik"
+# - name: Setup traefik
+#   when: item.name == "traefik"
+#   block:
+    # - name: Create providers directory
+    #   ansible.builtin.file:
+    #     path: /opt/pods/traefik/providers
+    #     state: directory
+    #     recurse: true
+    #     mode: '0755'
+
+    # - name: Create traefik yml
+    #   ansible.builtin.template:
+    #     src: traefik/traefik.yml.j2
+    #     dest: /opt/pods/traefik/traefik.yml
+    #     mode: '0644'
+
+    # - name: Create acme.json
+    #   ansible.builtin.file:
+    #     path: /opt/pods/traefik/acme.json
+    #     state: touch
+    #     mode: '0600'
+
+    # - name: Create middleware config
+    #   ansible.builtin.template:
+    #     src: traefik/middlewares.yml.j2
+    #     dest: /opt/pods/traefik/providers/middlewares.yml
+    #     mode: '0644'
+
+    # - name: Create router config
+    #   ansible.builtin.template:
+    #     src: traefik/routers.yml.j2
+    #     dest: /opt/pods/traefik/providers/routers.yml
+    #     mode: '0644'
+
+    # - name: Create service config
+    #   ansible.builtin.template:
+    #     src: traefik/services.yml.j2
+    #     dest: /opt/pods/traefik/providers/services.yml
+    #     mode: '0644'
+
+- name: Setup mktxp
+  when: item.name == 'mktxp'
+  become: true
   block:
-    - name: Create providers folder
+    - name: Create mktxp config directory
       ansible.builtin.file:
-        path: /opt/pods/traefik/providers
+        path: /opt/pods/mktxp/config
         state: directory
         recurse: true
-        mode: "0755"
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: '0755'
 
-    - name: Create traefik yml
+    - name: Create mktxp config
       ansible.builtin.template:
-        src: traefik/traefik.yml.j2
-        dest: /opt/pods/traefik/traefik.yml
-        mode: "0644"
+        src: mktxp/mktxp.conf.j2
+        dest: /opt/pods/mktxp/config/mktxp.conf
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: '0644'
 
-    - name: Create acme.json
+    - name: Create _mktxp.conf config
+      ansible.builtin.copy:
+        src: mktxp/_mktxp.conf
+        dest: /opt/pods/mktxp/config/_mktxp.conf
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: '0644'
+
+- name: Setup Prometheus
+  when: item.name == 'prometheus'
+  become: true
+  block:
+    - name: Create prometheus config directory
       ansible.builtin.file:
-        path: /opt/pods/traefik/acme.json
-        state: touch
-        mode: "0600"
+        path: /opt/pods/prometheus/config
+        state: directory
+        recurse: true
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: '0755'
 
-    - name: Create middleware config
-      ansible.builtin.template:
-        src: traefik/middlewares.yml.j2
-        dest: /opt/pods/traefik/providers/middlewares.yml
-        mode: "0644"
+    - name: Create prometheus data directory
+      ansible.builtin.file:
+        path: /opt/pods/prometheus/data
+        state: directory
+        recurse: true
+        owner: root
+        group: root
+        mode: '0755'
 
-    - name: Create router config
-      ansible.builtin.template:
-        src: traefik/routers.yml.j2
-        dest: /opt/pods/traefik/providers/routers.yml
-        mode: "0644"
+    - name: Copy files (temporary - to be templated)
+      ansible.builtin.copy:
+        src: prometheus/
+        dest: /opt/pods/prometheus/config
+        mode: '0644'
 
-    - name: Create service config
-      ansible.builtin.template:
-        src: traefik/services.yml.j2
-        dest: /opt/pods/traefik/providers/services.yml
-        mode: "0644"
+- name: Setup Grafana
+  when: item.name == 'grafana'
+  become: true
+  block:
+    - name: Create grafana config directory
+      ansible.builtin.file:
+        path: /opt/pods/prometheus/data
+        state: directory
+        recurse: true
+        mode: '0755'

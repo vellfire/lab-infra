@@ -272,10 +272,10 @@ pods:
   - name: xoa
     image: ronivay/xen-orchestra:5.177.0
     restart: unless-stopped
+    state: started
     capabilities:
       - SYS_ADMIN
       - DAC_READ_SEARCH
-    state: started
     security_opt:
       - "apparmor:unconfined"
     networks:
@@ -285,10 +285,55 @@ pods:
       - "/opt/pods/xoa/db:/var/lib/redis"
     directory: true
 
+  - name: prometheus
+    image: quay.io/prometheus/prometheus:v3.3.1
+    container_name: prometheus
+    restart: unless-stopped
+    state: started
+    user: root
+    networks:
+      - name: proxy
+      - name: monitor
+    volumes:
+      - "/opt/pods/prometheus/config/prometheus.yml:/etc/prometheus/prometheus.yml:ro"
+      - "/opt/pods/prometheus/config/targets:/etc/prometheus/targets:ro"
+      - "/opt/pods/prometheus/data:/prometheus"
+    directory: true
+
+  - name: mktxp
+    image: ghcr.io/akpw/mktxp:1.2.10
+    container_name: mktxp
+    restart: unless-stopped
+    state: started
+    user: root
+    networks:
+      - name: monitor
+    volumes:
+      - "/opt/pods/mktxp/config:/root/mktxp"
+    mktxp_user: "{{ lookup('ripplefcl.bwscache.secret', 'mktxp_user').value }}"
+    mktxp_pass: "{{ lookup('ripplefcl.bwscache.secret', 'mktxp_pass').value }}"
+
+  - name: grafana
+    image: docker.io/grafana/grafana:11.6.1
+    container_name: grafana
+    restart: unless-stopped
+    state: started
+    user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
+    networks:
+      - name: proxy
+      - name: monitor
+    env:
+      GF_INSTALL_PLUGINS: grafana-clock-panel,natel-discrete-panel,grafana-piechart-panel
+    volumes:
+      - "/opt/pods/grafana/data:/var/lib/grafana"
+    directory: true
+
 pod_networks:
   - name: proxy
     driver: local
   - name: scrutiny
     driver: local
   - name: media
+    driver: local
+  - name: monitor
     driver: local
