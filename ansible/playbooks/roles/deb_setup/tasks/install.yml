@@ -29,4 +29,5 @@
       - systemd-resolved
       - python3-requests
       - tuned
+      - kitty-terminfo
     state: present
