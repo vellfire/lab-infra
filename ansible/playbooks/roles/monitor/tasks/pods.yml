@@ -1,0 +1,30 @@
+---
+- name: "Create {{ item.name }} config directory"
+  ansible.builtin.file:
+    path: "{{ monitor_pods_path }}/{{ item.name }}/config"
+    state: directory
+    recurse: true
+    mode: '0740'
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+
+- name: "Create data directory for {{ item.name }}"
+  ansible.builtin.file:
+    path: "{{ monitor_pods_path }}/{{ item.name }}/data"
+    state: directory
+    recurse: true
+    mode: '0740'
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+
+- name: Include config tasks
+  ansible.builtin.include_tasks: "{{ item.name }}"
+  loop: "{{ monitor_pods.name | default([]) }}"
+  loop_control:
+    label: "{{ item.name }}"
+
+- name: "Deploy container for {{ item.name }}"
+  community.docker.docker_container: "{{ item }}"
+  loop: "{{ monitor_pods | default([]) }}"
+  loop_control:
+    label: "{{ item.name }}"

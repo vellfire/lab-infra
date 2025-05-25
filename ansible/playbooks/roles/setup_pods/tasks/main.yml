@@ -15,15 +15,7 @@
 
 - name: Create docker containers
   when: pods is defined
-  block:
-    - name: Import config task
-      ansible.builtin.include_tasks: config.yml
-      loop: "{{ pods }}"
-      loop_control:
-        label: "{{ item.name }}"
-
-    - name: Import pods task
-      ansible.builtin.include_tasks: pods.yml
-      loop: "{{ pods }}"
-      loop_control:
-        label: "{{ item.name }}"
+  ansible.builtin.include_tasks: pods.yml
+  loop: "{{ pods }}"
+  loop_control:
+    label: "{{ item.name }}"

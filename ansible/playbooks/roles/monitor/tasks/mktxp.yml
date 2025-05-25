@@ -1,0 +1,16 @@
+---
+- name: Set template for mktxp.conf
+  ansible.builtin.template:
+    src: mktxp/mktxp.conf.j2
+    dest: "{{ monitor_pods_path }}/{{ item.name }}/config/mktxp.conf"
+    owner: root
+    group: root
+    mode: '0600'
+
+- name: Copy _mktxp.conf file
+  ansible.builtin.copy:
+    src: mktxp/_mktxp.conf
+    dest: "{{ monitor_pods_path }}/{{ item.name }}/config/_mktxp.conf"
+    owner: root
+    group: root
+    mode: '0600'
