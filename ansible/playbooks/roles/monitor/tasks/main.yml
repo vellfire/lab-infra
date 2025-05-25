@@ -1,3 +1,12 @@
 ---
+- name: Include mktxp task
+  ansible.builtin.include_tasks: mktxp.yml
+
+- name: Include Prometheus task
+  ansible.builtin.include_tasks: prometheus.yml
+
 - name: Include pods task
   ansible.builtin.include_tasks: pods.yml
+  loop: "{{ monitor_pods_def }}"
+  loop_control:
+    label: "{{ item.name }}"

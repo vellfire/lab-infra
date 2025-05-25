@@ -6,13 +6,12 @@
     - name: Update hosts
       ansible.builtin.include_role:
         name: update_hosts
-        tags:
-          - update
         apply:
           become: true
           tags:
             - update
-
+      tags:
+        - update
 
     - name: Get service facts
       ansible.builtin.service_facts:
@@ -26,14 +25,14 @@
       when: ansible_os_family == 'Debian'
       ansible.builtin.include_role:
         name: deb_setup
-        tags:
-          - setup
-          - all
         apply:
           become: true
           tags:
             - setup
             - all
+      tags:
+        - setup
+        - all
 
     - name: Install node exporter
       when:
@@ -41,14 +40,12 @@
         - ansible_facts.services['node_exporter.service'] is not defined
       ansible.builtin.include_role:
         name: prometheus.prometheus.node_exporter
-        tags:
-          - prometheus
-          - all
         apply:
           become: true
           tags:
             - prometheus
-            - all
+      tags:
+        - prometheus
 
     - name: Setup NUT client
       when: req_nut | default(false)
@@ -73,21 +70,18 @@
       when:
         - req_docker | default(false)
         - ansible_facts.services['docker.service'] is not defined
-      tags:
-        - docker
       ansible.builtin.include_role:
         name: geerlingguy.docker
         apply:
           become: true
           tags:
             - docker
+      tags:
+        - docker
 
     - name: Setup pods
       when:
         - pods is defined
-      tags:
-        - docker
-        - pods
       ansible.builtin.include_role:
         name: setup_pods
         apply:
@@ -95,16 +89,40 @@
           tags:
             - docker
             - pods
+      tags:
+        - docker
+        - pods
+
+    - name: Setup monitoring stack
+      when: inventory_hostname == 'sbc2'
+      tags:
+        - pods
+        - monitor
+      block:
+        - name: Lookup monitor secrets
+          ansible.builtin.set_fact:
+            mktxp_user: "{{ lookup('ripplefcl.bwscache.secret', 'mktxp_user').value }}"
+            mktxp_pass: "{{ lookup('ripplefcl.bwscache.secret', 'mktxp_pass').value }}"
+          # no_log: true
+
+        - name: Include monitor role
+          ansible.builtin.include_role:
+            name: monitor
+            apply:
+              tags:
+                - pods
+                - monitor
+
 
     - name: Setup libvirt
       when:
         - req_virt | default(false)
         - ansible_os_family == 'Debian'
-      tags:
-        - virt
       ansible.builtin.include_role:
         name: deb_virt
         apply:
           become: true
           tags:
             - virt
+      tags:
+        - virt

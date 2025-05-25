@@ -1,5 +1,6 @@
 ---
-- name: "Create {{ item.name }} config directory"
+- name: "Create config directory: {{ item.name }}"
+  become: true
   ansible.builtin.file:
     path: "{{ monitor_pods_path }}/{{ item.name }}/config"
     state: directory
@@ -9,6 +10,7 @@
     group: "{{ ansible_user }}"
 
 - name: "Create data directory for {{ item.name }}"
+  become: true
   ansible.builtin.file:
     path: "{{ monitor_pods_path }}/{{ item.name }}/data"
     state: directory
@@ -17,14 +19,21 @@
     owner: "{{ ansible_user }}"
     group: "{{ ansible_user }}"
 
-- name: Include config tasks
-  ansible.builtin.include_tasks: "{{ item.name }}"
-  loop: "{{ monitor_pods.name | default([]) }}"
-  loop_control:
-    label: "{{ item.name }}"
-
-- name: "Deploy container for {{ item.name }}"
-  community.docker.docker_container: "{{ item }}"
-  loop: "{{ monitor_pods | default([]) }}"
-  loop_control:
-    label: "{{ item.name }}"
+- name: "Create docker container: {{ item.name }}"
+  community.docker.docker_container:
+    name: "{{ item.name }}"
+    image: "{{ item.image }}"
+    state: "{{ item.state | default('started') }}"
+    restart_policy: "{{ item.restart | default('unless-stopped') }}"
+    networks: "{{ item.networks | default(omit) }}"
+    network_mode: "{{ item.network_mode | default(omit) }}"
+    capabilities: "{{ item.capabilities | default(omit) }}"
+    security_opts: "{{ item.security_opt | default(omit) }}"
+    ports: "{{ item.ports | default(omit) }}"
+    user: "{{ item.user | default(omit) }}"
+    env: "{{ item.env | default(omit) }}"
+    devices: "{{ item.devices | default(omit) }}"
+    volumes: "{{ item.volumes | default(omit) }}"
+    log_driver: "{{ item.log_driver | default(omit) }}"
+    log_options: "{{ item.log_options | default(omit) }}"
+    default_host_ip: "{{ default_host_ip }}"
