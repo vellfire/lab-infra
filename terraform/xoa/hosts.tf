@@ -19,7 +19,7 @@ data "xenorchestra_template" "debian-xng1" {
 
 resource "xenorchestra_network" "xng1vlan50" {
   name_label        = "v.5G"
-  name_description  = "VLAN 50 - OPNsense LAN"
+  name_description  = "VLAN 50 - OPNsense LAN # tf-managed"
   pool_id           = data.xenorchestra_pool.xng1.id
   source_pif_device = "eth0"
   mtu               = 9000
@@ -28,7 +28,7 @@ resource "xenorchestra_network" "xng1vlan50" {
 
 resource "xenorchestra_network" "xng1vlan240" {
   name_label        = "v.Guest"
-  name_description  = "VLAN 240 - Guest LAN"
+  name_description  = "VLAN 240 - Guest LAN # tf-managed"
   pool_id           = data.xenorchestra_pool.xng1.id
   source_pif_device = "eth0"
   mtu               = 1500
@@ -37,7 +37,7 @@ resource "xenorchestra_network" "xng1vlan240" {
 
 resource "xenorchestra_network" "xng1vlan998" {
   name_label        = "v.WAN1"
-  name_description  = "VLAN 998 - WAN1"
+  name_description  = "VLAN 998 - WAN1 # tf-managed"
   pool_id           = data.xenorchestra_pool.xng1.id
   source_pif_device = "eth0"
   mtu               = 1500
