@@ -14,7 +14,7 @@ pods:
       NUT_UID: "{{ ansible_facts.user_uid }}"
       NUT_GID: "{{ ansible_facts.user_gid }}"
     devices:
-      /dev/bus/usb/001/004:/dev/bus/usb/001/004
+      /dev/bus/usb/001/006:/dev/bus/usb/001/006
     volumes:
       ~/pods/nut/data:/etc/nut:ro
     directory: true
