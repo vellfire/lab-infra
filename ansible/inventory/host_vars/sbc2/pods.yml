@@ -178,7 +178,7 @@ pods:
     directory: true
 
   - name: radarr
-    image: ghcr.io/linuxserver/radarr:5.24.1
+    image: ghcr.io/linuxserver/radarr:5.25.0
     restart: unless-stopped
     state: started
     networks:
