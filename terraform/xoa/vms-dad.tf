@@ -30,7 +30,7 @@ resource "xenorchestra_cloud_config" "wsrv_net" {
 resource "xenorchestra_vm" "wsrv" {
   count            = var.dad_vm_count
   name_label       = "${var.dad_vm_name}${count.index + 1}"
-  name_description = "# tf-managed"
+  name_description = "Managed by TF"
 
   template             = data.xenorchestra_template.debian12base.id
   cloud_config         = xenorchestra_cloud_config.wsrv_user[count.index].template
