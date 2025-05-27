@@ -258,7 +258,7 @@ pods:
     directory: true
 
   - name: vaultwarden
-    image: ghcr.io/dani-garcia/vaultwarden:1.33.2
+    image: ghcr.io/dani-garcia/vaultwarden:1.34.1
     restart: unless-stopped
     state: started
     networks:
