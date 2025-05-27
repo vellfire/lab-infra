@@ -7,10 +7,6 @@ data "xenorchestra_sr" "xng1" {
   pool_id    = data.xenorchestra_pool.xng1.id
 }
 
-data "xenorchestra_sr" "xng1isos" {
-  name_label = "ISOStorage"
-}
-
 data "xenorchestra_network" "xng1" {
   name_label = "Pool-wide network associated with eth0"
   pool_id    = data.xenorchestra_pool.xng1.id
