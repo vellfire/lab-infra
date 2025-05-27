@@ -61,4 +61,8 @@ resource "xenorchestra_vm" "wsrv" {
     sr_id      = data.xenorchestra_sr.xng1.id
     size       = 32 * 1024 * 1024 * 1024
   }
+
+  lifecycle {
+    prevent_destroy = true
+  }
 }
