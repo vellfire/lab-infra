@@ -12,11 +12,6 @@ data "xenorchestra_network" "xng1" {
   pool_id    = data.xenorchestra_pool.xng1.id
 }
 
-data "xenorchestra_template" "debian-xng1" {
-  name_label = "debian12base_template"
-  pool_id    = data.xenorchestra_pool.xng1.id
-}
-
 resource "xenorchestra_network" "xng1vlan50" {
   name_label        = "v.5G"
   name_description  = "VLAN 50 - OPNsense LAN # tf-managed"
@@ -42,4 +37,9 @@ resource "xenorchestra_network" "xng1vlan998" {
   source_pif_device = "eth0"
   mtu               = 1500
   vlan              = 998
+}
+
+data "xenorchestra_template" "debian12base" {
+  name_label = "debian12base_template"
+  pool_id    = data.xenorchestra_pool.xng1.id
 }
