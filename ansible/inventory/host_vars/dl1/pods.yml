@@ -1,2 +1,10 @@
 ---
 default_host_ip: ""
+
+pods:
+  - name: socks5-proxy
+    image: serjs/go-socks5-proxy:master
+    restart: unless-stopped
+    state: started
+    ports:
+      - 1080:1080

@@ -69,7 +69,6 @@
     - name: Setup docker
       when:
         - req_docker | default(false)
-        - ansible_facts.services['docker.service'] is not defined
       ansible.builtin.include_role:
         name: geerlingguy.docker
         apply:
@@ -103,7 +102,7 @@
           ansible.builtin.set_fact:
             mktxp_user: "{{ lookup('ripplefcl.bwscache.secret', 'mktxp_user').value }}"
             mktxp_pass: "{{ lookup('ripplefcl.bwscache.secret', 'mktxp_pass').value }}"
-          # no_log: true
+          no_log: true
 
         - name: Include monitor role
           ansible.builtin.include_role:
