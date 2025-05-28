@@ -23,7 +23,7 @@ resource "macaddress" "vm_pet_mac_vlan50" {
 resource "xenorchestra_cloud_config" "vm_pet_user" {
   for_each = var.vm_pet_cfg
   name     = "${each.value.name}_user"
-  template = templatefile("${path.module}/templates/vms_pet/user-data.tftpl", {
+  template = templatefile("${path.module}/templates/vms-pet/user-data.tftpl", {
     name                = each.key,
     timezone            = var.vm_timezone,
     standard_username   = var.standard_username,
@@ -36,10 +36,10 @@ resource "xenorchestra_cloud_config" "vm_pet_user" {
 resource "xenorchestra_cloud_config" "vm_pet_net" {
   for_each = var.vm_pet_cfg
   name     = "${each.value.name}_net"
-  template = templatefile("${path.module}/templates/vms_pet/network-config.tftpl", {
-    hostname   = each.value.name
-    vlan50     = each.value.vlan50
+  template = templatefile("${path.module}/templates/vms-pet/network-config.tftpl", {
+    name       = each.value.name
     vlan1_mac  = macaddress.vm_pet_mac_vlan1[each.key].address
+    vlan50     = each.value.vlan50
     vlan50_mac = macaddress.vm_pet_mac_vlan50[each.key].address
   })
 }

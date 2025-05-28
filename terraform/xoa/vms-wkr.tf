@@ -6,7 +6,7 @@ resource "macaddress" "vm_wkr_mac_vlan1" {
 resource "xenorchestra_cloud_config" "vm_wkr_user" {
   count = var.vm_wkr_count
   name  = "${var.vm_wkr_name}${count.index + 1}_user"
-  template = templatefile("${path.module}/templates/vms_wkr/user-data.tftpl", {
+  template = templatefile("${path.module}/templates/vms-wkr/user-data.tftpl", {
     name                = "${var.vm_wkr_name}${count.index + 1}",
     timezone            = var.vm_timezone,
     standard_username   = var.standard_username,
@@ -19,9 +19,9 @@ resource "xenorchestra_cloud_config" "vm_wkr_user" {
 resource "xenorchestra_cloud_config" "vm_wkr_net" {
   count = var.vm_wkr_count
   name  = "${var.vm_wkr_name}${count.index + 1}_net"
-  template = templatefile("${path.module}/templates/vms_wkr/network-config.tftpl", {
-    hostname = "${var.vm_wkr_name}${count.index + 1}"
-    mac      = macaddress.vm_wkr_mac_vlan1[count.index].address
+  template = templatefile("${path.module}/templates/vms-wkr/network-config.tftpl", {
+    name = "${var.vm_wkr_name}${count.index + 1}"
+    mac  = macaddress.vm_wkr_mac_vlan1[count.index].address
   })
 }
 
