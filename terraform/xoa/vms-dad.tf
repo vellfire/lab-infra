@@ -22,8 +22,8 @@ resource "xenorchestra_cloud_config" "vm_dad_net" {
   count = var.vm_dad_count
   name  = "${var.vm_dad_name}${count.index + 1}_net"
   template = templatefile("${path.module}/templates/vms-dad/network-config.tftpl", {
-    hostname = "${var.vm_dad_name}${count.index + 1}"
-    mac      = macaddress.vm_dad_mac[count.index].address
+    name = "${var.vm_dad_name}${count.index + 1}"
+    mac  = macaddress.vm_dad_mac[count.index].address
   })
 }
 
@@ -31,7 +31,7 @@ resource "xenorchestra_vm" "vm_dad" {
   count            = var.vm_dad_count
   name_label       = "${var.vm_dad_name}${count.index + 1}"
   name_description = "Managed by TF"
-  tags             = "web"
+  tags             = ["web"]
 
   template             = data.xenorchestra_template.debian12base.id
   cloud_config         = xenorchestra_cloud_config.vm_dad_user[count.index].template

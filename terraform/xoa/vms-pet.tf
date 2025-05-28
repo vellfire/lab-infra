@@ -91,7 +91,7 @@ resource "xenorchestra_vm" "vm_pet" {
 resource "xenorchestra_vm" "opnsense_vm" {
   name_label       = "xnfw1"
   name_description = "Managed by TF"
-  tags             = "network"
+  tags             = ["network"]
 
   auto_poweron      = true
   exp_nested_hvm    = false
