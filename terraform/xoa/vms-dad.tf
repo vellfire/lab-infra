@@ -1,13 +1,13 @@
-resource "macaddress" "dad_vm_mac" {
-  count  = var.dad_vm_count
+resource "macaddress" "vm_dad_mac" {
+  count  = var.vm_dad_count
   prefix = [82, 84, 0] # 52:54:00 (KVM)
 }
 
-resource "xenorchestra_cloud_config" "wsrv_user" {
-  count = var.dad_vm_count
-  name  = var.dad_vm_name + (count.index + 1) + "_user"
-  template = templatefile("${path.module}/templates/vms-dad/user-data.tftpl", {
-    hostname            = var.dad_vm_name + (count.index + 1),
+resource "xenorchestra_cloud_config" "vm_dad_user" {
+  count = var.vm_dad_count
+  name  = "${var.vm_dad_name}${count.index + 1}_user"
+  template = templatefile("${path.module}/templates/vms_dad/user-data.tftpl", {
+    name                = "${var.vm_dad_name}${count.index + 1}",
     timezone            = var.vm_timezone,
     standard_username   = var.standard_username,
     dad_username        = var.dad_username,
@@ -18,23 +18,23 @@ resource "xenorchestra_cloud_config" "wsrv_user" {
   })
 }
 
-resource "xenorchestra_cloud_config" "wsrv_net" {
-  count = var.dad_vm_count
-  name  = var.dad_vm_name + (count.index + 1) + "_net"
-  template = templatefile("${path.module}/templates/vms-dad/network-config.tftpl", {
-    hostname = var.dad_vm_name + (count.index + 1)
-    mac      = macaddress.dad_vm_mac[count.index].address
+resource "xenorchestra_cloud_config" "vm_dad_net" {
+  count = var.vm_dad_count
+  name  = "${var.vm_dad_name}${count.index + 1}_net"
+  template = templatefile("${path.module}/templates/vms_dad/network-config.tftpl", {
+    hostname = "${var.vm_dad_name}${count.index + 1}"
+    mac      = macaddress.vm_dad_mac[count.index].address
   })
 }
 
-resource "xenorchestra_vm" "wsrv" {
-  count            = var.dad_vm_count
-  name_label       = var.dad_vm_name + (count.index + 1)
+resource "xenorchestra_vm" "vm_dad" {
+  count            = var.vm_dad_count
+  name_label       = "${var.vm_dad_name}${count.index + 1}"
   name_description = "Managed by TF"
 
   template             = data.xenorchestra_template.debian12base.id
-  cloud_config         = xenorchestra_cloud_config.wsrv_user[count.index].template
-  cloud_network_config = xenorchestra_cloud_config.wsrv_net[count.index].template
+  cloud_config         = xenorchestra_cloud_config.vm_dad_user[count.index].template
+  cloud_network_config = xenorchestra_cloud_config.vm_dad_net[count.index].template
 
   auto_poweron      = true
   exp_nested_hvm    = false
@@ -47,22 +47,23 @@ resource "xenorchestra_vm" "wsrv" {
 
   network {
     network_id  = data.xenorchestra_network.xng1.id
-    mac_address = macaddress.dad_vm_mac[count.index].address
+    mac_address = macaddress.vm_dad_mac[count.index].address
   }
 
   disk {
-    name_label = var.dad_vm_name + count.index + 1 + "_os"
+    name_label = "${var.vm_dad_name}${count.index + 1}_os"
     sr_id      = data.xenorchestra_sr.xng1.id
     size       = 16 * 1024 * 1024 * 1024
   }
 
   disk {
-    name_label = var.dad_vm_name + count.index + "_data"
+    name_label = "${var.vm_dad_name}${count.index + 1}_data"
     sr_id      = data.xenorchestra_sr.xng1.id
     size       = 32 * 1024 * 1024 * 1024
   }
-
+  /*
   lifecycle {
     prevent_destroy = true
   }
+*/
 }

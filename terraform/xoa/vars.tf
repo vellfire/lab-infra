@@ -28,25 +28,25 @@ variable "git_ssh_keys" {
   default     = "gh:vellfire"
 }
 
-variable "prod_vm_name" {
+variable "vm_wkr_name" {
   description = "VM name (for hostname and files)"
   type        = string
-  default     = "xnvm"
+  default     = "xwkr"
 }
 
-variable "prod_vm_count" {
+variable "vm_wkr_count" {
   description = "Number of vms"
   type        = number
   default     = 1
 }
 
-variable "dad_vm_name" {
+variable "vm_dad_name" {
   description = "VM name (for hostname and files)"
   type        = string
   default     = "wsrv"
 }
 
-variable "dad_vm_count" {
+variable "vm_dad_count" {
   description = "Number of vms"
   type        = number
   default     = 2
