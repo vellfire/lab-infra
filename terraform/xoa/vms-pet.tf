@@ -6,7 +6,8 @@ variable "vm_pet_cfg" {
     vlan50     = bool
   }))
   default = {
-    "dl1" = { name = "dl1", cpus = 2, memory_max = 2048, vlan50 = true }
+    "dl1"  = { name = "dl1", cpus = 2, memory_max = 2048, vlan50 = true }
+    "xdb1" = { name = "xdb1", cpus = 2, memory_max = 2048, vlan50 = false }
   }
 }
 
