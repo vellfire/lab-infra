@@ -6,7 +6,7 @@ resource "macaddress" "vm_dad_mac" {
 resource "xenorchestra_cloud_config" "vm_dad_user" {
   count = var.vm_dad_count
   name  = "${var.vm_dad_name}${count.index + 1}_user"
-  template = templatefile("${path.module}/templates/vms_dad/user-data.tftpl", {
+  template = templatefile("${path.module}/templates/vms-dad/user-data.tftpl", {
     name                = "${var.vm_dad_name}${count.index + 1}",
     timezone            = var.vm_timezone,
     standard_username   = var.standard_username,
@@ -21,7 +21,7 @@ resource "xenorchestra_cloud_config" "vm_dad_user" {
 resource "xenorchestra_cloud_config" "vm_dad_net" {
   count = var.vm_dad_count
   name  = "${var.vm_dad_name}${count.index + 1}_net"
-  template = templatefile("${path.module}/templates/vms_dad/network-config.tftpl", {
+  template = templatefile("${path.module}/templates/vms-dad/network-config.tftpl", {
     hostname = "${var.vm_dad_name}${count.index + 1}"
     mac      = macaddress.vm_dad_mac[count.index].address
   })
