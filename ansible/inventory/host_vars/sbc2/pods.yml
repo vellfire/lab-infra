@@ -144,7 +144,7 @@ pods:
     directory: true
 
   - name: overseerr
-    image: ghcr.io/linuxserver/overseerr:develop
+    image: ghcr.io/linuxserver/overseerr:07dc8d755a0e94d100ecd8b1e950e43da1c0a7dd
     restart: unless-stopped
     state: started
     networks:
