@@ -152,9 +152,9 @@ pods:
       - name: proxy
     ports:
       - 5055:5055
+    user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
     env:
-      PUID: "{{ ansible_facts.user_uid }}"
-      PGID: "{{ ansible_facts.user_gid }}"
+      LOG_LEVEL: info
       TZ: "Europe/London"
     volumes:
       - "/opt/pods/overseerr/config:/app/config"
