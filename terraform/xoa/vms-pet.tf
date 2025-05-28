@@ -1,4 +1,4 @@
-variable "pet_vm_cfg" {
+variable "vm_pet_cfg" {
   type = map(object({
     name       = string
     cpus       = number
@@ -6,26 +6,25 @@ variable "pet_vm_cfg" {
     vlan50     = bool
   }))
   default = {
-    "dl1"   = { name = "dl1", cpus = 2, memory_max = 2048, vlan50 = true }
-    "test1" = { name = "test1", cpus = 2, memory_max = 2048, vlan50 = false }
+    "dl1" = { name = "dl1", cpus = 2, memory_max = 2048, vlan50 = true }
   }
 }
 
-resource "macaddress" "pet_vm_mac_vlan1" {
-  for_each = var.pet_vm_cfg
+resource "macaddress" "vm_pet_mac_vlan1" {
+  for_each = var.vm_pet_cfg
   prefix   = [82, 84, 0] # 52:54:00 (KVM)
 }
 
-resource "macaddress" "pet_vm_mac_vlan50" {
-  for_each = var.pet_vm_cfg
+resource "macaddress" "vm_pet_mac_vlan50" {
+  for_each = var.vm_pet_cfg
   prefix   = [82, 84, 0] # 52:54:00 (KVM)
 }
 
-resource "xenorchestra_cloud_config" "pet_vm_user" {
-  for_each = var.pet_vm_cfg
-  name     = "${each.key}_user"
+resource "xenorchestra_cloud_config" "vm_pet_user" {
+  for_each = var.vm_pet_cfg
+  name     = each.key + "_user"
   template = templatefile("${path.module}/templates/vms-pet/user-data.tftpl", {
-    name                = "${each.key}",
+    name                = each.key,
     timezone            = var.vm_timezone,
     standard_username   = var.standard_username,
     automation_username = var.automation_username,
@@ -34,25 +33,25 @@ resource "xenorchestra_cloud_config" "pet_vm_user" {
   })
 }
 
-resource "xenorchestra_cloud_config" "pet_vm_net" {
-  for_each = var.pet_vm_cfg
-  name     = "${each.key}_net"
+resource "xenorchestra_cloud_config" "vm_pet_net" {
+  for_each = var.vm_pet_cfg
+  name     = each.key + "_net"
   template = templatefile("${path.module}/templates/vms-pet/network-config.tftpl", {
     hostname   = each.value.name
     vlan50     = each.value.vlan50
-    vlan1_mac  = macaddress.pet_vm_mac_vlan1[each.key].address
-    vlan50_mac = macaddress.pet_vm_mac_vlan50[each.key].address
+    vlan1_mac  = macaddress.vm_pet_mac_vlan1[each.key].address
+    vlan50_mac = macaddress.vm_pet_mac_vlan50[each.key].address
   })
 }
 
-resource "xenorchestra_vm" "pet-vms" {
-  for_each         = var.pet_vm_cfg
+resource "xenorchestra_vm" "vm_pet" {
+  for_each         = var.vm_pet_cfg
   name_label       = each.value.name
   name_description = "Managed by TF"
 
   template             = data.xenorchestra_template.debian12base.id
-  cloud_config         = xenorchestra_cloud_config.pet_vm_user[each.key].template
-  cloud_network_config = xenorchestra_cloud_config.pet_vm_net[each.key].template
+  cloud_config         = xenorchestra_cloud_config.vm_pet_user[each.key].template
+  cloud_network_config = xenorchestra_cloud_config.vm_pet_net[each.key].template
 
   auto_poweron      = true
   exp_nested_hvm    = false
@@ -65,25 +64,25 @@ resource "xenorchestra_vm" "pet-vms" {
 
   network {
     network_id  = data.xenorchestra_network.xng1.id
-    mac_address = macaddress.pet_vm_mac_vlan1[each.key].address
+    mac_address = macaddress.vm_pet_mac_vlan1[each.key].address
   }
 
   dynamic "network" {
     for_each = each.value.vlan50 ? [1] : []
     content {
       network_id  = xenorchestra_network.xng1vlan50.id
-      mac_address = macaddress.pet_vm_mac_vlan50[each.key].address
+      mac_address = macaddress.vm_pet_mac_vlan50[each.key].address
     }
   }
 
   disk {
-    name_label = "${each.key}_os"
+    name_label = each.key + "_os"
     sr_id      = data.xenorchestra_sr.xng1.id
     size       = 16 * 1024 * 1024 * 1024
   }
 
   disk {
-    name_label = "${each.key}_data"
+    name_label = each.key + "_data"
     sr_id      = data.xenorchestra_sr.xng1.id
     size       = 32 * 1024 * 1024 * 1024
   }

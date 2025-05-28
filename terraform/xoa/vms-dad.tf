@@ -5,9 +5,9 @@ resource "macaddress" "dad_vm_mac" {
 
 resource "xenorchestra_cloud_config" "wsrv_user" {
   count = var.dad_vm_count
-  name  = "${var.dad_vm_name}${count.index}_user"
+  name  = var.dad_vm_name + (count.index + 1) + "_user"
   template = templatefile("${path.module}/templates/vms-dad/user-data.tftpl", {
-    hostname            = "${var.dad_vm_name}${count.index + 1}",
+    hostname            = var.dad_vm_name + (count.index + 1),
     timezone            = var.vm_timezone,
     standard_username   = var.standard_username,
     dad_username        = var.dad_username,
@@ -20,16 +20,16 @@ resource "xenorchestra_cloud_config" "wsrv_user" {
 
 resource "xenorchestra_cloud_config" "wsrv_net" {
   count = var.dad_vm_count
-  name  = "${var.dad_vm_name}${count.index}_net"
+  name  = var.dad_vm_name + (count.index + 1) + "_net"
   template = templatefile("${path.module}/templates/vms-dad/network-config.tftpl", {
-    hostname = "${var.dad_vm_name}${count.index + 1}"
+    hostname = var.dad_vm_name + (count.index + 1)
     mac      = macaddress.dad_vm_mac[count.index].address
   })
 }
 
 resource "xenorchestra_vm" "wsrv" {
   count            = var.dad_vm_count
-  name_label       = "${var.dad_vm_name}${count.index + 1}"
+  name_label       = var.dad_vm_name + (count.index + 1)
   name_description = "Managed by TF"
 
   template             = data.xenorchestra_template.debian12base.id
@@ -51,13 +51,13 @@ resource "xenorchestra_vm" "wsrv" {
   }
 
   disk {
-    name_label = "${var.dad_vm_name}${count.index + 1}_os"
+    name_label = var.dad_vm_name + count.index + 1 + "_os"
     sr_id      = data.xenorchestra_sr.xng1.id
     size       = 16 * 1024 * 1024 * 1024
   }
 
   disk {
-    name_label = "${var.dad_vm_name}${count.index + 1}_data"
+    name_label = var.dad_vm_name + count.index + "_data"
     sr_id      = data.xenorchestra_sr.xng1.id
     size       = 32 * 1024 * 1024 * 1024
   }
