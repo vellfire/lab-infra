@@ -30,7 +30,7 @@ pods:
       9199:9199
     env:
       NUT_EXPORTER_USERNAME: observer
-      NUT_EXPORTER_PASSWORD: "{{ lookup('ripplefcl.bwscache.secret', 'nut').value }}"
+      NUT_EXPORTER_PASSWORD: "{{ lookup('ripplefcl.bwscache.secret', 'nut_password').value }}"
       NUT_EXPORTER_SERVER: nut
       NUT_EXPORTER_PORT: "3493"
       NUT_EXPORTER_VARIABLES: >-

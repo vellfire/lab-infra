@@ -54,9 +54,9 @@ pods:
       - name: unifi-net
     env:
       MONGO_INITDB_ROOT_USERNAME: "root"
-      MONGO_INITDB_ROOT_PASSWORD: "{{ lookup('ripplefcl.bwscache.secret', 'unifi-db-password').value }}"
+      MONGO_INITDB_ROOT_PASSWORD: "{{ lookup('ripplefcl.bwscache.secret', 'unifi_db_password').value }}"
       MONGO_USER: "unifi"
-      MONGO_PASS: "{{ lookup('ripplefcl.bwscache.secret', 'unifi-db-password').value }}"
+      MONGO_PASS: "{{ lookup('ripplefcl.bwscache.secret', 'unifi_db_password').value }}"
       MONGO_DBNAME: "unifi"
       MONGO_AUTHSOURCE: "admin"
     volumes:
@@ -83,9 +83,9 @@ pods:
       PGID: "{{ ansible_facts.user_gid }}"
       TZ: "Europe/London"
       MONGO_INITDB_ROOT_USERNAME: "root"
-      MONGO_INITDB_ROOT_PASSWORD: "{{ lookup('ripplefcl.bwscache.secret', 'unifi-db-password').value }}"
+      MONGO_INITDB_ROOT_PASSWORD: "{{ lookup('ripplefcl.bwscache.secret', 'unifi_db_password').value }}"
       MONGO_USER: "unifi"
-      MONGO_PASS: "{{ lookup('ripplefcl.bwscache.secret', 'unifi-db-password').value }}"
+      MONGO_PASS: "{{ lookup('ripplefcl.bwscache.secret', 'unifi_db_password').value }}"
       MONGO_DBNAME: "unifi"
       MONGO_AUTHSOURCE: "admin"
       MONGO_HOST: "unifi-db"

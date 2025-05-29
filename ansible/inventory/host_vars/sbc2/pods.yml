@@ -15,12 +15,12 @@ pods:
       - 443:443
     user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
     env:
-      BUNNY_API_KEY: "{{ lookup('ripplefcl.bwscache.secret', 'bunny-api').value }}"
+      BUNNY_API_KEY: "{{ lookup('ripplefcl.bwscache.secret', 'bunny_api').value }}"
       BUNNY_POLLING_TIMEOUT: "600"
       BUNNY_POLLING_INTERVAL: "5"
       BUNNY_TTL: "3600"
-      CF_API_EMAIL: "{{ lookup('ripplefcl.bwscache.secret', 'cf-api-email').value }}"
-      CF_API_KEY: "{{ lookup('ripplefcl.bwscache.secret', 'cf-api-key').value }}"
+      CF_API_EMAIL: "{{ lookup('ripplefcl.bwscache.secret', 'cf_api_email').value }}"
+      CF_API_KEY: "{{ lookup('ripplefcl.bwscache.secret', 'cf_api_key').value }}"
     volumes:
       - "/etc/localtime:/etc/localtime:ro"
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
@@ -116,7 +116,7 @@ pods:
     user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
     env:
       POSTGRES_USER: "media"
-      POSTGRES_PASSWORD: "{{ lookup('ripplefcl.bwscache.secret', 'media-db-password').value }}"
+      POSTGRES_PASSWORD: "{{ lookup('ripplefcl.bwscache.secret', 'media_db_password').value }}"
     volumes:
       - "/opt/pods/media-db/pgdata:/var/lib/postgresql/data"
     directory: true
@@ -283,7 +283,7 @@ pods:
     networks:
       - name: proxy
     env:
-      DOMAIN: "{{ lookup('ripplefcl.bwscache.secret', 'vw-domain').value }}"
+      DOMAIN: "{{ lookup('ripplefcl.bwscache.secret', 'vw_domain').value }}"
     volumes:
       - "/opt/pods/vaultwarden/data:/data"
     directory: true
