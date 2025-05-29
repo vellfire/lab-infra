@@ -55,7 +55,7 @@ monitor_prometheus_config:
           - 'nas1:9100'
           - 'kvm1:9100'
           - 'dl1:9100'
-          - "{{ lookup('ripplefcl.bwscache.secret', 'vps1_domain').value }}:9100"
+          - "{{ lookup('ripplefcl.bwscache.secret', 'domain_vps1').value }}:9100"
 
   - job_name: "gravity"
     static_configs:

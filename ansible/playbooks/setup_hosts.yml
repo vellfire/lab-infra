@@ -54,7 +54,7 @@
       block:
         - name: Lookup NUT secret
           ansible.builtin.set_fact:
-            nut_client_password: "{{ lookup('ripplefcl.bwscache.secret', 'nut_password').value }}"
+            nut_client_password: "{{ lookup('ripplefcl.bwscache.secret', 'pass_nut').value }}"
           no_log: true
 
         - name: Install NUT client
@@ -100,8 +100,7 @@
       block:
         - name: Lookup monitor secrets
           ansible.builtin.set_fact:
-            mktxp_user: "{{ lookup('ripplefcl.bwscache.secret', 'mktxp_user').value }}"
-            mktxp_pass: "{{ lookup('ripplefcl.bwscache.secret', 'mktxp_pass').value }}"
+            mktxp_pass: "{{ lookup('ripplefcl.bwscache.secret', 'pass_mktxp').value }}"
           no_log: true
 
         - name: Include monitor role

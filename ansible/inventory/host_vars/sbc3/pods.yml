@@ -54,9 +54,9 @@ pods:
       - name: unifi-net
     env:
       MONGO_INITDB_ROOT_USERNAME: "root"
-      MONGO_INITDB_ROOT_PASSWORD: "{{ lookup('ripplefcl.bwscache.secret', 'unifi_db_password').value }}"
+      MONGO_INITDB_ROOT_PASSWORD: "{{ lookup('ripplefcl.bwscache.secret', 'pass_db_unifi').value }}"
       MONGO_USER: "unifi"
-      MONGO_PASS: "{{ lookup('ripplefcl.bwscache.secret', 'unifi_db_password').value }}"
+      MONGO_PASS: "{{ lookup('ripplefcl.bwscache.secret', 'pass_db_unifi').value }}"
       MONGO_DBNAME: "unifi"
       MONGO_AUTHSOURCE: "admin"
     volumes:
@@ -83,9 +83,9 @@ pods:
       PGID: "{{ ansible_facts.user_gid }}"
       TZ: "Europe/London"
       MONGO_INITDB_ROOT_USERNAME: "root"
-      MONGO_INITDB_ROOT_PASSWORD: "{{ lookup('ripplefcl.bwscache.secret', 'unifi_db_password').value }}"
+      MONGO_INITDB_ROOT_PASSWORD: "{{ lookup('ripplefcl.bwscache.secret', 'pass_db_unifi').value }}"
       MONGO_USER: "unifi"
-      MONGO_PASS: "{{ lookup('ripplefcl.bwscache.secret', 'unifi_db_password').value }}"
+      MONGO_PASS: "{{ lookup('ripplefcl.bwscache.secret', 'pass_db_unifi').value }}"
       MONGO_DBNAME: "unifi"
       MONGO_AUTHSOURCE: "admin"
       MONGO_HOST: "unifi-db"
@@ -106,7 +106,7 @@ pods:
       - 9130:9130
     env:
       UP_UNIFI_DEFAULT_USER: poller
-      UP_UNIFI_DEFAULT_PASS: "{{ lookup('ripplefcl.bwscache.secret', 'unpoller').value }}"
+      UP_UNIFI_DEFAULT_PASS: "{{ lookup('ripplefcl.bwscache.secret', 'pass_unpoller').value }}"
       UP_UNIFI_DYNAMIC: "false"
       UP_UNIFI_DEFAULT_URL: "https://unifi-app:8443"
       UP_UNIFI_DEFAULT_VERIFY_SSL: "false"

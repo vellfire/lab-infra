@@ -10,7 +10,7 @@ pods:
       - SYS_ADMIN
       - SYS_RAWIO
     env:
-      COLLECTOR_API_ENDPOINT: "{{ lookup('ripplefcl.bwscache.secret', 'scrutiny_domain').value }}"
+      COLLECTOR_API_ENDPOINT: "{{ lookup('ripplefcl.bwscache.secret', 'domain_scrutiny').value }}"
       COLLECTOR_HOST_ID: "{{ ansible_hostname }}"
       COLLECTOR_CRON_SCHEDULE: "0 * * * *"
       COLLECTOR_RUN_STARTUP: "true"

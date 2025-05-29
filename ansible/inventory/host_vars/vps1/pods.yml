@@ -10,7 +10,7 @@ pods:
       - "no-new-privileges:true"
     network_mode: host
     env:
-      BUNNY_API_KEY: "{{ lookup('ripplefcl.bwscache.secret', 'bunny_api').value }}"
+      BUNNY_API_KEY: "{{ lookup('ripplefcl.bwscache.secret', 'api_bunny').value }}"
     volumes:
       - "/etc/localtime:/etc/localtime:ro"
       - "/var/run/docker.sock:/var/run/docker.sock:ro"

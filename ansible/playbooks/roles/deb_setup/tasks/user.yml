@@ -22,7 +22,7 @@
   ansible.builtin.user:
     name: "{{ automation_user }}"
     uid: "{{ automation_uid }}"
-    password: "{{ lookup('ripplefcl.bwscache.secret', 'automation').value }}"
+    password: "{{ lookup('ripplefcl.bwscache.secret', 'pass_automation').value }}"
     shell: /bin/bash
     create_home: true
     groups:
