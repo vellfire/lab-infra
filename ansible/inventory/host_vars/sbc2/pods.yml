@@ -247,7 +247,7 @@ pods:
     directory: true
 
   - name: maintainerr
-    image: ghcr.io/jorenn92/maintainerr:2.16.0
+    image: ghcr.io/jorenn92/maintainerr:2.17.0
     restart: unless-stopped
     state: started
     networks:
