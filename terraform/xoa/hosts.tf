@@ -60,12 +60,12 @@ data "xenorchestra_sr" "m720q" {
   pool_id    = data.xenorchestra_pool.m720q.id
 }
 
-data "xenorchestra_network" "m720q" {
+data "xenorchestra_network" "m720q_vlan1" {
   name_label = "Pool-wide network associated with eth0"
   pool_id    = data.xenorchestra_pool.m720q.id
 }
 
-resource "xenorchestra_network" "m720qvlan50" {
+resource "xenorchestra_network" "m720q_vlan50" {
   name_label        = "v.5G"
   name_description  = "VLAN 50 - OPNsense LAN # tf-managed"
   pool_id           = data.xenorchestra_pool.m720q.id
@@ -74,7 +74,7 @@ resource "xenorchestra_network" "m720qvlan50" {
   vlan              = 50
 }
 
-resource "xenorchestra_network" "m720qlan240" {
+resource "xenorchestra_network" "m720q_vlan240" {
   name_label        = "v.Guest"
   name_description  = "VLAN 240 - Guest LAN # tf-managed"
   pool_id           = data.xenorchestra_pool.m720q.id
@@ -83,7 +83,7 @@ resource "xenorchestra_network" "m720qlan240" {
   vlan              = 240
 }
 
-resource "xenorchestra_network" "m720qvlan998" {
+resource "xenorchestra_network" "m720q_vlan998" {
   name_label        = "v.WAN1"
   name_description  = "VLAN 998 - WAN1 # tf-managed"
   pool_id           = data.xenorchestra_pool.m720q.id
@@ -92,12 +92,12 @@ resource "xenorchestra_network" "m720qvlan998" {
   vlan              = 998
 }
 
-data "xenorchestra_template" "debian12base" {
+data "xenorchestra_template" "m720q_debian12base" {
   name_label = "debian12base_template"
   pool_id    = data.xenorchestra_pool.m720q.id
 }
 
-data "xenorchestra_template" "opnsense_template" {
+data "xenorchestra_template" "m720q_opnsense_template" {
   name_label = "OPNsense_template"
   pool_id    = data.xenorchestra_pool.m720q.id
 }
