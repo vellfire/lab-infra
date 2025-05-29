@@ -227,6 +227,25 @@ pods:
       - "/opt/shares/pods/prowlarr:/backup"
     directory: true
 
+  - name: iplayarr
+    image: docker.io/nikorag/iplayarr:0.7.2
+    restart: unless-stopped
+    state: started
+    networks:
+      - name: media
+      - name: proxy
+    env:
+      PUID: "{{ ansible_facts.user_uid }}"
+      PGID: "{{ ansible_facts.user_gid }}"
+      TZ: "Europe/London"
+      DOWNLOAD_DIR: "/media/downloads/temp"
+      COMPLETE_DIR: "/media/downloads/complete"
+      HIDE_DONATE: "true"
+    volumes:
+      - "/opt/pods/iplayarr/config:/config"
+      - "/opt/shares/pods/media:/media"
+    directory: true
+
   - name: maintainerr
     image: ghcr.io/jorenn92/maintainerr:2.16.0
     restart: unless-stopped

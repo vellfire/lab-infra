@@ -6,5 +6,6 @@ pods:
     image: serjs/go-socks5-proxy:master
     restart: unless-stopped
     state: started
+    user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
     ports:
       - 1080:1080

@@ -10,13 +10,12 @@ unix:
         sbc[1:4]:
         vps[1:3]:
         nas1:
-        kvm1:
         dl1:
+          ansible_user: automation
     home:
       hosts:
         sbc[1:4]:
         nas1:
-        kvm1:
         dl1:
     remote:
       vps[1:3]:
