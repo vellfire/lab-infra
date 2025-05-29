@@ -16,7 +16,7 @@
     name: "{{ item.name }}"
     image: "{{ item.image }}"
     state: "{{ item.state | default('started') }}"
-    recreate: "{{ item.recreate | default('no') }}"
+    recreate: "{{ item.recreate | default('false') }}"
     restart_policy: "{{ item.restart | default('unless-stopped') }}"
     networks: "{{ item.networks | default(omit) }}"
     network_mode: "{{ item.network_mode | default(omit) }}"
