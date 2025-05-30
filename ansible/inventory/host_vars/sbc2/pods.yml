@@ -195,21 +195,17 @@ pods:
     directory: true
 
   - name: sabnzbd
-    image: ghcr.io/linuxserver/sabnzbd:4.5.1
+    image: ghcr.io/home-operations/sabnzbd:4.5.1
     restart: unless-stopped
     state: started
     networks:
       - name: media
       - name: proxy
-    env:
-      PUID: "{{ ansible_facts.user_uid }}"
-      PGID: "{{ ansible_facts.user_gid }}"
-      TZ: "Europe/London"
+    user:  "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
     volumes:
       - "/opt/pods/sabnzbd/config:/config"
       - "/opt/shares/pods/media:/media"
       - "/opt/shares/pods/sabnzbd:/backup"
-    directory: true
 
   - name: prowlarr
     image: ghcr.io/linuxserver/prowlarr:1.36.3
