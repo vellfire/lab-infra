@@ -27,7 +27,6 @@ pods:
       - "~/pods/traefik/config/traefik.yml:/traefik.yml:ro"
       - "~/pods/traefik/config/providers:/providers:ro"
       - "~/pods/traefik/config/acme.json:/acme.json"
-    directory: true
 
   - name: pma_ams
     image: public.ecr.aws/docker/library/phpmyadmin:5.2.2
@@ -73,7 +72,6 @@ pods:
       - name: scrutiny
     volumes:
       - "/opt/pods/scrutiny-db/data:/var/lib/influxdb2"
-    directory: true
 
   - name: scrutiny-web
     image: ghcr.io/analogj/scrutiny:v0.8.1-web
@@ -86,7 +84,6 @@ pods:
       SCRUTINY_WEB_INFLUXDB_HOST: scrutiny-db
     volumes:
       - "/opt/pods/scrutiny-web/config:/opt/scrutiny/config"
-    directory: true
 
   - name: scrutiny-collector
     image: ghcr.io/analogj/scrutiny:v0.8.1-collector
@@ -119,7 +116,6 @@ pods:
       POSTGRES_PASSWORD: "{{ lookup('ripplefcl.bwscache.secret', 'pass_db_media').value }}"
     volumes:
       - "/opt/pods/media-db/pgdata:/var/lib/postgresql/data"
-    directory: true
 
   - name: plex
     image: ghcr.io/linuxserver/plex:1.41.7
@@ -141,7 +137,6 @@ pods:
       - "/opt/pods/plex/transcode:/transcode"
       - "/opt/shares/pods/media:/media"
       - "/opt/shares/pods/plex:/backup"
-    directory: true
 
   - name: overseerr
     image: ghcr.io/sct/overseerr:07dc8d755a0e94d100ecd8b1e950e43da1c0a7dd
@@ -158,7 +153,6 @@ pods:
       TZ: "Europe/London"
     volumes:
       - "/opt/pods/overseerr/config:/app/config"
-    directory: true
 
   - name: sonarr
     image: ghcr.io/linuxserver/sonarr:4.0.14
@@ -175,7 +169,6 @@ pods:
       - "/opt/pods/sonarr/config:/config"
       - "/opt/shares/pods/media:/media"
       - "/opt/shares/pods/sonarr:/backup"
-    directory: true
 
   - name: radarr
     image: ghcr.io/linuxserver/radarr:5.25.0
@@ -192,7 +185,6 @@ pods:
       - "/opt/pods/radarr/config:/config"
       - "/opt/shares/pods/media:/media"
       - "/opt/shares/pods/radarr:/backup"
-    directory: true
 
   - name: sabnzbd
     image: ghcr.io/home-operations/sabnzbd:4.5.1
@@ -221,7 +213,6 @@ pods:
     volumes:
       - "/opt/pods/prowlarr/config:/config"
       - "/opt/shares/pods/prowlarr:/backup"
-    directory: true
 
   - name: iplayarr
     image: docker.io/nikorag/iplayarr:0.7.2
@@ -240,7 +231,6 @@ pods:
     volumes:
       - "/opt/pods/iplayarr/config:/config"
       - "/opt/shares/pods/media:/media"
-    directory: true
 
   - name: maintainerr
     image: ghcr.io/jorenn92/maintainerr:2.17.0
@@ -254,7 +244,6 @@ pods:
       TZ: "Europe/London"
     volumes:
       - "/opt/pods/maintainerr/config:/opt/data"
-    directory: true
 
   - name: tautulli
     image: ghcr.io/tautulli/tautulli:v2.15.2
@@ -270,7 +259,6 @@ pods:
     volumes:
       - "/opt/pods/tautulli/config:/config"
       - "/opt/shares/pods/tautulli/backup:/config/backups"
-    directory: true
 
   - name: vaultwarden
     image: ghcr.io/dani-garcia/vaultwarden:1.34.1
@@ -282,7 +270,6 @@ pods:
       DOMAIN: "{{ lookup('ripplefcl.bwscache.secret', 'domain_vw').value }}"
     volumes:
       - "/opt/pods/vaultwarden/data:/data"
-    directory: true
 
   - name: xoa
     image: ronivay/xen-orchestra:5.177.2
@@ -298,7 +285,6 @@ pods:
     volumes:
       - "/opt/pods/xoa/config:/var/lib/xo-server"
       - "/opt/pods/xoa/db:/var/lib/redis"
-    directory: true
 
 pod_networks:
   - name: proxy
