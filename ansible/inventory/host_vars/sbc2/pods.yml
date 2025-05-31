@@ -51,7 +51,7 @@ pods:
       PMA_PASSWORD: "{{ lookup('ripplefcl.bwscache.secret', 'pass_pma').value }}"
 
   - name: it-tools
-    image: ghcr.io/corentinth/it-tools:2024.10.22-7ca5933
+    image: ghcr.io/home-operations/it-tools:2024.10.22
     restart: unless-stopped
     state: started
     networks:
@@ -118,7 +118,7 @@ pods:
       - "/opt/pods/media-db/pgdata:/var/lib/postgresql/data"
 
   - name: plex
-    image: ghcr.io/linuxserver/plex:1.41.7
+    image: ghcr.io/home-operations/plex:1.41.7
     restart: unless-stopped
     state: started
     networks:
@@ -126,15 +126,13 @@ pods:
       - name: proxy
     ports:
       - 32400:32400
+    user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
     env:
-      PUID: "{{ ansible_facts.user_uid }}"
-      PGID: "{{ ansible_facts.user_gid }}"
-      TZ: "Europe/London"
-      VERSION: "latest"
-      # - PLEX_CLAIM=
+      PLEX_ADVERTISE_URL: "{{ lookup('ripplefcl.bwscache.secret', 'domain_plex').value }}"
+      PLEX_NO_AUTH_NETWORKS: "10.10.0.0/21, fd72:1432:d17a::/48"
+      # - PLEX_CLAIM_TOKEN=
     volumes:
       - "/opt/pods/plex/config:/config"
-      - "/opt/pods/plex/transcode:/transcode"
       - "/opt/shares/pods/media:/media"
       - "/opt/shares/pods/plex:/backup"
 
@@ -155,32 +153,26 @@ pods:
       - "/opt/pods/overseerr/config:/app/config"
 
   - name: sonarr
-    image: ghcr.io/linuxserver/sonarr:4.0.14
+    image: ghcr.io/home-operations/sonarr:4.0.14
     restart: unless-stopped
     state: started
     networks:
       - name: media
       - name: proxy
-    env:
-      PUID: "{{ ansible_facts.user_uid }}"
-      PGID: "{{ ansible_facts.user_gid }}"
-      TZ: "Europe/London"
+    user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
     volumes:
       - "/opt/pods/sonarr/config:/config"
       - "/opt/shares/pods/media:/media"
       - "/opt/shares/pods/sonarr:/backup"
 
   - name: radarr
-    image: ghcr.io/linuxserver/radarr:5.25.0
+    image: ghcr.io/home-operations/radarr:5.25.0
     restart: unless-stopped
     state: started
     networks:
       - name: media
       - name: proxy
-    env:
-      PUID: "{{ ansible_facts.user_uid }}"
-      PGID: "{{ ansible_facts.user_gid }}"
-      TZ: "Europe/London"
+    user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
     volumes:
       - "/opt/pods/radarr/config:/config"
       - "/opt/shares/pods/media:/media"
@@ -200,16 +192,13 @@ pods:
       - "/opt/shares/pods/sabnzbd:/backup"
 
   - name: prowlarr
-    image: ghcr.io/linuxserver/prowlarr:1.36.3
+    image: ghcr.io/home-operations/prowlarr:1.36.3
     restart: unless-stopped
     state: started
     networks:
       - name: media
       - name: proxy
-    env:
-      PUID: "{{ ansible_facts.user_uid }}"
-      PGID: "{{ ansible_facts.user_gid }}"
-      TZ: "Europe/London"
+    user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
     volumes:
       - "/opt/pods/prowlarr/config:/config"
       - "/opt/shares/pods/prowlarr:/backup"
@@ -246,16 +235,13 @@ pods:
       - "/opt/pods/maintainerr/config:/opt/data"
 
   - name: tautulli
-    image: ghcr.io/tautulli/tautulli:v2.15.2
+    image: ghcr.io/home-operations/tautulli:2.15.2
     restart: unless-stopped
     state: started
     networks:
       - name: media
       - name: proxy
-    env:
-      PUID: "{{ ansible_facts.user_uid }}"
-      PGID: "{{ ansible_facts.user_gid }}"
-      TZ: "Europe/London"
+    user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
     volumes:
       - "/opt/pods/tautulli/config:/config"
       - "/opt/shares/pods/tautulli/backup:/config/backups"

@@ -5,7 +5,6 @@ pods:
   - name: socks5-proxy
     image: serjs/go-socks5-proxy:master
     state: started
-    recreate: true
     restart: unless-stopped
     user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
     ports:
