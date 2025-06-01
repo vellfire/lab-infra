@@ -128,13 +128,16 @@ pods:
       - 32400:32400
     user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
     env:
-      PLEX_ADVERTISE_URL: "{{ lookup('ripplefcl.bwscache.secret', 'domain_plex').value }}"
+      PLEX_ADVERTISE_URL: "{{ 'https://' + lookup('ripplefcl.bwscache.secret', 'domain_plex').value }}"
       PLEX_NO_AUTH_NETWORKS: "10.10.0.0/21, fd72:1432:d17a::/48"
       # - PLEX_CLAIM_TOKEN=
     volumes:
       - "/opt/pods/plex/config:/config"
       - "/opt/shares/pods/media:/media"
       - "/opt/shares/pods/plex:/backup"
+    devices:
+      - "/dev/dri:/dev/dri"
+    recreate: true
 
   - name: overseerr
     image: ghcr.io/sct/overseerr:07dc8d755a0e94d100ecd8b1e950e43da1c0a7dd
