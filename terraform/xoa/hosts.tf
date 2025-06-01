@@ -49,7 +49,7 @@ data "xenorchestra_template" "opnsense_template" {
   name_label = "OPNsense_template"
   pool_id    = data.xenorchestra_pool.xng1.id
 }
-
+/*
 # xng2 - m720q
 data "xenorchestra_pool" "m720q" {
   name_label = "m720q"
@@ -101,3 +101,4 @@ data "xenorchestra_template" "m720q_opnsense_template" {
   name_label = "OPNsense_template"
   pool_id    = data.xenorchestra_pool.m720q.id
 }
+*/
