@@ -15,7 +15,7 @@ pods:
       - "/opt/pods/mqtt/log:/mosquitto/log"
 
   - name: z2m
-    image: ghcr.io/koenkk/zigbee2mqtt:2.3.0
+    image: ghcr.io/koenkk/zigbee2mqtt:2.4.0
     restart: unless-stopped
     state: started
     networks:
