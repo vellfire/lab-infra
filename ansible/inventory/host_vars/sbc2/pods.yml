@@ -137,7 +137,6 @@ pods:
       - "/opt/shares/pods/plex:/backup"
     devices:
       - "/dev/dri:/dev/dri"
-    recreate: true
 
   - name: overseerr
     image: ghcr.io/sct/overseerr:07dc8d755a0e94d100ecd8b1e950e43da1c0a7dd
