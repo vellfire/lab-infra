@@ -17,7 +17,6 @@ pods:
       - "~/pods/traefik/config/traefik.yml:/traefik.yml:ro"
       - "~/pods/traefik/config/providers:/providers:ro"
       - "~/pods/traefik/config/acme.json:/acme.json"
-    directory: true
 
   - name: immich-public-proxy
     image: ghcr.io/alangrainger/immich-public-proxy:1.11.1
@@ -26,3 +25,16 @@ pods:
     network_mode: host
     env:
       IMMICH_URL: "http://[fd72:1432:d17a:0:be24:11ff:fe8a:aa24]:2283"
+
+  - name: ping-api
+    image: ghcr.io/vellfire/ping-api:1.0.1
+    restart: unless-stopped
+    user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
+    network_mode: host
+    env:
+      PORT: "8912"
+      ENDPOINT: "172.16.110.2"
+
+pod_networks:
+  - name: proxy
+    driver: local
