@@ -194,7 +194,7 @@ pods:
       - "/opt/shares/pods/sabnzbd:/backup"
 
   - name: prowlarr
-    image: ghcr.io/home-operations/prowlarr:1.36.3
+    image: ghcr.io/home-operations/prowlarr:1.37.0
     restart: unless-stopped
     state: started
     networks:
