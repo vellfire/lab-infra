@@ -260,7 +260,7 @@ pods:
       - "/opt/pods/vaultwarden/data:/data"
 
   - name: xoa
-    image: ronivay/xen-orchestra:5.178.1
+    image: docker.io/ronivay/xen-orchestra:5.178.1
     restart: unless-stopped
     state: started
     capabilities:

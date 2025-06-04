@@ -67,27 +67,27 @@ resource "xenorchestra_vm" "vm_pet" {
   hvm_boot_firmware = "uefi"
 
   network {
-    network_id  = data.xenorchestra_network.xng1.id
+    network_id  = data.xenorchestra_network.m720q.id
     mac_address = macaddress.vm_pet_mac_vlan1[each.key].address
   }
 
   dynamic "network" {
     for_each = each.value.vlan50 ? [true] : [false]
     content {
-      network_id  = xenorchestra_network.xng1vlan50.id
+      network_id  = xenorchestra_network.m720qvlan50.id
       mac_address = macaddress.vm_pet_mac_vlan50[each.key].address
     }
   }
 
   disk {
-    name_label = "{each.key}_os"
-    sr_id      = data.xenorchestra_sr.xng1.id
+    name_label = "${each.key}_os"
+    sr_id      = data.xenorchestra_sr.m720q.id
     size       = 16 * 1024 * 1024 * 1024
   }
 
   disk {
-    name_label = "{each.key}_data"
-    sr_id      = data.xenorchestra_sr.xng1.id
+    name_label = "${each.key}_data"
+    sr_id      = data.xenorchestra_sr.m720q.id
     size       = 32 * 1024 * 1024 * 1024
   }
 }
@@ -109,23 +109,23 @@ resource "xenorchestra_vm" "opnsense_vm" {
   hvm_boot_firmware = "uefi"
 
   network {
-    network_id  = xenorchestra_network.xng1vlan998.id
+    network_id  = xenorchestra_network.m720qvlan998.id
     mac_address = "52:54:00:42:d6:52"
   }
 
   network {
-    network_id  = xenorchestra_network.xng1vlan50.id
+    network_id  = xenorchestra_network.m720qvlan50.id
     mac_address = "52:54:00:45:13:e3"
   }
 
   network {
-    network_id  = xenorchestra_network.xng1vlan240.id
+    network_id  = xenorchestra_network.m720qvlan240.id
     mac_address = "52:54:00:22:c1:30"
   }
 
   disk {
     name_label = "xnfw1"
-    sr_id      = data.xenorchestra_sr.xng1.id
+    sr_id      = data.xenorchestra_sr.m720q.id
     size       = 16 * 1024 * 1024 * 1024
   }
 }

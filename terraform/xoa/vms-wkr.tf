@@ -44,19 +44,19 @@ resource "xenorchestra_vm" "vm_wkr" {
   hvm_boot_firmware = "uefi"
 
   network {
-    network_id  = data.xenorchestra_network.xng1.id
+    network_id  = data.xenorchestra_network.m720q.id
     mac_address = macaddress.vm_wkr_mac_vlan1[count.index].address
   }
 
   disk {
     name_label = "${var.vm_wkr_name}${count.index + 1}_os"
-    sr_id      = data.xenorchestra_sr.xng1.id
+    sr_id      = data.xenorchestra_sr.m720q.id
     size       = 16 * 1024 * 1024 * 1024
   }
 
   disk {
     name_label = "${var.vm_wkr_name}${count.index + 1}_data"
-    sr_id      = data.xenorchestra_sr.xng1.id
+    sr_id      = data.xenorchestra_sr.m720q.id
     size       = 32 * 1024 * 1024 * 1024
   }
 }
