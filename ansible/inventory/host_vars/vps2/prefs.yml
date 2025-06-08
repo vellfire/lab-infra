@@ -1,5 +1,5 @@
 ---
 req_nut: false
 req_docker: false
-req_virt: false
+req_libvirt: false
 req_monitor: true

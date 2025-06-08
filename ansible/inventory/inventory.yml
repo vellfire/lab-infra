@@ -13,6 +13,7 @@ unix:
         nas1:
         dl1:
           ansible_user: automation
+        kvm1:
 
     home:
       hosts:
@@ -23,8 +24,3 @@ unix:
     remote:
       hosts:
         vps[1:3]:
-
-    xen:
-      hosts:
-        xng[1:2]:
-          ansible_user: root

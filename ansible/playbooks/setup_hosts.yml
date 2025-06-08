@@ -114,10 +114,10 @@
 
     - name: Setup libvirt
       when:
-        - req_virt | default(false)
+        - req_libvirt | default(false)
         - ansible_os_family == 'Debian'
       ansible.builtin.include_role:
-        name: deb_virt
+        name: deb_libvirt
         apply:
           become: true
           tags:
