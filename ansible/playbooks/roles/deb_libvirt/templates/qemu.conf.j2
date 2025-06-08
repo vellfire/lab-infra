@@ -490,7 +490,7 @@ spice_listen = "0.0.0.0"
 # a special value; security_driver can be set to that value in
 # isolation, but it cannot appear in a list of drivers.
 #
-security_driver = "{{ deb_virt_security_driver | default('apparmor') }}"
+security_driver = "{{ deb_libvirt_security_driver | default('apparmor') }}"
 
 # If set to non-zero, then the default security labeling
 # will make guests confined. If set to zero, then guests
@@ -516,11 +516,11 @@ security_driver = "{{ deb_virt_security_driver | default('apparmor') }}"
 #       user = "+0"     # Super user (uid=0)
 #       user = "100"    # A user named "100" or a user with uid=100
 #
-user = "{{ deb_virt_uid | default('libvirt-qemu') }}"
+user = "{{ deb_libvirt_uid | default('libvirt-qemu') }}"
 
 # The group for QEMU processes run by the system instance. It can be
 # specified in a similar way to user.
-group = "{{ deb_virt_gid | default('libvirt-qemu') }}"
+group = "{{ deb_libvirt_gid | default('libvirt-qemu') }}"
 
 # Whether libvirt should dynamically change file ownership
 # to match the configured user/group above. Defaults to 1.
@@ -650,7 +650,7 @@ group = "{{ deb_virt_gid | default('libvirt-qemu') }}"
 # is used to create <source type='bridge'> interfaces when libvirtd is
 # running unprivileged.  libvirt invokes the helper directly, instead
 # of using "-netdev bridge", for security reasons.
-bridge_helper = "{{ deb_virt_bridge_helper | default('/usr/libexec/qemu-bridge-helper') }}"
+bridge_helper = "{{ deb_libvirt_bridge_helper | default('/usr/libexec/qemu-bridge-helper') }}"
 
 
 # If enabled, libvirt will have QEMU set its process name to

@@ -18,12 +18,12 @@
 
 - name: Configure libvirt network
   ansible.builtin.include_tasks: network.yml
-  loop: "{{ deb_virt_net_nics }}"
+  loop: "{{ deb_libvirt_net_nics }}"
   loop_control:
     label: "{{ item.name }}"
 
 - name: Configure libvirt storage
   ansible.builtin.include_tasks: storage.yml
-  loop: "{{ deb_virt_storage_pools }}"
+  loop: "{{ deb_libvirt_storage_pools }}"
   loop_control:
     label: "{{ item.name }}"
