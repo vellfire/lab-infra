@@ -155,7 +155,7 @@ pods:
       - "/opt/pods/overseerr/config:/app/config"
 
   - name: sonarr
-    image: ghcr.io/home-operations/sonarr:4.0.14
+    image: ghcr.io/home-operations/sonarr:4.0.15
     restart: unless-stopped
     state: started
     networks:
