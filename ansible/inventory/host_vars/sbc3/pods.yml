@@ -29,7 +29,7 @@ pods:
       - "/opt/pods/z2m/config:/app/data"
 
   - name: hass
-    image: ghcr.io/home-operations/home-assistant:2025.6.0
+    image: ghcr.io/home-operations/home-assistant:2025.6.1
     restart: unless-stopped
     state: started
     networks:
