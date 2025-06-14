@@ -48,9 +48,7 @@ monitor_prometheus_config:
     scheme: http
     static_configs:
       - targets:
-          - 'sbc1:9100'
           - 'sbc2:9100'
-          - 'sbc3:9100'
           - 'sbc4:9100'
           - 'nas1:9100'
           - 'kvm1:9100'
@@ -62,20 +60,10 @@ monitor_prometheus_config:
       - targets:
           - 10.10.0.3:8009
 
-  - job_name: "nut-exporter"
-    metrics_path: "/ups_metrics"
-    scheme: http
-    static_configs:
-      - targets: ["sbc1:9199"]
-        labels:
-          ups: "primary"
-    params:
-      ups: ["will-office-eaton"]
-
   - job_name: "unpoller"
     scheme: http
     static_configs:
-      - targets: ["sbc3:9130"]
+      - targets: ["sbc4:9130"]
 
   - job_name: "mktxp"
     static_configs:

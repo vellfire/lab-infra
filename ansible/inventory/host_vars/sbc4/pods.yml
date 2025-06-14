@@ -37,6 +37,76 @@ pods:
       - /dev/sdb
       - /dev/sdc
 
+  - name: unifi-db
+    image: public.ecr.aws/docker/library/mongo:7.0.0
+    restart: unless-stopped
+    state: started
+    networks:
+      - name: unifi-net
+    env:
+      MONGO_INITDB_ROOT_USERNAME: "root"
+      MONGO_INITDB_ROOT_PASSWORD: "{{ lookup('ripplefcl.bwscache.secret', 'pass_db_unifi').value }}"
+      MONGO_USER: "unifi"
+      MONGO_PASS: "{{ lookup('ripplefcl.bwscache.secret', 'pass_db_unifi').value }}"
+      MONGO_DBNAME: "unifi"
+      MONGO_AUTHSOURCE: "admin"
+    volumes:
+      - "/opt/pods/unifi/db:/data/db"
+      - "/opt/pods/unifi/init-mongo.sh:/docker-entrypoint-initdb.d/init-mongo.sh:ro"
+
+  - name: unifi-app
+    image: ghcr.io/linuxserver/unifi-network-application:9.1.120
+    restart: unless-stopped
+    state: started
+    networks:
+      - name: unifi-net
+    ports:
+      - 8080:8080
+      - 8443:8443
+      - 8880:8880
+      - 8843:8843
+      - 27117:27117
+      - 3478:3478/udp
+      - 10001:10001/udp
+    env:
+      PUID: "{{ ansible_facts.user_uid }}"
+      PGID: "{{ ansible_facts.user_gid }}"
+      TZ: "Europe/London"
+      MONGO_INITDB_ROOT_USERNAME: "root"
+      MONGO_INITDB_ROOT_PASSWORD: "{{ lookup('ripplefcl.bwscache.secret', 'pass_db_unifi').value }}"
+      MONGO_USER: "unifi"
+      MONGO_PASS: "{{ lookup('ripplefcl.bwscache.secret', 'pass_db_unifi').value }}"
+      MONGO_DBNAME: "unifi"
+      MONGO_AUTHSOURCE: "admin"
+      MONGO_HOST: "unifi-db"
+      MONGO_PORT: "27017"
+      MEM_STARTUP: "512"
+      MEM_LIMIT: "1024"
+    volumes:
+      - "/opt/pods/unifi/app:/config"
+
+  - name: unpoller
+    image: ghcr.io/unpoller/unpoller:v2.15.3
+    restart: unless-stopped
+    state: started
+    networks:
+      - name: unifi-net
+    ports:
+      - 9130:9130
+    env:
+      UP_UNIFI_DEFAULT_USER: poller
+      UP_UNIFI_DEFAULT_PASS: "{{ lookup('ripplefcl.bwscache.secret', 'pass_unpoller').value }}"
+      UP_UNIFI_DYNAMIC: "false"
+      UP_UNIFI_DEFAULT_URL: "https://unifi-app:8443"
+      UP_UNIFI_DEFAULT_VERIFY_SSL: "false"
+      UP_UNIFI_DEFAULT_SAVE_SITES: "true"
+      UP_INFLUXDB_DISABLE: "true"
+      UP_POLLER_DEBUG: "true"
+
 pod_volumes:
   - name: gravity_data
+    driver: local
+
+pod_networks:
+  - name: unifi-net
     driver: local
