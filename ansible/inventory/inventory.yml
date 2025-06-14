@@ -8,7 +8,8 @@ unix:
 
     linux:
       hosts:
-        sbc[2:4]:
+        sbc2:
+        sbc4:
         vps[1:3]:
         nas1:
         dl1:
@@ -17,9 +18,11 @@ unix:
 
     home:
       hosts:
-        sbc[2:4]:
+        sbc2:
+        sbc4:
         nas1:
         dl1:
+        kvm1:
 
     remote:
       hosts:
