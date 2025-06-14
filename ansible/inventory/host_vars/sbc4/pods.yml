@@ -18,6 +18,25 @@ pods:
     volumes:
       gravity_data:/data
 
+  - name: scrutiny-collector
+    image: ghcr.io/analogj/scrutiny:v0.8.1-collector
+    restart: unless-stopped
+    state: started
+    capabilities:
+      - SYS_ADMIN
+      - SYS_RAWIO
+    env:
+      COLLECTOR_API_ENDPOINT: "{{ lookup('ripplefcl.bwscache.secret', 'domain_scrutiny').value }}"
+      COLLECTOR_HOST_ID: "{{ ansible_hostname }}"
+      COLLECTOR_CRON_SCHEDULE: "0 * * * *"
+      COLLECTOR_RUN_STARTUP: "true"
+    volumes:
+      - "/run/udev:/run/udev:ro"
+    devices:
+      - /dev/sda
+      - /dev/sdb
+      - /dev/sdc
+
 pod_volumes:
   - name: gravity_data
     driver: local

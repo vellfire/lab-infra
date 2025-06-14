@@ -17,8 +17,6 @@ pods:
     volumes:
       - "/run/udev:/run/udev:ro"
     devices:
-      - /dev/nvme0
-      - /dev/nvme1
       - /dev/sda
       - /dev/sdb
       - /dev/sdc
