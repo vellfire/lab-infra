@@ -104,7 +104,7 @@ pods:
       UP_POLLER_DEBUG: "true"
 
   - name: mariadb_ams
-    image: public.ecr.aws/docker/library/mariadb:10.5.23
+    image: public.ecr.aws/docker/library/mariadb:10.11.13
     restart: unless-stopped
     state: started
     ports:
@@ -115,7 +115,7 @@ pods:
       - "/opt/pods/mariadb_ams/data:/var/lib/mysql"
 
   - name: mariadb_bnt
-    image: public.ecr.aws/docker/library/mariadb:10.5.23
+    image: public.ecr.aws/docker/library/mariadb:10.11.13
     restart: unless-stopped
     state: started
     ports:
