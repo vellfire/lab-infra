@@ -103,6 +103,28 @@ pods:
       UP_INFLUXDB_DISABLE: "true"
       UP_POLLER_DEBUG: "true"
 
+  - name: mariadb_ams
+    image: public.ecr.aws/docker/library/mariadb:10.5.23
+    restart: unless-stopped
+    state: started
+    ports:
+      - 15000:3306
+    env:
+      MARIADB_ROOT_PASSWORD: "{{ lookup('ripplefcl.bwscache.secret', 'pass_db_root').value }}"
+    volumes:
+      - "/opt/pods/mariadb_ams/data:/var/lib/mysql"
+
+  - name: mariadb_bnt
+    image: public.ecr.aws/docker/library/mariadb:10.5.23
+    restart: unless-stopped
+    state: started
+    ports:
+      - 15001:3306
+    env:
+      MARIADB_ROOT_PASSWORD: "{{ lookup('ripplefcl.bwscache.secret', 'pass_db_root').value }}"
+    volumes:
+      - "/opt/pods/mariadb_bnt/data:/var/lib/mysql"
+
 pod_volumes:
   - name: gravity_data
     driver: local
