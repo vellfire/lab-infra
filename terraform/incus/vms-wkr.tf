@@ -17,7 +17,7 @@ resource "incus_instance" "vm_wkr" {
   count = var.vm_wkr_count
   name = "${var.vm_wkr_name}${count.index + 1}"
   type = "virtual-machine"
-  image = incus_image.debian-stable.fingerprint
+  image = incus_image.ubuntu-stable.fingerprint
   ephemeral = false
 
   wait_for {

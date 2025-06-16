@@ -18,10 +18,10 @@ import {
   id = "default/nvme0"
 }
 
-resource "incus_image" "debian-stable" {
+resource "incus_image" "ubuntu-stable" {
   source_image = {
     remote = "images"
-    name = "debian/13/cloud"
+    name = "ubuntu/24.04/cloud"
     type = "virtual-machine"
     architecture = "x86_64"
   }

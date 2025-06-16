@@ -1,0 +1,31 @@
+#cloud-config
+"ethernets":
+  "enp5s0":
+    "match":
+      "macaddress": "${vlan1_mac}"
+    "accept-ra": true
+    "dhcp4": true
+    "dhcp4-overrides":
+      "hostname": "${name}"
+      "send-hostname": true
+      "use-dns": true
+      "use-domains": true
+      "use-ntp": true
+      "use-routes": true
+    "dhcp6": false
+%{ if vlan50 }
+  "enp6s0":
+    "match":
+      "macaddress": "${vlan50_mac}"
+    "accept-ra": false
+    "dhcp4": false
+    "dhcp4-overrides":
+      "hostname": "${name}"
+      "send-hostname": true
+      "use-dns": true
+      "use-domains": true
+      "use-ntp": true
+      "use-routes": true
+    "dhcp6": false
+%{ endif }
+"version": 2

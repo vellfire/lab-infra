@@ -37,7 +37,7 @@ variable "vm_wkr_name" {
 variable "vm_wkr_count" {
   description = "Number of vms"
   type        = number
-  default     = 3
+  default     = 5
 }
 /*
 variable "vm_dad_name" {
