@@ -55,7 +55,7 @@ pods:
       - "/opt/pods/unifi/init-mongo.sh:/docker-entrypoint-initdb.d/init-mongo.sh:ro"
 
   - name: unifi-app
-    image: ghcr.io/linuxserver/unifi-network-application:9.1.120
+    image: ghcr.io/linuxserver/unifi-network-application:9.2.87
     restart: unless-stopped
     state: started
     networks:
