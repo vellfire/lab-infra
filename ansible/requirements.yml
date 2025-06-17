@@ -7,7 +7,7 @@ collections:
   - name: community.docker
     version: 4.6.1
   - name: community.general
-    version: 10.7.1
+    version: 11.0.0
   - name: prometheus.prometheus
     version: 0.27.0
   - name: community.libvirt
