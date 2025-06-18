@@ -73,7 +73,7 @@ monitor_pods_def:
       - "{{ monitor_pods_path }}/loki/data:/loki"
 
   - name: promtail
-    image: grafana/promtail:3.4.1
+    image: grafana/promtail:3.5.1
     container_name: promtail
     restart: unless-stopped
     state: started
