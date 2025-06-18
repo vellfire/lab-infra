@@ -2,4 +2,4 @@
 req_nut: true
 req_docker: false
 req_libvirt: false
-req_monitor: false
+req_monitor: true
