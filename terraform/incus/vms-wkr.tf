@@ -37,9 +37,10 @@ resource "incus_instance" "vm_wkr" {
         name                = "${var.vm_wkr_name}${count.index + 1}",
         timezone            = var.vm_timezone,
         standard_username   = var.standard_username,
+        standard_ssh_key    = var.standard_ssh_key,
         automation_username = var.automation_username,
         automation_uid      = var.automation_uid,
-        ssh_keys            = var.git_ssh_keys
+        automation_ssh_key  = var.automation_ssh_key
       }
     )
     "cloud-init.network-config" = templatefile(

@@ -12,19 +12,19 @@ users:
 - name: ${standard_username}
   shell: "/bin/bash"
   ssh_authorized_keys:
-    - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDoqdhIBCfewaqLTKaWt0fF2oNPgR430pcpl4PkNWJ3w
-    - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHYh+rz24+HqkPsgTG98pcEIoKeSUbidGPSfJRDs+DVn
-    - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPHxhWVzK0D0jpASF/TXwO7KtmnA95e9OFy55W6miLXd
+    - ${standard_ssh_key}
+    - ${automation_ssh_key}
   sudo: "ALL=(ALL) NOPASSWD:ALL"
 - name: ${automation_username}
   shell: "/bin/bash"
   ssh_authorized_keys:
-    - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDoqdhIBCfewaqLTKaWt0fF2oNPgR430pcpl4PkNWJ3w
-    - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPHxhWVzK0D0jpASF/TXwO7KtmnA95e9OFy55W6miLXd
+    - ${standard_ssh_key}
+    - ${automation_ssh_key}
   sudo: "ALL=(ALL) NOPASSWD:ALL"
   uid: ${automation_uid}
 runcmd:
-  - [ systemctl, enable, --now, ssh.service ]
+  - systemctl enable ssh.service
+  - systemctl start ssh.service
 disk_setup:
   "/dev/sdb": {"layout": true, "overwrite": false, "table_type": "gpt"}
 fs_setup:

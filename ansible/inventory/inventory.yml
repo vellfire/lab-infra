@@ -17,6 +17,10 @@ unix:
         kvm1:
         vwkr[1:5]:
           ansible_user: automation
+        vws[1:2]:
+          ansible_user: automation
+        vdb1:
+          ansible_user: automation
 
     home:
       hosts:
@@ -27,6 +31,10 @@ unix:
           ansible_user: automation
         kvm1:
         vwkr[1:5]:
+          ansible_user: automation
+        vws[1:2]:
+          ansible_user: automation
+        vdb1:
           ansible_user: automation
 
     remote:

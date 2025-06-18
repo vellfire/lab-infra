@@ -1,28 +1,22 @@
-variable "vm_pet_cfg" {
+variable "vm_dad_cfg" {
   type = map(object({
     name   = string
     cpus   = number
     memory = string
-    vlan50 = bool
   }))
   default = {
-    "dl1"  = { name = "dl1", cpus = 2, memory = "2GiB", vlan50 = true }
-    "vdb1" = { name = "vdb1", cpus = 2, memory = "8GiB", vlan50 = false }
+    "vws1" = { name = "vws1", cpus = 2, memory = "2GiB" }
+    "vws2" = { name = "vws2", cpus = 2, memory = "2GiB" }
   }
 }
 
-resource "macaddress" "vm_pet_mac_vlan1" {
-  for_each = var.vm_pet_cfg
+resource "macaddress" "vm_dad_mac_vlan1" {
+  for_each = var.vm_dad_cfg
   prefix   = [16, 102, 106]
 }
 
-resource "macaddress" "vm_pet_mac_vlan50" {
-  for_each = var.vm_pet_cfg
-  prefix   = [16, 102, 106]
-}
-
-resource "incus_storage_volume" "vm_pet_data" {
-  for_each     = var.vm_pet_cfg
+resource "incus_storage_volume" "vm_dad_data" {
+  for_each     = var.vm_dad_cfg
   name         = "${each.value.name}_data"
   pool         = incus_storage_pool.nvme1.name
   content_type = "block"
@@ -31,8 +25,8 @@ resource "incus_storage_volume" "vm_pet_data" {
   }
 }
 
-resource "incus_instance" "vm_pet" {
-  for_each  = var.vm_pet_cfg
+resource "incus_instance" "vm_dad" {
+  for_each  = var.vm_dad_cfg
   name      = each.value.name
   type      = "virtual-machine"
   image     = incus_image.ubuntu-stable.fingerprint
@@ -50,24 +44,25 @@ resource "incus_instance" "vm_pet" {
     "security.secureboot" = false
 
     "cloud-init.user-data" = templatefile(
-      "${path.module}/templates/vms-pet/user-data.tftpl",
+      "${path.module}/templates/vms-dad/user-data.tftpl",
       {
         name                = each.value.name,
         timezone            = var.vm_timezone,
         standard_username   = var.standard_username,
-        standard_ssh_key    = var.standard_ssh_key,
+        standard_ssh_key    = var.standard_ssh_key
+        dad_username        = var.dad_username,
+        dad_uid             = var.dad_uid
+        dad_ssh_key         = var.dad_ssh_key,
         automation_username = var.automation_username,
         automation_uid      = var.automation_uid,
         automation_ssh_key  = var.automation_ssh_key
       }
     )
     "cloud-init.network-config" = templatefile(
-      "${path.module}/templates/vms-pet/network-config.tftpl",
+      "${path.module}/templates/vms-dad/network-config.tftpl",
       {
-        name       = each.value.name,
-        vlan1_mac  = macaddress.vm_pet_mac_vlan1[each.key].address,
-        vlan50_mac = macaddress.vm_pet_mac_vlan50[each.key].address,
-        vlan50     = each.value.vlan50
+        name      = each.value.name,
+        vlan1_mac = macaddress.vm_dad_mac_vlan1[each.key].address,
     })
   }
 
@@ -87,7 +82,7 @@ resource "incus_instance" "vm_pet" {
     type = "disk"
     properties = {
       "pool"   = "nvme1"
-      "source" = incus_storage_volume.vm_pet_data[each.key].name
+      "source" = incus_storage_volume.vm_dad_data[each.key].name
     }
   }
 
@@ -98,20 +93,7 @@ resource "incus_instance" "vm_pet" {
     properties = {
       nictype = "bridged"
       parent  = "br0"
-      hwaddr  = macaddress.vm_pet_mac_vlan1[each.key].address
-    }
-  }
-
-  dynamic "device" {
-    for_each = each.value.vlan50 ? [true] : [false]
-    content {
-      name = "incusbr50"
-      type = "nic"
-
-      properties = {
-        network = "incusbr50"
-        hwaddr  = macaddress.vm_pet_mac_vlan50[each.key].address
-      }
+      hwaddr  = macaddress.vm_dad_mac_vlan1[each.key].address
     }
   }
 }

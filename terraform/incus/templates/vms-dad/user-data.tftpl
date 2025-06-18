@@ -22,6 +22,12 @@ users:
     - ${automation_ssh_key}
   sudo: "ALL=(ALL) NOPASSWD:ALL"
   uid: ${automation_uid}
+- name: ${dad_username}
+  shell: "/bin/bash"
+  ssh_authorized_keys:
+    - ${dad_ssh_key}
+    - ${standard_ssh_key}
+  uid: ${dad_uid}
 runcmd:
   - systemctl enable ssh.service
   - systemctl start ssh.service
