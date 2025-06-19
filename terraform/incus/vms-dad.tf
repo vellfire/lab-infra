@@ -91,8 +91,7 @@ resource "incus_instance" "vm_dad" {
     type = "nic"
 
     properties = {
-      nictype = "bridged"
-      parent  = "br0"
+      network = "incusbr0"
       hwaddr  = macaddress.vm_dad_mac_vlan1[each.key].address
     }
   }

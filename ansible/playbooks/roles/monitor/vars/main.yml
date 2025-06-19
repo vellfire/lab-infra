@@ -102,6 +102,7 @@ monitor_prometheus_config:
           - 'vwkr4:9100'
           - 'vwkr5:9100'
           - 'vdb1:9100'
+          - 'homeassistant:9100'
           - "{{ lookup('ripplefcl.bwscache.secret', 'domain_vps1').value }}:9100"
 
   - job_name: "gravity"
