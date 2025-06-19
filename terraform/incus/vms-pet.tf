@@ -103,7 +103,7 @@ resource "incus_instance" "vm_pet" {
   }
 
   dynamic "device" {
-    for_each = each.value.vlan50 ? [true] : [false]
+    for_each = each.value.vlan50 ? [1] : []
     content {
       name = "incusbr50"
       type = "nic"
