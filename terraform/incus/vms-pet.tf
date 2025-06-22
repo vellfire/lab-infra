@@ -48,6 +48,7 @@ resource "incus_instance" "vm_pet" {
 
     "agent.nic_config"    = true
     "security.secureboot" = false
+    "boot.autostart" = true
 
     "cloud-init.user-data" = templatefile(
       "${path.module}/templates/vms-pet/user-data.tftpl",

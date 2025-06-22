@@ -30,6 +30,7 @@ resource "incus_instance" "vm_wkr" {
 
     "agent.nic_config" = true
     "security.secureboot" = false
+    "boot.autostart" = true
 
     "cloud-init.user-data" = templatefile(
       "${path.module}/templates/vms-wkr/user-data.tftpl",

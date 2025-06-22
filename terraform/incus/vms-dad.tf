@@ -5,8 +5,7 @@ variable "vm_dad_cfg" {
     memory = string
   }))
   default = {
-    "vws1" = { name = "vws1", cpus = 2, memory = "2GiB" }
-    "vws2" = { name = "vws2", cpus = 2, memory = "2GiB" }
+    "vws1" = { name = "vws1", cpus = 4, memory = "4GiB" }
   }
 }
 
@@ -42,6 +41,7 @@ resource "incus_instance" "vm_dad" {
 
     "agent.nic_config"    = true
     "security.secureboot" = false
+    "boot.autostart" = true
 
     "cloud-init.user-data" = templatefile(
       "${path.module}/templates/vms-dad/user-data.tftpl",
