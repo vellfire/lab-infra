@@ -122,7 +122,7 @@ monitor_prometheus_config:
   - job_name: mysql
     metrics_path: /probe
     static_configs:
-      - targets: ["10.10.0.3:15000"]
+      - targets: ["10.10.0.185:15000"]
     relabel_configs:
       - source_labels: [__address__]
         target_label: __param_target

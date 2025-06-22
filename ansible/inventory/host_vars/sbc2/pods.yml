@@ -35,7 +35,7 @@ pods:
     networks:
       - name: proxy
     env:
-      PMA_HOST: sbc4:15000
+      PMA_HOST: vdb1:15000
       PMA_USER: "pma"
       PMA_PASSWORD: "{{ lookup('ripplefcl.bwscache.secret', 'pass_pma').value }}"
 
@@ -46,7 +46,7 @@ pods:
     networks:
       - name: proxy
     env:
-      PMA_HOST: sbc4:15001
+      PMA_HOST: vdb1:15001
       PMA_USER: "pma"
       PMA_PASSWORD: "{{ lookup('ripplefcl.bwscache.secret', 'pass_pma').value }}"
 

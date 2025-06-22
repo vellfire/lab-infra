@@ -1,0 +1,26 @@
+---
+default_host_ip: ""
+
+pods:
+  - name: mariadb_ams
+    image: public.ecr.aws/docker/library/mariadb:10.5.23
+    restart: unless-stopped
+    state: started
+    ports:
+      - 15000:3306
+    env:
+      MARIADB_ROOT_PASSWORD: "{{ lookup('ripplefcl.bwscache.secret', 'pass_db_root').value }}"
+    volumes:
+      - "/opt/pods/mariadb_ams/data:/var/lib/mysql"
+      - "/opt/pods/mariadb_ams/config/my.cnf:/etc/mysql/my.cnf"
+
+  - name: mariadb_bnt
+    image: public.ecr.aws/docker/library/mariadb:10.5.23
+    restart: unless-stopped
+    state: started
+    ports:
+      - 15001:3306
+    env:
+      MARIADB_ROOT_PASSWORD: "{{ lookup('ripplefcl.bwscache.secret', 'pass_db_root').value }}"
+    volumes:
+      - "/opt/pods/mariadb_bnt/data:/var/lib/mysql"
