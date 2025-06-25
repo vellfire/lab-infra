@@ -37,6 +37,10 @@ unix:
         vdb1:
           ansible_user: automation
 
+    k8s-home:
+      vwkr[1:5]:
+        ansible_user: automation
+
     remote:
       hosts:
         vps[1:3]:
