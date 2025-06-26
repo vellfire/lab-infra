@@ -15,7 +15,7 @@ unix:
         dl1:
           ansible_user: automation
         kvm1:
-        vwkr[1:5]:
+        vwkr[1:3]:
           ansible_user: automation
         vws1:
           ansible_user: automation
@@ -30,7 +30,7 @@ unix:
         dl1:
           ansible_user: automation
         kvm1:
-        vwkr[1:5]:
+        vwkr[1:3]:
           ansible_user: automation
         vws1:
           ansible_user: automation
@@ -38,8 +38,9 @@ unix:
           ansible_user: automation
 
     k8s-home:
-      vwkr[1:5]:
-        ansible_user: automation
+      hosts:
+        vwkr[1:3]:
+          ansible_user: automation
 
     remote:
       hosts:
