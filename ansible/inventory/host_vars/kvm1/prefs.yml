@@ -3,3 +3,5 @@ req_nut: true
 req_docker: false
 req_libvirt: false
 req_monitor: true
+
+nut_client_ups: will-office-eaton
