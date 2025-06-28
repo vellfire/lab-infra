@@ -21,3 +21,15 @@ pods:
       - /dev/sdb
       - /dev/sdc
       - /dev/sdd
+
+  - name: netboot
+    image: ghcr.io/netbootxyz/netbootxyz:0.7.6-nbxyz4
+    restart: unless-stopped
+    state: started
+    ports:
+      - 3000:3000
+      - 69:69/udp
+      - 8900:80
+    volumes:
+      - "/tank/pods/netbootxyz/config:/config"
+      - "/tank/pods/netbootxyz/assets:/assets"

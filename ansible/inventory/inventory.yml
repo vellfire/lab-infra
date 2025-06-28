@@ -37,7 +37,7 @@ unix:
         vdb1:
           ansible_user: automation
 
-    k8s-home:
+    k8s_home:
       hosts:
         vwkr[1:3]:
           ansible_user: automation

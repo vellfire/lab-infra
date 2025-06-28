@@ -113,7 +113,7 @@ pods:
   - name: mariadb_ams
     image: public.ecr.aws/docker/library/mariadb:10.5.23
     restart: unless-stopped
-    state: stopped
+    state: absent
     ports:
       - 15000:3306
     env:
@@ -125,7 +125,7 @@ pods:
   - name: mariadb_bnt
     image: public.ecr.aws/docker/library/mariadb:10.5.23
     restart: unless-stopped
-    state: stopped
+    state: absent
     ports:
       - 15001:3306
     env:
