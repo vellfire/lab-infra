@@ -208,7 +208,7 @@ pods:
   - name: iplayarr
     image: docker.io/nikorag/iplayarr:0.7.2
     restart: unless-stopped
-    state: started
+    state: absent
     networks:
       - name: media
       - name: proxy
@@ -254,25 +254,11 @@ pods:
     state: started
     networks:
       - name: proxy
+    user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
     env:
-      DOMAIN: "{{ lookup('ripplefcl.bwscache.secret', 'domain_vw').value }}"
+      DOMAIN: "{{ lookup('ripplefcl.bwscache.secret', 'vw_domain').value }}"
     volumes:
       - "/opt/pods/vaultwarden/data:/data"
-
-  - name: xoa
-    image: docker.io/ronivay/xen-orchestra:5.180.0
-    restart: unless-stopped
-    state: started
-    capabilities:
-      - SYS_ADMIN
-      - DAC_READ_SEARCH
-    security_opt:
-      - "apparmor:unconfined"
-    networks:
-      - name: proxy
-    volumes:
-      - "/opt/pods/xoa/config:/var/lib/xo-server"
-      - "/opt/pods/xoa/db:/var/lib/redis"
 
 pod_networks:
   - name: proxy
