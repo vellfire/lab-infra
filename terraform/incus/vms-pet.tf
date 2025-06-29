@@ -8,6 +8,7 @@ variable "vm_pet_cfg" {
   default = {
     "dl1"  = { name = "dl1", cpus = 2, memory = "2GiB", vlan50 = true }
     "vdb1" = { name = "vdb1", cpus = 4, memory = "8GiB", vlan50 = false }
+    "vgm1" = { name = "vgm1", cpus = 8, memory = "10GiB", vlan50 = false }
   }
 }
 
