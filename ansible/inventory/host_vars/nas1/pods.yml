@@ -35,7 +35,7 @@ pods:
       - "/tank/pods/netbootxyz/assets:/assets"
 
   - name: files
-    image: public.ecr.aws/nginx/nginx:1.27.4
+    image: public.ecr.aws/nginx/nginx:1.29.0
     restart: unless-stopped
     state: started
     ports:
