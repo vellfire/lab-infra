@@ -40,7 +40,7 @@ monitor_pods_def:
     ports:
       - 9104:9104
     env:
-      MYSQLD_EXPORTER_PASSWORD: "{{ lookup('ripplefcl.bwscache.secret', 'pass_db_root').value }}"
+      MYSQLD_EXPORTER_PASSWORD: "{{ lookup('ripplefcl.bwscache.secret', 'dad_db_root').value }}"
     volumes:
       - "{{ monitor_pods_path }}/mysqld/user_my.cnf:/.my.cnf"
 
@@ -103,7 +103,7 @@ monitor_prometheus_config:
           - 'vwkr5:9100'
           - 'vdb1:9100'
           - 'homeassistant:9100'
-          - "{{ lookup('ripplefcl.bwscache.secret', 'domain_vps1').value }}:9100"
+          - "{{ lookup('ripplefcl.bwscache.secret', 'vps1_domain').value }}:9100"
 
   - job_name: "gravity"
     static_configs:

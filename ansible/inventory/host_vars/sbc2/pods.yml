@@ -15,12 +15,12 @@ pods:
       - 443:443
     user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
     env:
-      BUNNY_API_KEY: "{{ lookup('ripplefcl.bwscache.secret', 'api_bunny').value }}"
+      BUNNY_API_KEY: "{{ lookup('ripplefcl.bwscache.secret', 'bunny_api').value }}"
       BUNNY_POLLING_TIMEOUT: "600"
       BUNNY_POLLING_INTERVAL: "5"
       BUNNY_TTL: "3600"
-      CF_API_EMAIL: "{{ lookup('ripplefcl.bwscache.secret', 'api_cf_user').value }}"
-      CF_API_KEY: "{{ lookup('ripplefcl.bwscache.secret', 'api_cf_token').value }}"
+      CF_API_EMAIL: "{{ lookup('ripplefcl.bwscache.secret', 'will_email').value }}"
+      CF_API_KEY: "{{ lookup('ripplefcl.bwscache.secret', 'cf_token').value }}"
     volumes:
       - "/etc/localtime:/etc/localtime:ro"
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
@@ -37,7 +37,7 @@ pods:
     env:
       PMA_HOST: vdb1:15000
       PMA_USER: "pma"
-      PMA_PASSWORD: "{{ lookup('ripplefcl.bwscache.secret', 'pass_pma').value }}"
+      PMA_PASSWORD: "{{ lookup('ripplefcl.bwscache.secret', 'pma_pass').value }}"
 
   - name: pma_bnt
     image: public.ecr.aws/docker/library/phpmyadmin:5.2.2
@@ -48,7 +48,7 @@ pods:
     env:
       PMA_HOST: vdb1:15001
       PMA_USER: "pma"
-      PMA_PASSWORD: "{{ lookup('ripplefcl.bwscache.secret', 'pass_pma').value }}"
+      PMA_PASSWORD: "{{ lookup('ripplefcl.bwscache.secret', 'pma_pass').value }}"
 
   - name: it-tools
     image: ghcr.io/home-operations/it-tools:2024.10.22
@@ -113,7 +113,7 @@ pods:
     user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
     env:
       POSTGRES_USER: "media"
-      POSTGRES_PASSWORD: "{{ lookup('ripplefcl.bwscache.secret', 'pass_db_media').value }}"
+      POSTGRES_PASSWORD: "{{ lookup('ripplefcl.bwscache.secret', 'media_db_pass').value }}"
     volumes:
       - "/opt/pods/media-db/pgdata:/var/lib/postgresql/data"
 

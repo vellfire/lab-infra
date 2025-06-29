@@ -10,7 +10,7 @@ pods:
       - SYS_ADMIN
       - SYS_RAWIO
     env:
-      COLLECTOR_API_ENDPOINT: "{{ lookup('ripplefcl.bwscache.secret', 'domain_scrutiny').value }}"
+      COLLECTOR_API_ENDPOINT: "{{ lookup('ripplefcl.bwscache.secret', 'scrutiny_domain').value }}"
       COLLECTOR_HOST_ID: "{{ inventory_hostname }}"
       COLLECTOR_CRON_SCHEDULE: "0 * * * *"
       COLLECTOR_RUN_STARTUP: "true"
@@ -41,7 +41,7 @@ pods:
     ports:
       - 8084:80
     env:
-      NGINX_HOST: "files.int.mcda.dev"
+      NGINX_HOST: "{{ lookup('ripplefcl.bwscache.secret', 'int_files_domain').value }}"
       NGINX_PORT: "80"
     volumes:
       - "/tank/virt/iso:/var/www"

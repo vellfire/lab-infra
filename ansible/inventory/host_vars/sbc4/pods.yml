@@ -26,7 +26,7 @@ pods:
       - SYS_ADMIN
       - SYS_RAWIO
     env:
-      COLLECTOR_API_ENDPOINT: "{{ lookup('ripplefcl.bwscache.secret', 'domain_scrutiny').value }}"
+      COLLECTOR_API_ENDPOINT: "{{ lookup('ripplefcl.bwscache.secret', 'scrutiny_domain').value }}"
       COLLECTOR_HOST_ID: "{{ inventory_hostname }}"
       COLLECTOR_CRON_SCHEDULE: "0 * * * *"
       COLLECTOR_RUN_STARTUP: "true"
@@ -45,9 +45,9 @@ pods:
       - name: unifi-net
     env:
       MONGO_INITDB_ROOT_USERNAME: "root"
-      MONGO_INITDB_ROOT_PASSWORD: "{{ lookup('ripplefcl.bwscache.secret', 'pass_db_unifi').value }}"
+      MONGO_INITDB_ROOT_PASSWORD: "{{ lookup('ripplefcl.bwscache.secret', 'unifi_db_pass').value }}"
       MONGO_USER: "unifi"
-      MONGO_PASS: "{{ lookup('ripplefcl.bwscache.secret', 'pass_db_unifi').value }}"
+      MONGO_PASS: "{{ lookup('ripplefcl.bwscache.secret', 'unifi_db_pass').value }}"
       MONGO_DBNAME: "unifi"
       MONGO_AUTHSOURCE: "admin"
     volumes:
@@ -73,9 +73,9 @@ pods:
       PGID: "{{ ansible_facts.user_gid }}"
       TZ: "Europe/London"
       MONGO_INITDB_ROOT_USERNAME: "root"
-      MONGO_INITDB_ROOT_PASSWORD: "{{ lookup('ripplefcl.bwscache.secret', 'pass_db_unifi').value }}"
+      MONGO_INITDB_ROOT_PASSWORD: "{{ lookup('ripplefcl.bwscache.secret', 'unifi_db_pass').value }}"
       MONGO_USER: "unifi"
-      MONGO_PASS: "{{ lookup('ripplefcl.bwscache.secret', 'pass_db_unifi').value }}"
+      MONGO_PASS: "{{ lookup('ripplefcl.bwscache.secret', 'unifi_db_pass').value }}"
       MONGO_DBNAME: "unifi"
       MONGO_AUTHSOURCE: "admin"
       MONGO_HOST: "unifi-db"
@@ -95,7 +95,7 @@ pods:
       - 9130:9130
     env:
       UP_UNIFI_DEFAULT_USER: poller
-      UP_UNIFI_DEFAULT_PASS: "{{ lookup('ripplefcl.bwscache.secret', 'pass_unpoller').value }}"
+      UP_UNIFI_DEFAULT_PASS: "{{ lookup('ripplefcl.bwscache.secret', 'unpoller_pass').value }}"
       UP_UNIFI_DYNAMIC: "false"
       UP_UNIFI_DEFAULT_URL: "https://unifi-app:8443"
       UP_UNIFI_DEFAULT_VERIFY_SSL: "false"
@@ -108,7 +108,7 @@ pods:
     restart: unless-stopped
     state: started
     env:
-      MARIADB_ROOT_PASSWORD: "{{ lookup('ripplefcl.bwscache.secret', 'pass_db_root').value }}"
+      MARIADB_ROOT_PASSWORD: "{{ lookup('ripplefcl.bwscache.secret', 'dad_db_root').value }}"
 
   - name: mariadb_ams
     image: public.ecr.aws/docker/library/mariadb:10.5.23
@@ -117,7 +117,7 @@ pods:
     ports:
       - 15000:3306
     env:
-      MARIADB_ROOT_PASSWORD: "{{ lookup('ripplefcl.bwscache.secret', 'pass_db_root').value }}"
+      MARIADB_ROOT_PASSWORD: "{{ lookup('ripplefcl.bwscache.secret', 'dad_db_root').value }}"
     volumes:
       - "/opt/pods/mariadb_ams/data:/var/lib/mysql"
       - "/opt/pods/mariadb_ams/config/my.cnf:/etc/mysql/my.cnf"
@@ -129,7 +129,7 @@ pods:
     ports:
       - 15001:3306
     env:
-      MARIADB_ROOT_PASSWORD: "{{ lookup('ripplefcl.bwscache.secret', 'pass_db_root').value }}"
+      MARIADB_ROOT_PASSWORD: "{{ lookup('ripplefcl.bwscache.secret', 'dad_db_root').value }}"
     volumes:
       - "/opt/pods/mariadb_bnt/data:/var/lib/mysql"
       # - "/opt/pods/mariadb_bnt/config:/etc/mysql"

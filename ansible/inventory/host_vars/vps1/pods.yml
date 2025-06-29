@@ -10,12 +10,12 @@ pods:
       - "no-new-privileges:true"
     network_mode: host
     env:
-      BUNNY_API_KEY: "{{ lookup('ripplefcl.bwscache.secret', 'api_bunny').value }}"
+      BUNNY_API_KEY: "{{ lookup('ripplefcl.bwscache.secret', 'bunny_api').value }}"
       BUNNY_POLLING_TIMEOUT: "600"
       BUNNY_POLLING_INTERVAL: "5"
       BUNNY_TTL: "3600"
-      CF_API_EMAIL: "{{ lookup('ripplefcl.bwscache.secret', 'api_cf_user').value }}"
-      CF_API_KEY: "{{ lookup('ripplefcl.bwscache.secret', 'api_cf_token').value }}"
+      CF_API_EMAIL: "{{ lookup('ripplefcl.bwscache.secret', 'will_email').value }}"
+      CF_API_KEY: "{{ lookup('ripplefcl.bwscache.secret', 'cf_token').value }}"
     volumes:
       - "/etc/localtime:/etc/localtime:ro"
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
