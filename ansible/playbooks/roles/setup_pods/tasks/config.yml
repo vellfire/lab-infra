@@ -39,70 +39,70 @@
     #     dest: /opt/pods/traefik/providers/services.yml
     #     mode: '0644'
 
-- name: Setup mktxp
-  when: item.name == 'mktxp'
-  become: true
-  block:
-    - name: Create mktxp config directory
-      ansible.builtin.file:
-        path: /opt/pods/mktxp/config
-        state: directory
-        recurse: true
-        owner: "{{ ansible_user }}"
-        group: "{{ ansible_user }}"
-        mode: '0755'
+# - name: Setup mktxp
+#   when: item.name == 'mktxp'
+#   become: true
+#   block:
+#     - name: Create mktxp config directory
+#       ansible.builtin.file:
+#         path: /opt/pods/mktxp/config
+#         state: directory
+#         recurse: true
+#         owner: "{{ ansible_user }}"
+#         group: "{{ ansible_user }}"
+#         mode: '0755'
 
-    - name: Create mktxp config
-      ansible.builtin.template:
-        src: mktxp/mktxp.conf.j2
-        dest: /opt/pods/mktxp/config/mktxp.conf
-        owner: "{{ ansible_user }}"
-        group: "{{ ansible_user }}"
-        mode: '0644'
+#     - name: Create mktxp config
+#       ansible.builtin.template:
+#         src: mktxp/mktxp.conf.j2
+#         dest: /opt/pods/mktxp/config/mktxp.conf
+#         owner: "{{ ansible_user }}"
+#         group: "{{ ansible_user }}"
+#         mode: '0644'
 
-    - name: Create _mktxp.conf config
-      ansible.builtin.copy:
-        src: mktxp/_mktxp.conf
-        dest: /opt/pods/mktxp/config/_mktxp.conf
-        owner: "{{ ansible_user }}"
-        group: "{{ ansible_user }}"
-        mode: '0644'
+#     - name: Create _mktxp.conf config
+#       ansible.builtin.copy:
+#         src: mktxp/_mktxp.conf
+#         dest: /opt/pods/mktxp/config/_mktxp.conf
+#         owner: "{{ ansible_user }}"
+#         group: "{{ ansible_user }}"
+#         mode: '0644'
 
-- name: Setup Prometheus
-  when: item.name == 'prometheus'
-  become: true
-  block:
-    - name: Create prometheus config directory
-      ansible.builtin.file:
-        path: /opt/pods/prometheus/config
-        state: directory
-        recurse: true
-        owner: "{{ ansible_user }}"
-        group: "{{ ansible_user }}"
-        mode: '0755'
+# - name: Setup Prometheus
+#   when: item.name == 'prometheus'
+#   become: true
+#   block:
+#     - name: Create prometheus config directory
+#       ansible.builtin.file:
+#         path: /opt/pods/prometheus/config
+#         state: directory
+#         recurse: true
+#         owner: "{{ ansible_user }}"
+#         group: "{{ ansible_user }}"
+#         mode: '0755'
 
-    - name: Create prometheus data directory
-      ansible.builtin.file:
-        path: /opt/pods/prometheus/data
-        state: directory
-        recurse: true
-        owner: root
-        group: root
-        mode: '0755'
+#     - name: Create prometheus data directory
+#       ansible.builtin.file:
+#         path: /opt/pods/prometheus/data
+#         state: directory
+#         recurse: true
+#         owner: root
+#         group: root
+#         mode: '0755'
 
-    - name: Copy files (temporary - to be templated)
-      ansible.builtin.copy:
-        src: prometheus/
-        dest: /opt/pods/prometheus/config
-        mode: '0644'
+#     - name: Copy files (temporary - to be templated)
+#       ansible.builtin.copy:
+#         src: prometheus/
+#         dest: /opt/pods/prometheus/config
+#         mode: '0644'
 
-- name: Setup Grafana
-  when: item.name == 'grafana'
-  become: true
-  block:
-    - name: Create grafana config directory
-      ansible.builtin.file:
-        path: /opt/pods/prometheus/data
-        state: directory
-        recurse: true
-        mode: '0755'
+# - name: Setup Grafana
+#   when: item.name == 'grafana'
+#   become: true
+#   block:
+#     - name: Create grafana config directory
+#       ansible.builtin.file:
+#         path: /opt/pods/prometheus/data
+#         state: directory
+#         recurse: true
+#         mode: '0755'

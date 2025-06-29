@@ -1,9 +1,0 @@
----
-- name: Set template for prometheus.yml
-  become: true
-  ansible.builtin.template:
-    src: prometheus/prometheus.yml.j2
-    dest: "{{ monitor_pods_path }}/prometheus/config/prometheus.yml"
-    owner: "{{ ansible_user }}"
-    group: "{{ ansible_user }}"
-    mode: '0740'

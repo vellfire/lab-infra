@@ -1,32 +1,42 @@
 ---
-- name: "Create directory: {{ item.name }}"
-  when: item.directory is defined
+- name: "Create directories"
+  when: pod.directory is defined
   become: true
   changed_when: false
   ansible.builtin.file:
-    path: "/opt/pods/{{ item.name }}"
+    path: "/opt/pods/{{ pod.name }}"
     state: directory
     recurse: true
     owner: "{{ ansible_user }}"
     group: "{{ ansible_user }}"
     mode: '0755'
+  loop: "{{ pods }}"
+  loop_control:
+    label: "{{ pod.name }}"
+    loop_var: pod
 
-- name: "Create docker container: {{ item.name }}"
+- name: "Create docker containers"
   community.docker.docker_container:
-    name: "{{ item.name }}"
-    image: "{{ item.image }}"
-    state: "{{ item.state | default('started') }}"
-    recreate: "{{ item.recreate | default('false') }}"
-    restart_policy: "{{ item.restart | default('unless-stopped') }}"
-    networks: "{{ item.networks | default(omit) }}"
-    network_mode: "{{ item.network_mode | default(omit) }}"
-    capabilities: "{{ item.capabilities | default(omit) }}"
-    security_opts: "{{ item.security_opt | default(omit) }}"
-    ports: "{{ item.ports | default(omit) }}"
-    user: "{{ item.user | default(omit) }}"
-    env: "{{ item.env | default(omit) }}"
-    devices: "{{ item.devices | default(omit) }}"
-    volumes: "{{ item.volumes | default(omit) }}"
-    log_driver: "{{ item.log_driver | default(omit) }}"
-    log_options: "{{ item.log_options | default(omit) }}"
+    name: "{{ pod.name }}"
+    image: "{{ pod.image }}"
+    state: "{{ pod.state | default('started') }}"
+    recreate: "{{ pod.recreate | default('false') }}"
+    restart_policy: "{{ pod.restart | default('unless-stopped') }}"
+    networks: "{{ pod.networks | default(omit) }}"
+    network_mode: "{{ pod.network_mode | default(omit) }}"
+    capabilities: "{{ pod.capabilities | default(omit) }}"
+    security_opts: "{{ pod.security_opt | default(omit) }}"
+    ports: "{{ pod.ports | default(omit) }}"
+    user: "{{ pod.user | default(omit) }}"
+    env: "{{ pod.env | default(omit) }}"
+    devices: "{{ pod.devices | default(omit) }}"
+    volumes: "{{ pod.volumes | default(omit) }}"
+    log_driver: "{{ pod.log_driver | default(omit) }}"
+    log_options: "{{ pod.log_options | default(omit) }}"
+    interactive: "{{ pod.stdin | default(omit) }}"
+    tty: "{{ pod.tty | default(omit) }}"
     default_host_ip: "{{ default_host_ip }}"
+  loop: "{{ pods }}"
+  loop_control:
+    label: "{{ pod.name }}"
+    loop_var: pod

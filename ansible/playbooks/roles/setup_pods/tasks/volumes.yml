@@ -1,13 +1,21 @@
 ---
-- name: "Checking for volume: {{ item.name }}"
+- name: "Checking for volume"
   register: volume
   failed_when: false
   community.docker.docker_volume_info:
-    name: "{{ item.name }}"
+    name: "{{ pod_volume.name }}"
+  loop: "{{ pod_volumes }}"
+  loop_control:
+    label: "{{ pod_volume.name }}"
+    loop_var: pod_volume
 
-- name: "Create volume: {{ item.name }}"
-  when: volume.exists is false
+- name: "Create volume"
+  when: volume.results[ansible_loop.index0].exists is false
   community.docker.docker_volume:
-    name: "{{ item.name }}"
-    driver: "{{ item.driver }}"
+    name: "{{ pod_volume.name }}"
+    driver: "{{ pod_volume.driver }}"
     state: present
+  loop: "{{ pod_volumes }}"
+  loop_control:
+    label: "{{ pod_volume.name }}"
+    loop_var: pod_volume
