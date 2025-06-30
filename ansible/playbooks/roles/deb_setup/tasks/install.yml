@@ -8,26 +8,32 @@
       - tmux
       - htop
       - smartmontools
-      - nload
       - net-tools
       - tcpdump
       - bind9-utils
       - nfs-common
       - cifs-utils
       - lm-sensors
-      - build-essential
       - tree
       - rsync
       - jq
       - bind9-dnsutils
       - curl
       - wget
-      - lshw
-      - dmidecode
       - openvswitch-switch-dpdk
       - netplan.io
       - systemd-resolved
       - python3-requests
       - tuned
-      - kitty-terminfo
     state: present
+
+- name: Remove packages
+  ansible.builtin.apt:
+    name:
+      - kitty-terminfo
+      - lshw
+      - dmidecode
+      - build-essential
+      - nload
+    autoremove: true
+    state: absent
