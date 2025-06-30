@@ -13,7 +13,6 @@
     label: "{{ pod.name }}"
     loop_var: pod
 
-
 - name: "Create container data directory"
   become: true
   ansible.builtin.file:
@@ -46,7 +45,7 @@
     group: "{{ ansible_user }}"
     mode: '0740'
 
-- name: Set template for prometheus.yml
+- name: Create prometheus.yml based on template
   become: true
   ansible.builtin.template:
     src: prometheus/prometheus.yml.j2
@@ -54,6 +53,7 @@
     owner: "{{ ansible_user }}"
     group: "{{ ansible_user }}"
     mode: '0740'
+  notify: Restart prometheus
 
 - name: "Create container"
   community.docker.docker_container:
