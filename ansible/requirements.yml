@@ -16,6 +16,8 @@ collections:
     version: 3.8.0
   - name: ripplefcl.bwscache
     version: 1.2.1
+  - name: grafana.grafana
+    version: 6.0.2
 
 roles:
   - name: geerlingguy.docker
