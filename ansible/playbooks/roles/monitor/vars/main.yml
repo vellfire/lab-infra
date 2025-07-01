@@ -8,7 +8,6 @@ monitor_pods_def:
     restart: unless-stopped
     state: started
     user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
-    default_host_ip: ""
     networks:
       - name: proxy
       - name: monitor
@@ -21,11 +20,11 @@ monitor_pods_def:
     container_name: mktxp
     restart: unless-stopped
     state: started
-    user: root
+    user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
     networks:
       - name: monitor
     volumes:
-      - "{{ monitor_pods_path }}/mktxp/config:/root/mktxp"
+      - "{{ monitor_pods_path }}/mktxp/config:/mktxp"
 
   - name: mysqld_exporter
     image: docker.io/prom/mysqld-exporter:v0.17.2
@@ -35,8 +34,6 @@ monitor_pods_def:
     user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
     networks:
       - name: monitor
-    ports:
-      - 9104:9104
     env:
       MYSQLD_EXPORTER_PASSWORD: "{{ lookup('ripplefcl.bwscache.secret', 'dad_db_root').value }}"
     volumes:
