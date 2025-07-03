@@ -16,7 +16,7 @@ monitor_pods_def:
       - "{{ monitor_pods_path }}/prometheus/data:/prometheus"
 
   - name: mktxp
-    image: ghcr.io/akpw/mktxp:1.2.10
+    image: ghcr.io/akpw/mktxp:1.2.11
     container_name: mktxp
     restart: unless-stopped
     state: started
