@@ -51,7 +51,6 @@ pods:
       MARIADB_USER: "ts6-user"
       MARIADB_PASSWORD: "{{ lookup('ripplefcl.bwscache.secret', 'ts6_db_user').value }}"
       MARIADB_DATABASE: "ts6-db"
-      MARIADB_USER_HOST: "%"
     volumes:
       - "/opt/pods/mariadb_ts6/data:/var/lib/mysql"
       - "/opt/pods/mariadb_ts6/backup:/backup"
@@ -60,7 +59,6 @@ pods:
     image: docker.io/teamspeaksystems/teamspeak6-server:v6.0.0-beta4
     restart: unless-stopped
     state: started
-    recreate: true
     user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
     networks:
       - name: ts6
