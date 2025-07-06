@@ -1,0 +1,14 @@
+---
+shares:
+  - name: common
+    src_path: nas1:/tank/common
+    dest_path: /opt/shares/common
+  - name: backup
+    src_path: nas1:/tank/backup
+    dest_path: /opt/shares/backup
+  - name: pods
+    src_path: nas1:/tank/pods
+    dest_path: /opt/shares/pods
+  - name: will
+    src_path: nas1:/tank/datashares/will
+    dest_path: /home/will/nas1
