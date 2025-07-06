@@ -13,6 +13,7 @@ docker_packages:
 docker_packages_state: present
 docker_users:
   - "{{ ansible_user }}"
+  - "{{ automation_user }}"
 
 # Nut Client Configuration
 nut_client_server: homeassistant
