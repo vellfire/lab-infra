@@ -103,36 +103,15 @@ pods:
       UP_INFLUXDB_DISABLE: "true"
       UP_POLLER_DEBUG: "true"
 
-  - name: mariadb_test
-    image: public.ecr.aws/docker/library/mariadb:10.5.23
+  - name: garage
+    image: docker.io/dxflrs/garage:v2.0.0
     restart: unless-stopped
     state: started
-    env:
-      MARIADB_ROOT_PASSWORD: "{{ lookup('ripplefcl.bwscache.secret', 'dad_db_root').value }}"
-
-  - name: mariadb_ams
-    image: public.ecr.aws/docker/library/mariadb:10.5.23
-    restart: unless-stopped
-    state: absent
-    ports:
-      - 15000:3306
-    env:
-      MARIADB_ROOT_PASSWORD: "{{ lookup('ripplefcl.bwscache.secret', 'dad_db_root').value }}"
+    network_mode: host
     volumes:
-      - "/opt/pods/mariadb_ams/data:/var/lib/mysql"
-      - "/opt/pods/mariadb_ams/config/my.cnf:/etc/mysql/my.cnf"
-
-  - name: mariadb_bnt
-    image: public.ecr.aws/docker/library/mariadb:10.5.23
-    restart: unless-stopped
-    state: absent
-    ports:
-      - 15001:3306
-    env:
-      MARIADB_ROOT_PASSWORD: "{{ lookup('ripplefcl.bwscache.secret', 'dad_db_root').value }}"
-    volumes:
-      - "/opt/pods/mariadb_bnt/data:/var/lib/mysql"
-      # - "/opt/pods/mariadb_bnt/config:/etc/mysql"
+      - "/opt/pods/garage/config/garage.toml:/etc/garage.toml"
+      - "/opt/pods/garage/meta:/var/lib/garage/meta"
+      - "/opt/pods/garage/data:/var/lib/garage/data"
 
 pod_volumes:
   - name: gravity_data
