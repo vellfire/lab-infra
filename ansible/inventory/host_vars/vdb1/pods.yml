@@ -8,6 +8,8 @@ pods:
     state: started
     ports:
       - 15000:3306
+    networks:
+      - name: db
     env:
       MARIADB_ROOT_PASSWORD: "{{ lookup('ripplefcl.bwscache.secret', 'dad_db_root').value }}"
     volumes:
@@ -20,6 +22,8 @@ pods:
     image: public.ecr.aws/docker/library/mariadb:10.5.23
     restart: unless-stopped
     state: started
+    networks:
+      - name: db
     ports:
       - 15001:3306
     env:
@@ -27,3 +31,42 @@ pods:
     volumes:
       - "/opt/pods/mariadb_bnt/data:/var/lib/mysql"
       - "/opt/pods/mariadb_bnt/backup:/backup"
+
+  - name: mariadb_backup
+    image: ghcr.io/tiredofit/docker-db-backup:4.1.19
+    restart: unless-stopped
+    state: started
+    networks:
+      - name: db
+    env:
+      MODE: "AUTO"
+      DEFAULT_BACKUP_LOCATION: "S3"
+      DEFAULT_COMPRESSION_LEVEL: "9"
+      DEFAULT_BACKUP_INTERVAL: "1440"
+      DEFAULT_BACKUP_BEGIN: "0000"
+      DEFAULT_CLEANUP_TIME: "10080"
+      DEFAULT_PORT: "3306"
+      DEFAULT_MYSQL_CLIENT: "mariadb"
+      DEFAULT_S3_BUCKET: "mariadb-bucket"
+      DEFAULT_S3_KEY_ID: "{{ lookup('ripplefcl.bwscache.secret', 'mariadb_bucket_id').value }}"
+      DEFAULT_S3_KEY_SECRET: "{{ lookup('ripplefcl.bwscache.secret', 'mariadb_bucket_secret').value }}"
+      DEFAULT_S3_REGION: "smithy"
+      DEFAULT_S3_HOST: "nas1.conf.mcda.dev:3900"
+      DEFAULT_S3_PROTOCOL: "http"
+      CONTAINER_ENABLE_MONITORING: "false"
+      DB01_S3_PATH: ams
+      DB01_TYPE: "mysql"
+      DB01_HOST: "mariadb_ams"
+      DB01_NAME: "ALL"
+      DB01_USER: "root"
+      DB01_PASS: "{{ lookup('ripplefcl.bwscache.secret', 'dad_db_root').value }}"
+      DB02_S3_PATH: bnt
+      DB02_TYPE: "mysql"
+      DB02_HOST: "mariadb_bnt"
+      DB02_NAME: "ALL"
+      DB02_USER: "root"
+      DB02_PASS: "{{ lookup('ripplefcl.bwscache.secret', 'dad_db_root').value }}"
+
+pod_networks:
+  - name: db
+    driver: local
