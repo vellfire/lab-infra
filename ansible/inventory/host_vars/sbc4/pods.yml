@@ -4,7 +4,7 @@ default_host_ip: ""
 pods:
   - name: gravity
     hostname: "{{ inventory_hostname }}"
-    image: ghcr.io/beryju/gravity:v0.27.0
+    image: ghcr.io/beryju/gravity:v0.27.1
     restart: unless-stopped
     state: started
     network_mode: host
