@@ -109,9 +109,9 @@ pods:
     state: started
     network_mode: host
     volumes:
-      - "/opt/pods/garage/config/garage.toml:/etc/garage.toml"
-      - "/opt/pods/garage/meta:/var/lib/garage/meta"
-      - "/opt/pods/garage/data:/var/lib/garage/data"
+      - "/tank/pods/garage/config/garage.toml:/etc/garage.toml"
+      - "/tank/pods/garage/meta:/var/lib/garage/meta"
+      - "/tank/pods/garage/data:/var/lib/garage/data"
 
 pod_volumes:
   - name: gravity_data
