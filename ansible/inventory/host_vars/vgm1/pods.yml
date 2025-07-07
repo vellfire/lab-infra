@@ -3,7 +3,7 @@ default_host_ip: ""
 
 pods:
   - name: mc-router
-    image: ghcr.io/itzg/mc-router:1.32.1
+    image: ghcr.io/itzg/mc-router:1.32.3
     restart: unless-stopped
     state: started
     networks:
