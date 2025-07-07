@@ -72,19 +72,12 @@
   delegate_to: nas1
   run_once: true
 
-- name: Debug all_garage_node_ids
-  ansible.builtin.debug:
-    var: all_garage_node_ids
-  delegate_to: nas1
-  run_once: true
-
 - name: Loop connect garage nodes
   community.docker.docker_container_exec:
     container: garage
     command: "/garage node connect {{ item }}"
   loop: "{{ all_garage_node_ids | reject('equalto', hostvars[inventory_hostname]['garage_node_id']) }}"
   delegate_to: nas1
-  when: all_garage_node_ids is defined and garage_node_id is defined
 
 - name: Assign layout
   community.docker.docker_container_exec:
@@ -100,13 +93,14 @@
     headers:
       Authorization: "Bearer {{ garage_admin_token }}"
   register: layout_info
+  run_once: true
+  delegate_to: nas1
 
 - name: Set layout version
   ansible.builtin.set_fact:
-    new_layout_version: "{{ (layout_info.stdout | from_json).version | int + 1 }}"
+    new_layout_version: "{{ layout_info.json.version | int + 1 }}"
   run_once: true
   delegate_to: nas1
-  when: layout_info.stdout is defined
 
 - name: Apply Layout
   community.docker.docker_container_exec:
@@ -115,4 +109,3 @@
   changed_when: false
   run_once: true
   delegate_to: nas1
-  when: new_layout_version is defined
