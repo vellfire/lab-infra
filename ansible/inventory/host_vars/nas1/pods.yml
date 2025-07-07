@@ -1,6 +1,9 @@
 ---
 default_host_ip: ""
 
+standard_pod_path_prefix: "/tank/pods"
+storage_pod_path_prefix: "/tank/pods"
+
 pods:
   - name: scrutiny-collector
     image: ghcr.io/analogj/scrutiny:v0.8.1-collector
@@ -47,13 +50,3 @@ pods:
       MIN_FILES: "10"
     volumes:
       - "/tank/backups/bitwarden:/app/backups"
-
-  - name: garage
-    image: docker.io/dxflrs/garage:v2.0.0
-    restart: unless-stopped
-    state: started
-    network_mode: host
-    volumes:
-      - "/tank/pods/garage/config/garage.toml:/etc/garage.toml"
-      - "/tank/pods/garage/meta:/var/lib/garage/meta"
-      - "/tank/pods/garage/data:/var/lib/garage/data"

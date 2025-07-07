@@ -1,0 +1,24 @@
+---
+garage_rpc_secret: "{{ lookup('ripplefcl.bwscache.secret', 'garage_rpc_secret').value }}"
+garage_admin_token: "{{ lookup('ripplefcl.bwscache.secret', 'garage_admin_token').value }}"
+
+# garage_public_addr: "{{ ansible_all_ipv6_addresses | ansible.utils.ipaddr('fdd3:9ec1:c828::/64') | first }}"
+garage_public_addr: "{{ ansible_all_ipv4_addresses | ansible.utils.ipaddr('10.10.0.0/24') | first }}"
+garage_api_port: 3900
+garage_web_port: 3902
+garage_adm_port: 3903
+
+garage_zone_name: "def"
+garage_node_capacity: "1T"
+
+garage_pods:
+  - name: garage
+    image: docker.io/dxflrs/garage:v2.0.0
+    restart: unless-stopped
+    state: started
+    network_mode: host
+    user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
+    volumes:
+      - "{{ storage_pod_path_prefix }}/garage/config/garage.toml:/etc/garage.toml"
+      - "{{ storage_pod_path_prefix }}/garage/meta:/var/lib/garage/meta"
+      - "{{ storage_pod_path_prefix }}/garage/data:/var/lib/garage/data"

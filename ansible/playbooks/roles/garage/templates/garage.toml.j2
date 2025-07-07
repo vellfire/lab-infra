@@ -1,0 +1,27 @@
+metadata_dir = "/var/lib/garage/meta"
+data_dir = "/var/lib/garage/data"
+db_engine = "lmdb"
+metadata_auto_snapshot_interval = "6h"
+
+replication_factor = 3
+
+compression_level = 2
+
+rpc_secret = "{{ garage_rpc_secret }}"
+rpc_bind_addr = "0.0.0.0:3900"
+rpc_public_addr = "{{ ansible_default_ipv4.address }}:{{ garage_api_port }}"
+
+[s3_api]
+s3_region = "garage"
+api_bind_addr = "0.0.0.0:{{ garage_api_port }}"
+root_domain = ".s3.garage"
+
+[s3_web]
+bind_addr = "0.0.0.0:{{ garage_web_port }}"
+root_domain = ".web.garage"
+index = "index.html"
+
+[admin]
+api_bind_addr = "0.0.0.0:{{ garage_adm_port }}"
+admin_token = "{{ garage_admin_token }}"
+metrics_require_token = false

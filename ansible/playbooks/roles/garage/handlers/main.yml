@@ -1,0 +1,8 @@
+---
+- name: Restart garage
+  community.docker.docker_container:
+    name: garage
+    state: started
+    restart: true
+    comparisons:
+      '*': ignore

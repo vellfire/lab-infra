@@ -1,6 +1,9 @@
 ---
 default_host_ip: ""
 
+standard_pod_path_prefix: "/opt/pods"
+storage_pod_path_prefix: "/opt/pods"
+
 pods:
   - name: scrutiny-collector
     image: ghcr.io/analogj/scrutiny:v0.8.1-collector
@@ -20,13 +23,3 @@ pods:
       - /dev/nvme0
       - /dev/nvme1
       - /dev/nvme2
-
-  - name: garage
-    image: docker.io/dxflrs/garage:v2.0.0
-    restart: unless-stopped
-    state: started
-    network_mode: host
-    volumes:
-      - "/opt/pods/garage/config/garage.toml:/etc/garage.toml"
-      - "/opt/pods/garage/meta:/var/lib/garage/meta"
-      - "/opt/pods/garage/data:/var/lib/garage/data"

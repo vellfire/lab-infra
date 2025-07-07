@@ -1,0 +1,118 @@
+---
+- name: "Create garage directories"
+  become: true
+  ansible.builtin.file:
+    path: "{{ storage_pod_path_prefix }}/garage/{{ item }}"
+    state: directory
+    mode: '0755'
+    recurse: true
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+  loop:
+    - config
+    - data
+    - meta
+
+- name: Set template for garage.toml
+  become: true
+  ansible.builtin.template:
+    src: garage.toml.j2
+    dest: "{{ storage_pod_path_prefix }}/garage/config/garage.toml"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: '0750'
+  notify: Restart garage
+
+- name: "Create garage container"
+  community.docker.docker_container:
+    name: "{{ pod.name }}"
+    image: "{{ pod.image }}"
+    state: "{{ pod.state | default('started') }}"
+    restart_policy: "{{ pod.restart | default('unless-stopped') }}"
+    networks: "{{ pod.networks | default(omit) }}"
+    network_mode: "{{ pod.network_mode | default(omit) }}"
+    capabilities: "{{ pod.capabilities | default(omit) }}"
+    security_opts: "{{ pod.security_opt | default(omit) }}"
+    ports: "{{ pod.ports | default(omit) }}"
+    user: "{{ pod.user | default(omit) }}"
+    env: "{{ pod.env | default(omit) }}"
+    devices: "{{ pod.devices | default(omit) }}"
+    volumes: "{{ pod.volumes | default(omit) }}"
+    log_driver: "{{ pod.log_driver | default(omit) }}"
+    log_options: "{{ pod.log_options | default(omit) }}"
+    default_host_ip: "{{ default_host_ip }}"
+  loop: "{{ garage_pods }}"
+  loop_control:
+    label: "{{ pod.name }}"
+    loop_var: pod
+
+- name: Get garage node id
+  community.docker.docker_container_exec:
+    container: garage
+    command: "/garage node id -q"
+  register: garage_node_id_result
+  changed_when: false
+
+- name: Set garage_node_id fact
+  ansible.builtin.set_fact:
+    garage_node_id: "{{ garage_node_id_result.stdout }}"
+
+- name: Wait for all hosts to set garage_node_id
+  ansible.builtin.meta: flush_handlers
+
+- name: Gather all garage_node_ids on delegate host
+  ansible.builtin.set_fact:
+    all_garage_node_ids: >-
+      {{
+        query('ansible.builtin.dict', hostvars)
+        | selectattr('value.garage_node_id', 'defined')
+        | map(attribute='value.garage_node_id')
+        | list
+      }}
+  delegate_to: nas1
+  run_once: true
+
+- name: Debug all_garage_node_ids
+  ansible.builtin.debug:
+    var: all_garage_node_ids
+  delegate_to: nas1
+  run_once: true
+
+- name: Loop connect garage nodes
+  community.docker.docker_container_exec:
+    container: garage
+    command: "/garage node connect {{ item }}"
+  loop: "{{ all_garage_node_ids | reject('equalto', hostvars[inventory_hostname]['garage_node_id']) }}"
+  delegate_to: nas1
+  when: all_garage_node_ids is defined and garage_node_id is defined
+
+- name: Assign layout
+  community.docker.docker_container_exec:
+    container: garage
+    command: "/garage layout assign {{ garage_node_id.split('@')[0] }} -z {{ garage_zone_name }} -c {{ garage_node_capacity }}"
+  changed_when: false
+  delegate_to: nas1
+
+- name: Get current layout verion number
+  ansible.builtin.uri:
+    url: "{{ 'http://10.10.0.20:3903/v1/layout' }}"
+    return_content: true
+    headers:
+      Authorization: "Bearer {{ garage_admin_token }}"
+  register: layout_info
+
+- name: Set layout version
+  ansible.builtin.set_fact:
+    new_layout_version: "{{ (layout_info.stdout | from_json).version | int + 1 }}"
+  run_once: true
+  delegate_to: nas1
+  when: layout_info.stdout is defined
+
+- name: Apply Layout
+  community.docker.docker_container_exec:
+    container: garage
+    command: "/garage layout apply --version {{ new_layout_version }}"
+  changed_when: false
+  run_once: true
+  delegate_to: nas1
+  when: new_layout_version is defined

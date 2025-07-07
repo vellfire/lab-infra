@@ -111,6 +111,17 @@
                 - pods
                 - monitor
 
+    - name: Setup garage
+      when: req_garage | default(false)
+      tags:
+        - pods
+        - garage
+      ansible.builtin.include_role:
+        name: garage
+        apply:
+          tags:
+            - pogs
+            - garage
 
     - name: Setup libvirt
       when:
