@@ -50,8 +50,8 @@ pods:
       DEFAULT_S3_BUCKET: "mariadb-bucket"
       DEFAULT_S3_KEY_ID: "{{ lookup('ripplefcl.bwscache.secret', 'mariadb_bucket_id').value }}"
       DEFAULT_S3_KEY_SECRET: "{{ lookup('ripplefcl.bwscache.secret', 'mariadb_bucket_secret').value }}"
-      DEFAULT_S3_REGION: "smithy"
-      DEFAULT_S3_HOST: "nas1.conf.mcda.dev:3900"
+      DEFAULT_S3_REGION: "def"
+      DEFAULT_S3_HOST: "10.10.0.5:3900"
       DEFAULT_S3_PROTOCOL: "http"
       CONTAINER_ENABLE_MONITORING: "false"
       DB01_S3_PATH: ams
