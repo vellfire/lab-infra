@@ -1,6 +1,6 @@
 ---
 - name: "Checking for volume"
-  register: volume
+  register: setup_pods_volume
   failed_when: false
   community.docker.docker_volume_info:
     name: "{{ pod_volume.name }}"
@@ -10,7 +10,7 @@
     loop_var: pod_volume
 
 - name: "Create volume"
-  when: volume.results[ansible_loop.index0].exists is false
+  when: setup_pods_volume.results[ansible_loop.index0].exists is false
   community.docker.docker_volume:
     name: "{{ pod_volume.name }}"
     driver: "{{ pod_volume.driver }}"

@@ -10,7 +10,7 @@
 
 - name: Check if reboot is required
   ansible.builtin.command: needs-restarting -r
-  register: reboot_required
+  register: update_hosts_reboot_required
   failed_when: false
-  changed_when: reboot_required.rc == 1
+  changed_when: update_hosts_reboot_required.rc == 1
   notify: Reboot if required

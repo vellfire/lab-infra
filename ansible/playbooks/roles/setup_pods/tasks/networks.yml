@@ -1,6 +1,6 @@
 ---
 - name: "Create networks"
-  register: result
+  register: setup_pods_result
   failed_when: false
   community.docker.docker_network:
     name: "{{ net.name }}"
