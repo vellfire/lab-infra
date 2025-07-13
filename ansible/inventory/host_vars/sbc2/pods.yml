@@ -224,7 +224,7 @@ pods:
       - "/opt/shares/pods/media:/media"
 
   - name: maintainerr
-    image: ghcr.io/jorenn92/maintainerr:2.18.1
+    image: ghcr.io/jorenn92/maintainerr:2.18.2
     restart: unless-stopped
     state: started
     networks:
