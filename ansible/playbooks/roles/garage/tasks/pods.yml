@@ -62,7 +62,7 @@
 
 - name: Gather all garage_node_ids on delegate host
   ansible.builtin.set_fact:
-    all_garage_node_ids: >-
+    garage_all_garage_node_ids: >-
       {{
         query('ansible.builtin.dict', hostvars)
         | selectattr('value.garage_node_id', 'defined')
@@ -76,7 +76,7 @@
   community.docker.docker_container_exec:
     container: garage
     command: "/garage node connect {{ item }}"
-  loop: "{{ all_garage_node_ids | reject('equalto', hostvars[inventory_hostname]['garage_node_id']) }}"
+  loop: "{{ garage_all_garage_node_ids | reject('equalto', hostvars[inventory_hostname]['garage_node_id']) }}"
   delegate_to: nas1
 
 - name: Assign layout
@@ -92,20 +92,20 @@
     return_content: true
     headers:
       Authorization: "Bearer {{ garage_admin_token }}"
-  register: layout_info
+  register: garage_layout_info
   run_once: true
   delegate_to: nas1
 
 - name: Set layout version
   ansible.builtin.set_fact:
-    new_layout_version: "{{ layout_info.json.version | int + 1 }}"
+    garage_new_layout_version: "{{ garage_layout_info.json.version | int + 1 }}"
   run_once: true
   delegate_to: nas1
 
 - name: Apply Layout
   community.docker.docker_container_exec:
     container: garage
-    command: "/garage layout apply --version {{ new_layout_version }}"
+    command: "/garage layout apply --version {{ garage_new_layout_version }}"
   changed_when: false
   run_once: true
   delegate_to: nas1
