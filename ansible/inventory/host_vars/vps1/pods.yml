@@ -32,7 +32,7 @@ pods:
       IMMICH_URL: "http://[fd72:1432:d17a:0:be24:11ff:fe8a:aa24]:2283"
 
   - name: ping-api
-    image: ghcr.io/vellfire/ping-api:1.0.1
+    image: ghcr.io/vellfire/ping-api:1.1.0
     restart: unless-stopped
     user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
     network_mode: host
