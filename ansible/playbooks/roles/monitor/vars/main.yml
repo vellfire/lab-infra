@@ -3,7 +3,7 @@ monitor_pods_path: /opt/pods/monitor
 
 monitor_pods_def:
   - name: prometheus
-    image: quay.io/prometheus/prometheus:v3.4.2
+    image: quay.io/prometheus/prometheus:v3.5.0
     container_name: prometheus
     restart: unless-stopped
     state: started
