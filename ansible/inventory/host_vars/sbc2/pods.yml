@@ -118,7 +118,7 @@ pods:
       - "/opt/pods/media-db/pgdata:/var/lib/postgresql/data"
 
   - name: plex
-    image: ghcr.io/home-operations/plex:1.41.8
+    image: ghcr.io/home-operations/plex:1.41.9
     restart: unless-stopped
     state: started
     networks:
