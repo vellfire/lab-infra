@@ -33,7 +33,7 @@ pods:
       - "/opt/pods/mariadb_bnt/backup:/backup"
 
   - name: mariadb_backup
-    image: ghcr.io/tiredofit/docker-db-backup:4.1.19
+    image: ghcr.io/tiredofit/docker-db-backup:4.1.20
     restart: unless-stopped
     state: started
     networks:
