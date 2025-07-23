@@ -54,7 +54,7 @@ monitor_pods_def:
       - "{{ monitor_pods_path }}/grafana/data:/var/lib/grafana"
 
   - name: loki
-    image: grafana/loki:3.5.2
+    image: grafana/loki:3.5.3
     container_name: loki
     restart: unless-stopped
     state: started
