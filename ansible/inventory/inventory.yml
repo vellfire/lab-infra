@@ -15,7 +15,7 @@ unix:
         dl1:
           ansible_user: automation
         kvm1:
-        kvm2:
+        bd790i:
         vwkr[1:3]:
           ansible_user: automation
         vws1:
@@ -36,7 +36,7 @@ unix:
         dl1:
           ansible_user: automation
         kvm1:
-        kvm2:
+        bd790i:
         vwkr[1:3]:
           ansible_user: automation
         vws1:
