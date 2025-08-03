@@ -237,7 +237,7 @@ pods:
       - "/opt/pods/maintainerr/config:/opt/data"
 
   - name: tautulli
-    image: ghcr.io/home-operations/tautulli:2.15.2
+    image: ghcr.io/home-operations/tautulli:2.15.3
     restart: unless-stopped
     state: started
     networks:
