@@ -24,7 +24,7 @@ pods:
       - "~/pods/traefik/config/acme.json:/acme.json"
 
   - name: immich-public-proxy
-    image: ghcr.io/alangrainger/immich-public-proxy:1.12.1
+    image: ghcr.io/alangrainger/immich-public-proxy:1.13.0
     restart: unless-stopped
     state: started
     network_mode: host
