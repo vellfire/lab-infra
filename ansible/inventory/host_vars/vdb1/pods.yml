@@ -3,7 +3,7 @@ default_host_ip: ""
 
 pods:
   - name: mariadb_ams
-    image: public.ecr.aws/docker/library/mariadb:10.5.23
+    image: public.ecr.aws/docker/library/mariadb:12.0.2
     restart: unless-stopped
     state: started
     ports:
@@ -19,7 +19,7 @@ pods:
       - "/opt/pods/mariadb_ams/backup:/backup"
 
   - name: mariadb_bnt
-    image: public.ecr.aws/docker/library/mariadb:10.5.23
+    image: public.ecr.aws/docker/library/mariadb:12.0.2
     restart: unless-stopped
     state: started
     networks:
