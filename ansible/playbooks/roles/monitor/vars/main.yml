@@ -40,7 +40,7 @@ monitor_pods_def:
       - "{{ monitor_pods_path }}/mysqld_exporter/config/user_my.cnf:/.my.cnf"
 
   - name: grafana
-    image: docker.io/grafana/grafana:12.1.0
+    image: docker.io/grafana/grafana:12.1.1
     container_name: grafana
     restart: unless-stopped
     state: started
