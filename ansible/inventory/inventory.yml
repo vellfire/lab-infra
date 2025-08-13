@@ -42,9 +42,7 @@ unix:
         vws1:
           ansible_user: automation
         vdb1:
-          ansible_user: automation
-        vgm1:
-          ansible_user: automation
+          ansible_user: automation 
 
     k8s_home:
       hosts:
