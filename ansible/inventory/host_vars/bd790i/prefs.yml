@@ -1,8 +1,0 @@
----
-req_nut: true
-req_docker: true
-req_libvirt: false
-req_monitor: true
-req_garage: false
-
-nut_client_ups: will-office-eaton

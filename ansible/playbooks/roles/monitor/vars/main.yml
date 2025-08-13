@@ -85,7 +85,6 @@ monitor_prometheus_config:
           - 'sbc4:9100'
           - 'nas1:9100'
           - 'kvm1:9100'
-          - 'bd790i:9100'
           - 'dl1:9100'
           - 'vws1:9100'
           - 'vwkr1:9100'
