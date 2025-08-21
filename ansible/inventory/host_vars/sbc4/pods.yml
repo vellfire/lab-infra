@@ -41,7 +41,7 @@ pods:
       - /dev/sdc
 
   - name: unifi-db
-    image: public.ecr.aws/docker/library/mongo:8.0.12
+    image: public.ecr.aws/docker/library/mongo:8.0.13
     restart: unless-stopped
     state: started
     networks:
