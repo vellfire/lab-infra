@@ -168,7 +168,7 @@ pods:
       - "/opt/shares/pods/sonarr:/backup"
 
   - name: radarr
-    image: ghcr.io/home-operations/radarr:5.27.4
+    image: ghcr.io/home-operations/radarr:5.27.5
     restart: unless-stopped
     state: started
     networks:
