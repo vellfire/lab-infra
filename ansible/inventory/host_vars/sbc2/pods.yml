@@ -181,7 +181,7 @@ pods:
       - "/opt/shares/pods/radarr:/backup"
 
   - name: sabnzbd
-    image: ghcr.io/home-operations/sabnzbd:4.5.2
+    image: ghcr.io/home-operations/sabnzbd:4.5.3
     restart: unless-stopped
     state: started
     networks:
