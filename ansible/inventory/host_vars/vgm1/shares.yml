@@ -1,5 +1,0 @@
----
-shares:
-  - name: backup
-    src_path: nas1:/tank/backup
-    dest_path: /opt/shares/backup
