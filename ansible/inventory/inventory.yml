@@ -12,8 +12,8 @@ unix:
         sbc4:
         vps1:
         nas1:
-        dl1:
-          ansible_user: automation
+        # dl1:
+          # ansible_user: automation
         kvm1:
         vwkr[1:3]:
           ansible_user: automation
@@ -27,8 +27,8 @@ unix:
         sbc2:
         sbc4:
         nas1:
-        dl1:
-          ansible_user: automation
+        # dl1:
+          # ansible_user: automation
         kvm1:
         vwkr[1:3]:
           ansible_user: automation
