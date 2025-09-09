@@ -2,6 +2,18 @@
 - name: Run host setup tasks
   hosts: linux
   gather_facts: true
+  module_defaults:
+    community.docker.docker_container:
+      default_host_ip: ""
+      restart_policy: unless-stopped
+      state: started
+      comparisons:
+        '*': strict
+        env: allow_more_present
+      security_opts:
+        - "no-new-privileges:true"
+      env:
+        TZ: "Europe/London"
   tasks:
     - name: Update hosts
       ansible.builtin.include_role:

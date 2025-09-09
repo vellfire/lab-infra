@@ -1,6 +1,4 @@
 ---
-default_host_ip: ""
-
 standard_pod_path_prefix: "/opt/pods"
 storage_pod_path_prefix: "/tank/pods"
 
@@ -8,8 +6,6 @@ pods:
   - name: gravity
     hostname: "{{ inventory_hostname }}"
     image: ghcr.io/beryju/gravity:v0.27.1
-    restart: unless-stopped
-    state: started
     network_mode: host
     env:
       LOG_LEVEL: info
@@ -23,8 +19,6 @@ pods:
 
   - name: scrutiny-collector
     image: ghcr.io/analogj/scrutiny:v0.8.1-collector
-    restart: unless-stopped
-    state: started
     capabilities:
       - SYS_ADMIN
       - SYS_RAWIO
@@ -42,8 +36,6 @@ pods:
 
   - name: unifi-db
     image: public.ecr.aws/docker/library/mongo:8.0.13
-    restart: unless-stopped
-    state: started
     networks:
       - name: unifi-net
     env:
@@ -59,8 +51,6 @@ pods:
 
   - name: unifi-app
     image: ghcr.io/linuxserver/unifi-network-application:9.3.45
-    restart: unless-stopped
-    state: started
     networks:
       - name: unifi-net
     ports:
@@ -74,7 +64,6 @@ pods:
     env:
       PUID: "{{ ansible_facts.user_uid }}"
       PGID: "{{ ansible_facts.user_gid }}"
-      TZ: "Europe/London"
       MONGO_INITDB_ROOT_USERNAME: "root"
       MONGO_INITDB_ROOT_PASSWORD: "{{ lookup('ripplefcl.bwscache.secret', 'unifi_db_pass').value }}"
       MONGO_USER: "unifi"
@@ -90,8 +79,6 @@ pods:
 
   - name: unpoller
     image: ghcr.io/unpoller/unpoller:v2.15.4
-    restart: unless-stopped
-    state: started
     networks:
       - name: unifi-net
     ports:

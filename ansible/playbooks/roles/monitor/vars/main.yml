@@ -4,9 +4,6 @@ monitor_pods_path: /opt/pods/monitor
 monitor_pods_def:
   - name: prometheus
     image: quay.io/prometheus/prometheus:v3.5.0
-    container_name: prometheus
-    restart: unless-stopped
-    state: started
     user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
     networks:
       - name: proxy
@@ -17,9 +14,6 @@ monitor_pods_def:
 
   - name: mktxp
     image: ghcr.io/akpw/mktxp:1.2.12
-    container_name: mktxp
-    restart: unless-stopped
-    state: started
     user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
     networks:
       - name: monitor
@@ -28,9 +22,6 @@ monitor_pods_def:
 
   - name: mysqld_exporter
     image: docker.io/prom/mysqld-exporter:v0.17.2
-    container_name: mysqld_exporter
-    restart: unless-stopped
-    state: started
     user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
     networks:
       - name: monitor
@@ -41,9 +32,6 @@ monitor_pods_def:
 
   - name: grafana
     image: docker.io/grafana/grafana:12.1.1
-    container_name: grafana
-    restart: unless-stopped
-    state: started
     user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
     networks:
       - name: proxy
@@ -55,9 +43,6 @@ monitor_pods_def:
 
   - name: loki
     image: grafana/loki:3.5.4
-    container_name: loki
-    restart: unless-stopped
-    state: started
     user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
     networks:
       - name: monitor
@@ -67,9 +52,6 @@ monitor_pods_def:
 
   - name: promtail
     image: grafana/promtail:3.5.4
-    container_name: promtail
-    restart: unless-stopped
-    state: started
     networks:
       - name: monitor
     volumes:

@@ -55,24 +55,8 @@
     mode: '0740'
   notify: Restart prometheus
 
-- name: "Create container"
-  community.docker.docker_container:
-    name: "{{ pod.name }}"
-    image: "{{ pod.image }}"
-    state: "{{ pod.state | default('started') }}"
-    restart_policy: "{{ pod.restart | default('unless-stopped') }}"
-    networks: "{{ pod.networks | default(omit) }}"
-    network_mode: "{{ pod.network_mode | default(omit) }}"
-    capabilities: "{{ pod.capabilities | default(omit) }}"
-    security_opts: "{{ pod.security_opt | default(omit) }}"
-    ports: "{{ pod.ports | default(omit) }}"
-    user: "{{ pod.user | default(omit) }}"
-    env: "{{ pod.env | default(omit) }}"
-    devices: "{{ pod.devices | default(omit) }}"
-    volumes: "{{ pod.volumes | default(omit) }}"
-    log_driver: "{{ pod.log_driver | default(omit) }}"
-    log_options: "{{ pod.log_options | default(omit) }}"
-    default_host_ip: "{{ default_host_ip }}"
+- name: "Create container" # noqa args[module]
+  community.docker.docker_container: "{{ pod | default([]) }}"
   loop: "{{ monitor_pods_def }}"
   loop_control:
     label: "{{ pod.name }}"

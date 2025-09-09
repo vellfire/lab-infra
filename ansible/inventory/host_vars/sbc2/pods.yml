@@ -1,13 +1,7 @@
 ---
-default_host_ip: ""
-
 pods:
   - name: traefik
     image: public.ecr.aws/docker/library/traefik:v3.5.1
-    restart: unless-stopped
-    state: healthy
-    security_opt:
-      - "no-new-privileges:true"
     networks:
       - name: proxy
     ports:
@@ -30,8 +24,6 @@ pods:
 
   - name: pma_ams
     image: public.ecr.aws/docker/library/phpmyadmin:5.2.2
-    restart: unless-stopped
-    state: started
     networks:
       - name: proxy
     env:
@@ -41,8 +33,6 @@ pods:
 
   - name: pma_bnt
     image: public.ecr.aws/docker/library/phpmyadmin:5.2.2
-    restart: unless-stopped
-    state: started
     networks:
       - name: proxy
     env:
@@ -52,22 +42,16 @@ pods:
 
   - name: it-tools
     image: ghcr.io/home-operations/it-tools:2024.10.22
-    restart: unless-stopped
-    state: started
     networks:
       - name: proxy
 
   - name: cyberchef
     image: ghcr.io/gchq/cyberchef:10.19.4
-    restart: unless-stopped
-    state: started
     networks:
       - name: proxy
 
   - name: scrutiny-db
     image: public.ecr.aws/docker/library/influxdb:2.7
-    restart: unless-stopped
-    state: started
     networks:
       - name: scrutiny
     volumes:
@@ -75,8 +59,6 @@ pods:
 
   - name: scrutiny-web
     image: ghcr.io/analogj/scrutiny:v0.8.1-web
-    restart: unless-stopped
-    state: started
     networks:
       - name: scrutiny
       - name: proxy
@@ -87,8 +69,6 @@ pods:
 
   - name: scrutiny-collector
     image: ghcr.io/analogj/scrutiny:v0.8.1-collector
-    restart: unless-stopped
-    state: started
     networks:
       - name: scrutiny
     capabilities:
@@ -106,8 +86,6 @@ pods:
 
   - name: media-db
     image: public.ecr.aws/docker/library/postgres:17.6
-    restart: unless-stopped
-    state: healthy
     networks:
       - name: media
     user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
@@ -119,8 +97,6 @@ pods:
 
   - name: plex
     image: ghcr.io/home-operations/plex:1.42.1
-    restart: unless-stopped
-    state: started
     networks:
       - name: media
       - name: proxy
@@ -140,8 +116,6 @@ pods:
 
   - name: overseerr
     image: ghcr.io/sct/overseerr:07dc8d755a0e94d100ecd8b1e950e43da1c0a7dd
-    restart: unless-stopped
-    state: started
     networks:
       - name: media
       - name: proxy
@@ -150,14 +124,11 @@ pods:
     user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
     env:
       LOG_LEVEL: info
-      TZ: "Europe/London"
     volumes:
       - "/opt/pods/overseerr/config:/app/config"
 
   - name: sonarr
     image: ghcr.io/home-operations/sonarr:4.0.15
-    restart: unless-stopped
-    state: started
     networks:
       - name: media
       - name: proxy
@@ -169,8 +140,6 @@ pods:
 
   - name: radarr
     image: ghcr.io/home-operations/radarr:5.28.0
-    restart: unless-stopped
-    state: started
     networks:
       - name: media
       - name: proxy
@@ -182,8 +151,6 @@ pods:
 
   - name: sabnzbd
     image: ghcr.io/home-operations/sabnzbd:4.5.3
-    restart: unless-stopped
-    state: started
     networks:
       - name: media
       - name: proxy
@@ -195,8 +162,6 @@ pods:
 
   - name: prowlarr
     image: ghcr.io/home-operations/prowlarr:2.1.0
-    restart: unless-stopped
-    state: started
     networks:
       - name: media
       - name: proxy
@@ -205,41 +170,17 @@ pods:
       - "/opt/pods/prowlarr/config:/config"
       - "/opt/shares/pods/prowlarr:/backup"
 
-  - name: iplayarr
-    image: docker.io/nikorag/iplayarr:0.7.2
-    restart: unless-stopped
-    state: absent
-    networks:
-      - name: media
-      - name: proxy
-    env:
-      PUID: "{{ ansible_facts.user_uid }}"
-      PGID: "{{ ansible_facts.user_gid }}"
-      TZ: "Europe/London"
-      DOWNLOAD_DIR: "/media/downloads/temp"
-      COMPLETE_DIR: "/media/downloads/complete"
-      HIDE_DONATE: "true"
-    volumes:
-      - "/opt/pods/iplayarr/config:/config"
-      - "/opt/shares/pods/media:/media"
-
   - name: maintainerr
     image: ghcr.io/jorenn92/maintainerr:2.19.0
-    restart: unless-stopped
-    state: started
     networks:
       - name: media
       - name: proxy
     user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
-    env:
-      TZ: "Europe/London"
     volumes:
       - "/opt/pods/maintainerr/config:/opt/data"
 
   - name: tautulli
     image: ghcr.io/home-operations/tautulli:2.15.3
-    restart: unless-stopped
-    state: started
     networks:
       - name: media
       - name: proxy
@@ -250,8 +191,6 @@ pods:
 
   - name: vaultwarden
     image: ghcr.io/dani-garcia/vaultwarden:1.34.3
-    restart: unless-stopped
-    state: started
     networks:
       - name: proxy
     user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"

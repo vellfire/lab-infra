@@ -1,14 +1,10 @@
 ---
-default_host_ip: ""
-
 standard_pod_path_prefix: "/tank/pods"
 storage_pod_path_prefix: "/tank/pods"
 
 pods:
   - name: scrutiny-collector
     image: ghcr.io/analogj/scrutiny:v0.8.1-collector
-    restart: unless-stopped
-    state: started
     capabilities:
       - SYS_ADMIN
       - SYS_RAWIO
@@ -27,12 +23,9 @@ pods:
 
   - name: bw-backup
     image: docker.io/reaper0x1/bitwarden-portal:1.0.2
-    restart: unless-stopped
-    state: started
     env:
       PUID: "{{ ansible_facts.user_uid }}"
       PGID: "{{ ansible_facts.user_gid }}"
-      TZ: "Europe/London"
       CRON_SCHEDULE: "0 0 * * *"
       ENCRYPTION_PASSWORD: "{{ lookup('ripplefcl.bwscache.secret', 'bwb_encryption').value }}"
       SOURCE_ACCOUNT: "{{ lookup('ripplefcl.bwscache.secret', 'will_email').value }}"

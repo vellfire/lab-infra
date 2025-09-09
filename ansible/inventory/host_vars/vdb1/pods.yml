@@ -1,11 +1,7 @@
 ---
-default_host_ip: ""
-
 pods:
   - name: mariadb_ams
     image: public.ecr.aws/docker/library/mariadb:10.5.23
-    restart: unless-stopped
-    state: started
     ports:
       - 15000:3306
     networks:
@@ -20,8 +16,6 @@ pods:
 
   - name: mariadb_bnt
     image: public.ecr.aws/docker/library/mariadb:10.5.23
-    restart: unless-stopped
-    state: started
     networks:
       - name: db
     ports:
@@ -34,8 +28,6 @@ pods:
 
   - name: mariadb_backup
     image: ghcr.io/tiredofit/docker-db-backup:4.1.21
-    restart: unless-stopped
-    state: started
     networks:
       - name: db
     env:
