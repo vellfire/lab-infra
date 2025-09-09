@@ -180,7 +180,7 @@ pods:
       - "/opt/pods/maintainerr/config:/opt/data"
 
   - name: tautulli
-    image: ghcr.io/home-operations/tautulli:2.15.3
+    image: ghcr.io/home-operations/tautulli:2.16.0
     networks:
       - name: media
       - name: proxy
