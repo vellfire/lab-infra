@@ -1,7 +1,7 @@
 ---
 pods:
   - name: traefik
-    image: public.ecr.aws/docker/library/traefik:v3.5.1
+    image: public.ecr.aws/docker/library/traefik:v3.5.2
     networks:
       - name: proxy
     ports:
