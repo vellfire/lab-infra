@@ -62,8 +62,8 @@ pods:
       - 3478:3478/udp
       - 10001:10001/udp
     env:
-      PUID: "{{ ansible_facts.user_uid }}"
-      PGID: "{{ ansible_facts.user_gid }}"
+      PUID: "{{ ansible_facts.user_uid | string }}"
+      PGID: "{{ ansible_facts.user_gid | string }}"
       MONGO_INITDB_ROOT_USERNAME: "root"
       MONGO_INITDB_ROOT_PASSWORD: "{{ lookup('ripplefcl.bwscache.secret', 'unifi_db_pass').value }}"
       MONGO_USER: "unifi"

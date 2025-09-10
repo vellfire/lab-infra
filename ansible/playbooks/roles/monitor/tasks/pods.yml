@@ -55,8 +55,9 @@
     mode: '0740'
   notify: Restart prometheus
 
-- name: "Create container" # noqa args[module]
-  community.docker.docker_container: "{{ pod | default([]) }}"
+- name: "Create container" # noqa args[module] 
+  community.docker.docker_container:
+  args: "{{ pod | default([]) }}"
   loop: "{{ monitor_pods_def }}"
   loop_control:
     label: "{{ pod.name }}"
