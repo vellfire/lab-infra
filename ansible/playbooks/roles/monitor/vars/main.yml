@@ -42,7 +42,7 @@ monitor_pods_def:
       - "{{ monitor_pods_path }}/grafana/data:/var/lib/grafana"
 
   - name: loki
-    image: grafana/loki:3.5.4
+    image: grafana/loki:3.5.5
     user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
     networks:
       - name: monitor
