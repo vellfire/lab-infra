@@ -255,7 +255,7 @@ pods:
 
 
   - name: immich_server
-    image: ghcr.io/immich-app/immich-server:v1.137.3
+    image: ghcr.io/immich-app/immich-server:v1.141.1
     networks:
       - name: immich
       - name: proxy
