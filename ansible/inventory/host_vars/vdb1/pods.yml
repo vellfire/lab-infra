@@ -32,6 +32,7 @@ pods:
       - name: db
     env:
       MODE: "AUTO"
+      DEBUG_MOVE_DBBACKUP: "TRUE"
       DEFAULT_BACKUP_LOCATION: "S3"
       DEFAULT_COMPRESSION_LEVEL: "9"
       DEFAULT_BACKUP_INTERVAL: "1440"
@@ -40,19 +41,19 @@ pods:
       DEFAULT_PORT: "3306"
       DEFAULT_MYSQL_CLIENT: "mariadb"
       DEFAULT_S3_BUCKET: "mariadb-bucket"
-      DEFAULT_S3_KEY_ID: "{{ lookup('ripplefcl.bwscache.secret', 'mariadb_bucket_id').value }}"
-      DEFAULT_S3_KEY_SECRET: "{{ lookup('ripplefcl.bwscache.secret', 'mariadb_bucket_secret').value }}"
-      DEFAULT_S3_REGION: "def"
-      DEFAULT_S3_HOST: "10.10.0.5:3900"
+      DEFAULT_S3_KEY_ID: "{{ lookup('ripplefcl.bwscache.secret', 'mariadb_bucket_key_id').value }}"
+      DEFAULT_S3_KEY_SECRET: "{{ lookup('ripplefcl.bwscache.secret', 'mariadb_bucket_key_secret').value }}"
+      DEFAULT_S3_REGION: "garage"
+      DEFAULT_S3_HOST: "10.10.0.3:3900"
       DEFAULT_S3_PROTOCOL: "http"
       CONTAINER_ENABLE_MONITORING: "false"
-      DB01_S3_PATH: ams
+      DB01_S3_PATH: "ams"
       DB01_TYPE: "mysql"
       DB01_HOST: "mariadb_ams"
       DB01_NAME: "ALL"
       DB01_USER: "root"
       DB01_PASS: "{{ lookup('ripplefcl.bwscache.secret', 'dad_db_root').value }}"
-      DB02_S3_PATH: bnt
+      DB02_S3_PATH: "bnt"
       DB02_TYPE: "mysql"
       DB02_HOST: "mariadb_bnt"
       DB02_NAME: "ALL"

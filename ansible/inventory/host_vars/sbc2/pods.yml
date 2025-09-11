@@ -199,6 +199,14 @@ pods:
     volumes:
       - "/opt/pods/vaultwarden/data:/data"
 
+  - name: garage
+    image: docker.io/dxflrs/garage:v2.0.0
+    network_mode: host
+    volumes:
+      - "/opt/pods/garage/config/garage.toml:/etc/garage.toml"
+      - "/opt/pods/garage/meta:/var/lib/garage/meta"
+      - "/opt/pods/garage/data:/var/lib/garage/data"
+
 pod_networks:
   - name: proxy
     driver: local
