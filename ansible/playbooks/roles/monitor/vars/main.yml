@@ -51,7 +51,7 @@ monitor_pods_def:
       - "{{ monitor_pods_path }}/loki/data:/loki"
 
   - name: promtail
-    image: grafana/promtail:3.5.4
+    image: grafana/promtail:3.5.5
     networks:
       - name: monitor
     volumes:
