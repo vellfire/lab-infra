@@ -106,7 +106,7 @@ pods:
     env:
       PLEX_ADVERTISE_URL: "{{ 'https://' + lookup('ripplefcl.bwscache.secret', 'plex_domain').value }}"
       PLEX_NO_AUTH_NETWORKS: "10.10.0.0/21, fd72:1432:d17a::/48"
-      # - PLEX_CLAIM_TOKEN=
+      PLEX_CLAIM_TOKEN: "{{ lookup('ripplefcl.bwscache.secret', 'plex_claim_token').value }}"
     volumes:
       - "/opt/pods/plex/config:/config"
       - "/opt/shares/pods/media:/media"
