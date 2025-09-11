@@ -207,6 +207,76 @@ pods:
       - "/opt/pods/garage/meta:/var/lib/garage/meta"
       - "/opt/pods/garage/data:/var/lib/garage/data"
 
+  - name: immich_machine_learning
+    image: ghcr.io/immich-app/immich-machine-learning:v1.137.3
+    networks:
+      - name: immich
+    volumes:
+      - model-cache:/cache
+      - /dev/bus/usb:/dev/bus/usb
+    devices:
+      - "/dev/dri:/dev/dri"
+    device_cgroup_rules:
+      - "c 189:* rmw"
+
+  - name: immich_redis
+    image: docker.io/redis:6.2-alpine@sha256:148bb5411c184abd288d9aaed139c98123eeb8824c5d3fce03cf721db58066d8
+    networks:
+      - name: immich
+    healthcheck:
+      test: redis-cli ping || exit 1
+
+  - name: immich_postgres
+    image: docker.io/tensorchord/pgvecto-rs:pg14-v0.2.0@sha256:739cdd626151ff1f796dc95a6591b55a714f341c737e27f045019ceabf8e8c52
+    networks:
+      - name: immich
+        aliases: database
+    env:
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "{{ lookup('ripplefcl.bwscache.secret', 'immich_db_pass').value }}"
+      POSTGRES_DB: "immich"
+      POSTGRES_INITDB_ARGS: "--data-checksums"
+    command: >-
+      postgres -c shared_preload_libraries=vectors.so
+      -c 'search_path="$$user", public, vectors'
+      -c logging_collector=on -c max_wal_size=2GB
+      -c shared_buffers=512MB -c wal_compression=on
+    volumes:
+      - "/opt/pods/immich/db:/var/lib/postgresql/data"
+    healthcheck:
+      test: >-
+        pg_isready --dbname="$${POSTGRES_DB}" --username="$${POSTGRES_USER}" || exit 1;
+        Chksum="$$(psql --dbname="$${POSTGRES_DB}" --username="$${POSTGRES_USER}" --tuples-only --no-align
+        --command='SELECT COALESCE(SUM(checksum_failures), 0) FROM pg_stat_database')";
+        echo "checksum failure count is $$Chksum"; [ "$$Chksum" = '0' ] || exit 1
+      interval: 5m
+      start_interval: 30s
+      start_period: 5m
+
+
+  - name: immich_server
+    image: ghcr.io/immich-app/immich-server:v1.137.3
+    networks:
+      - name: immich
+      - name: proxy
+    env:
+      REDIS_HOSTNAME: immich_redis
+      POSTGRES_HOSTNAME: immich_postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: "{{ lookup('ripplefcl.bwscache.secret', 'immich_db_pass').value }}"
+      POSTGRES_DB: immich
+    ports:
+      - 2283:2283
+    devices:
+      - "/dev/dri:/dev/dri"
+    volumes:
+      - "/opt/shares/pods/media/library/photos:/usr/src/app/upload"
+      - "/etc/localtime:/etc/localtime:ro"
+
+pod_volumes:
+  - name: model-cache
+    driver: local
+
 pod_networks:
   - name: proxy
     driver: local
@@ -215,4 +285,6 @@ pod_networks:
   - name: media
     driver: local
   - name: monitor
+    driver: local
+  - name: immich
     driver: local
