@@ -208,7 +208,7 @@ pods:
       - "/opt/pods/garage/data:/var/lib/garage/data"
 
   - name: immich_machine_learning
-    image: ghcr.io/immich-app/immich-machine-learning:v1.137.3
+    image: ghcr.io/immich-app/immich-machine-learning:v1.141.1
     networks:
       - name: immich
     volumes:
