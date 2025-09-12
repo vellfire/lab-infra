@@ -3,7 +3,7 @@ terraform {
   required_providers {
     incus = {
       source = "lxc/incus"
-      version = "0.4.0"
+      version = "0.5.0"
     }
     macaddress = {
       source  = "ivoronin/macaddress"
