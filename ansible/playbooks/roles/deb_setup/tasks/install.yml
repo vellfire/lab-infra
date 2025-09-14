@@ -4,11 +4,8 @@
     name:
       - git
       - vim
-      - nano
       - tmux
       - htop
-      - fzf
-      - smartmontools
       - net-tools
       - tcpdump
       - bind9-utils
@@ -25,5 +22,4 @@
       - netplan.io
       - systemd-resolved
       - python3-requests
-      - tuned
     state: present
