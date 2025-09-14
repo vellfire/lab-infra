@@ -2,8 +2,7 @@
 pods:
   - name: traefik
     image: public.ecr.aws/docker/library/traefik:v3.5.2
-    networks:
-      - name: proxy
+    networks: [{ name: proxy }]
     ports:
       - 80:80
       - 443:443
@@ -24,8 +23,7 @@ pods:
 
   - name: pma_ams
     image: public.ecr.aws/docker/library/phpmyadmin:5.2.2
-    networks:
-      - name: proxy
+    networks: [{ name: proxy }]
     env:
       PMA_HOST: vdb1:15000
       PMA_USER: "pma"
@@ -33,8 +31,7 @@ pods:
 
   - name: pma_bnt
     image: public.ecr.aws/docker/library/phpmyadmin:5.2.2
-    networks:
-      - name: proxy
+    networks: [{ name: proxy }]
     env:
       PMA_HOST: vdb1:15001
       PMA_USER: "pma"
@@ -42,20 +39,16 @@ pods:
 
   - name: it-tools
     image: ghcr.io/home-operations/it-tools:2024.10.22
-    networks:
-      - name: proxy
+    networks: [{ name: proxy }]
 
   - name: cyberchef
     image: ghcr.io/gchq/cyberchef:10.19.4
-    networks:
-      - name: proxy
+    networks: [{ name: proxy }]
 
   - name: scrutiny-db
     image: public.ecr.aws/docker/library/influxdb:2.7
-    networks:
-      - name: scrutiny
-    volumes:
-      - "/opt/pods/scrutiny-db/data:/var/lib/influxdb2"
+    networks: [{ name: scrutiny }]
+    volumes: ["/opt/pods/scrutiny-db/data:/var/lib/influxdb2"]
 
   - name: scrutiny-web
     image: ghcr.io/analogj/scrutiny:v0.8.1-web
@@ -64,13 +57,11 @@ pods:
       - name: proxy
     env:
       SCRUTINY_WEB_INFLUXDB_HOST: scrutiny-db
-    volumes:
-      - "/opt/pods/scrutiny-web/config:/opt/scrutiny/config"
+    volumes: ["/opt/pods/scrutiny-web/config:/opt/scrutiny/config"]
 
   - name: scrutiny-collector
     image: ghcr.io/analogj/scrutiny:v0.8.1-collector
-    networks:
-      - name: scrutiny
+    networks: [{ name: scrutiny }]
     capabilities:
       - SYS_ADMIN
       - SYS_RAWIO
@@ -79,15 +70,12 @@ pods:
       COLLECTOR_HOST_ID: "{{ inventory_hostname }}"
       COLLECTOR_CRON_SCHEDULE: "0 * * * *"
       COLLECTOR_RUN_STARTUP: "true"
-    volumes:
-      - "/run/udev:/run/udev:ro"
-    devices:
-      - /dev/nvme0
+    volumes: ["/run/udev:/run/udev:ro"]
+    devices: ["/dev/nvme0"]
 
   - name: media-db
     image: public.ecr.aws/docker/library/postgres:17.6
-    networks:
-      - name: media
+    networks: [{ name: media }]
     user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
     env:
       POSTGRES_USER: "media"
@@ -100,8 +88,7 @@ pods:
     networks:
       - name: media
       - name: proxy
-    ports:
-      - 32400:32400
+    ports: ["32400:32400"]
     user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
     env:
       PLEX_ADVERTISE_URL: "{{ 'https://' + lookup('ripplefcl.bwscache.secret', 'plex_domain').value }}"
@@ -111,21 +98,18 @@ pods:
       - "/opt/pods/plex/config:/config"
       - "/opt/shares/pods/media:/media"
       - "/opt/shares/pods/plex:/backup"
-    devices:
-      - "/dev/dri:/dev/dri"
+    devices: ["/dev/dri:/dev/dri"]
 
   - name: overseerr
     image: ghcr.io/sct/overseerr:07dc8d755a0e94d100ecd8b1e950e43da1c0a7dd
     networks:
       - name: media
       - name: proxy
-    ports:
-      - 5055:5055
+    ports: ["5055:5055"]
     user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
     env:
       LOG_LEVEL: info
-    volumes:
-      - "/opt/pods/overseerr/config:/app/config"
+    volumes: ["/opt/pods/overseerr/config:/app/config"]
 
   - name: sonarr
     image: ghcr.io/home-operations/sonarr:4.0.15
@@ -176,8 +160,7 @@ pods:
       - name: media
       - name: proxy
     user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
-    volumes:
-      - "/opt/pods/maintainerr/config:/opt/data"
+    volumes: ["/opt/pods/maintainerr/config:/opt/data"]
 
   - name: tautulli
     image: ghcr.io/home-operations/tautulli:2.16.0
@@ -191,13 +174,11 @@ pods:
 
   - name: vaultwarden
     image: ghcr.io/dani-garcia/vaultwarden:1.34.3
-    networks:
-      - name: proxy
+    networks: [{ name: proxy }]
     user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
     env:
       DOMAIN: "{{ lookup('ripplefcl.bwscache.secret', 'vw_domain').value }}"
-    volumes:
-      - "/opt/pods/vaultwarden/data:/data"
+    volumes: ["/opt/pods/vaultwarden/data:/data"]
 
   - name: garage
     image: docker.io/dxflrs/garage:v2.0.0
@@ -214,15 +195,12 @@ pods:
     volumes:
       - "model-cache:/cache"
       - "/dev/bus/usb:/dev/bus/usb"
-    devices:
-      - "/dev/dri:/dev/dri"
-    device_cgroup_rules:
-      - "c 189:* rmw"
+    devices: ["/dev/dri:/dev/dri"]
+    device_cgroup_rules: ["c 189:* rmw"]
 
   - name: immich_redis
     image: docker.io/valkey/valkey:8-bookworm@sha256:fea8b3e67b15729d4bb70589eb03367bab9ad1ee89c876f54327fc7c6e618571
-    networks:
-      - name: immich
+    networks: [{ name: immich }]
     exposed_ports: ["6379/tcp"]
     healthcheck:
       test: redis-cli ping || exit 1
@@ -239,8 +217,7 @@ pods:
       POSTGRES_DB: "immich"
       POSTGRES_INITDB_ARGS: "--data-checksums"
     shm_size: 128m
-    volumes:
-      - "/opt/pods/immich/db:/var/lib/postgresql/data"
+    volumes: ["/opt/pods/immich/db:/var/lib/postgresql/data"]
 
   - name: immich_server
     image: ghcr.io/immich-app/immich-server:v1.142.0
@@ -253,10 +230,8 @@ pods:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: "{{ lookup('ripplefcl.bwscache.secret', 'immich_db_pass').value }}"
       POSTGRES_DB: immich
-    ports:
-      - 2283:2283
-    devices:
-      - "/dev/dri:/dev/dri"
+    ports: ["2283:2283"]
+    devices: ["/dev/dri:/dev/dri"]
     volumes:
       - "/opt/shares/pods/media/library/photos:/usr/src/app/upload"
       - "/etc/localtime:/etc/localtime:ro"

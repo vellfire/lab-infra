@@ -13,8 +13,7 @@ pods:
       COLLECTOR_HOST_ID: "{{ inventory_hostname }}"
       COLLECTOR_CRON_SCHEDULE: "0 * * * *"
       COLLECTOR_RUN_STARTUP: "true"
-    volumes:
-      - "/run/udev:/run/udev:ro"
+    volumes: ["/run/udev:/run/udev:ro"]
     devices:
       - /dev/sda
       - /dev/sdb
@@ -41,8 +40,7 @@ pods:
       ENABLE_PRUNING: "true"
       RETENTION_DAYS: "30"
       MIN_FILES: "10"
-    volumes:
-      - "/tank/backups/bitwarden:/app/backups"
+    volumes: ["/tank/backups/bitwarden:/app/backups"]
 
   - name: garage
     image: docker.io/dxflrs/garage:v2.0.0

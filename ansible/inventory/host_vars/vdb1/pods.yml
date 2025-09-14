@@ -2,10 +2,8 @@
 pods:
   - name: mariadb_ams
     image: public.ecr.aws/docker/library/mariadb:10.5.23
-    ports:
-      - 15000:3306
-    networks:
-      - name: db
+    networks: [{ name: db }]
+    ports: ["15000:3306"]
     env:
       MARIADB_ROOT_PASSWORD: "{{ lookup('ripplefcl.bwscache.secret', 'dad_db_root').value }}"
     volumes:
@@ -16,10 +14,8 @@ pods:
 
   - name: mariadb_bnt
     image: public.ecr.aws/docker/library/mariadb:10.5.23
-    networks:
-      - name: db
-    ports:
-      - 15001:3306
+    networks: [{ name: db }]
+    ports: ["15001:3306"]
     env:
       MARIADB_ROOT_PASSWORD: "{{ lookup('ripplefcl.bwscache.secret', 'dad_db_root').value }}"
     volumes:
@@ -28,11 +24,9 @@ pods:
 
   - name: mariadb_backup
     image: ghcr.io/tiredofit/docker-db-backup:4.1.21
-    networks:
-      - name: db
+    networks: [{ name: db }]
     env:
       MODE: "AUTO"
-      DEBUG_MOVE_DBBACKUP: "TRUE"
       DEFAULT_BACKUP_LOCATION: "S3"
       DEFAULT_COMPRESSION_LEVEL: "9"
       DEFAULT_BACKUP_INTERVAL: "1440"
