@@ -212,8 +212,8 @@ pods:
     networks:
       - name: immich
     volumes:
-      - model-cache:/cache
-      - /dev/bus/usb:/dev/bus/usb
+      - "model-cache:/cache"
+      - "/dev/bus/usb:/dev/bus/usb"
     devices:
       - "/dev/dri:/dev/dri"
     device_cgroup_rules:
@@ -223,6 +223,7 @@ pods:
     image: docker.io/valkey/valkey:8-bookworm@sha256:fea8b3e67b15729d4bb70589eb03367bab9ad1ee89c876f54327fc7c6e618571
     networks:
       - name: immich
+    exposed_ports: ["6379/tcp"]
     healthcheck:
       test: redis-cli ping || exit 1
 
@@ -231,6 +232,7 @@ pods:
     networks:
       - name: immich
         aliases: database
+    exposed_ports: ["5432/tcp"]
     env:
       POSTGRES_USER: "postgres"
       POSTGRES_PASSWORD: "{{ lookup('ripplefcl.bwscache.secret', 'immich_db_pass').value }}"
