@@ -35,7 +35,7 @@ pods:
   - name: mariadb_ts6
     image: public.ecr.aws/docker/library/mariadb:11.8.3
     networks:
-      - name: ts6
+      - [{ name: ts6 }]
     env:
       MARIADB_ROOT_PASSWORD: "{{ lookup('ripplefcl.bwscache.secret', 'ts6_db_root').value }}"
       MARIADB_USER: "ts6-user"
@@ -48,8 +48,7 @@ pods:
   - name: ts6-server
     image: docker.io/teamspeaksystems/teamspeak6-server:v6.0.0-beta6
     user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
-    networks:
-      - name: ts6
+    networks: [{ name: ts6 }]
     ports:
       - "9987:9987/udp"
       - "30033:30033/tcp"
@@ -62,8 +61,7 @@ pods:
       TSSERVER_DATABASE_USERNAME: "ts6-user"
       TSSERVER_DATABASE_PASSWORD: "{{ lookup('ripplefcl.bwscache.secret', 'ts6_db_user').value }}"
       TSSERVER_DATABASE_SQL_CREATE_PATH: create_mariadb
-    volumes:
-      - "/opt/pods/ts6-server:/var/tsserver"
+    volumes: ["/opt/pods/ts6-server:/var/tsserver"]
 
 pod_networks:
   - name: proxy
