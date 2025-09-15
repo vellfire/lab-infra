@@ -26,6 +26,7 @@ pods:
 
   - name: ping-api
     image: ghcr.io/vellfire/ping-api:1.1.0
+    state: absent
     user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
     network_mode: host
     env:
@@ -34,8 +35,8 @@ pods:
 
   - name: mariadb_ts6
     image: public.ecr.aws/docker/library/mariadb:11.8.3
-    networks:
-      - [{ name: ts6 }]
+    state: absent
+    networks: [{ name: ts6 }]
     env:
       MARIADB_ROOT_PASSWORD: "{{ lookup('ripplefcl.bwscache.secret', 'ts6_db_root').value }}"
       MARIADB_USER: "ts6-user"
@@ -47,6 +48,7 @@ pods:
 
   - name: ts6-server
     image: docker.io/teamspeaksystems/teamspeak6-server:v6.0.0-beta6
+    state: absent
     user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
     networks: [{ name: ts6 }]
     ports:
