@@ -47,7 +47,7 @@ pods:
       - "/opt/pods/unifi/init-mongo.sh:/docker-entrypoint-initdb.d/init-mongo.sh:ro"
 
   - name: unifi-app
-    image: ghcr.io/linuxserver/unifi-network-application:9.3.45
+    image: ghcr.io/linuxserver/unifi-network-application:9.4.19
     networks: [{ name: unifi-net }]
     ports:
       - 8080:8080
