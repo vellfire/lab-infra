@@ -181,7 +181,7 @@ pods:
     volumes: ["/opt/pods/vaultwarden/data:/data"]
 
   - name: garage
-    image: docker.io/dxflrs/garage:v2.0.0
+    image: docker.io/dxflrs/garage:v2.1.0
     network_mode: host
     volumes:
       - "/opt/pods/garage/config/garage.toml:/etc/garage.toml"
