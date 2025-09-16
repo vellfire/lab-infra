@@ -87,7 +87,7 @@ pods:
       UP_POLLER_DEBUG: "true"
 
   - name: garage
-    image: docker.io/dxflrs/garage:v2.0.0
+    image: docker.io/dxflrs/garage:v2.1.0
     network_mode: host
     volumes:
       - "/tank/pods/garage/config/garage.toml:/etc/garage.toml"
