@@ -19,7 +19,7 @@ unix:
           ansible_user: ubuntu
         vps-fc85e1e4:
           ansible_host: vps1.ext.mcda.dev
-          ansible_user: ubuntu
+          ansible_user: automation
         nas1:
         dl1:
           ansible_user: automation

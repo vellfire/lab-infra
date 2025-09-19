@@ -7,4 +7,4 @@ req_garage: true
 req_meshmon: true
 
 nut_client_ups: will-office-eaton
-meshmon_node_id: will
+meshmon_node_id: will-lab-home

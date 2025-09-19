@@ -5,4 +5,4 @@ req_libvirt: false
 req_monitor: true
 req_meshmon: true
 
-meshmon_node_id: will☁️
+meshmon_node_id: will-lab-ovh
