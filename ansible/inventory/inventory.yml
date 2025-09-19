@@ -21,8 +21,8 @@ unix:
           ansible_host: vps1.ext.mcda.dev
           ansible_user: ubuntu
         nas1:
-        # dl1:
-          # ansible_user: automation
+        dl1:
+          ansible_user: automation
         kvm1:
         vwkr[1:3]:
           ansible_user: automation

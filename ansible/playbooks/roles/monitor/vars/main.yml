@@ -72,7 +72,6 @@ monitor_prometheus_config:
           - 'vwkr1:9100'
           - 'vwkr2:9100'
           - 'vwkr3:9100'
-          - 'vgm1:9100'
           - 'vdb1:9100'
           - 'homeassistant:9100'
           - "{{ lookup('ripplefcl.bwscache.secret', 'vps1_domain').value }}:9100"

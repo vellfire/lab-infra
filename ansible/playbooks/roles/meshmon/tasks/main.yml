@@ -1,0 +1,3 @@
+---
+- name: Include config task
+  ansible.builtin.include_tasks: config.yml

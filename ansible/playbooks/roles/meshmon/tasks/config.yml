@@ -1,0 +1,19 @@
+---
+- name: "Create container config directory"
+  become: true
+  ansible.builtin.file:
+    path: "{{ standard_pod_path_prefix }}/meshmon/config"
+    state: directory
+    recurse: true
+    mode: '0740'
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+
+- name: Generate nodeconf.yml
+  become: true
+  ansible.builtin.template:
+    src: nodeconf.yml.j2
+    dest: "{{ standard_pod_path_prefix }}/meshmon/config/nodeconf.yml"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: '0740'

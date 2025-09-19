@@ -90,6 +90,19 @@
       tags:
         - docker
 
+    - name: Configure meshmon
+      when: req_meshmon | default(false)
+      ansible.builtin.include_role:
+        name: meshmon
+        apply:
+          become: true
+          tags:
+            - docker
+            - meshmon
+      tags:
+        - docker
+        - meshmon
+
     - name: Setup pods
       when:
         - pods is defined
