@@ -95,7 +95,7 @@ pods:
       - "/tank/pods/garage/data:/var/lib/garage/data"
 
   - name: meshmon
-    image: ghcr.io/ripplefcl/meshmon:v2.0.4
+    image: ghcr.io/ripplefcl/meshmon:v2.0.5
     user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
     ports: ["8010:8000"]
     volumes: ["{{ standard_pod_path_prefix }}/meshmon/config:/app/config"]
