@@ -20,7 +20,7 @@ pods:
       - "/opt/pods/traefik/config/acme.json:/acme.json"
 
   - name: immich-public-proxy
-    image: ghcr.io/alangrainger/immich-public-proxy:1.13.1
+    image: ghcr.io/alangrainger/immich-public-proxy:1.13.2
     network_mode: host
     env:
       IMMICH_URL: "http://[fd72:1432:d17a:0:be24:11ff:fe8a:aa24]:2283"
