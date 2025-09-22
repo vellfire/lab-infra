@@ -123,7 +123,7 @@ pods:
       - "/opt/shares/pods/sonarr:/backup"
 
   - name: radarr
-    image: ghcr.io/home-operations/radarr:5.28.0
+    image: ghcr.io/home-operations/radarr:6.0.0
     networks:
       - name: media
       - name: proxy
