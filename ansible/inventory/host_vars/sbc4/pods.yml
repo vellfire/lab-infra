@@ -33,7 +33,7 @@ pods:
       - /dev/sdc
 
   - name: unifi-db
-    image: public.ecr.aws/docker/library/mongo:8.0.13
+    image: public.ecr.aws/docker/library/mongo:8.0.14
     networks: [{ name: unifi-net }]
     env:
       MONGO_INITDB_ROOT_USERNAME: "root"
