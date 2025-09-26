@@ -1,7 +1,7 @@
 ---
 pods:
   - name: traefik
-    image: public.ecr.aws/docker/library/traefik:v3.5.2
+    image: public.ecr.aws/docker/library/traefik:3.5.3
     networks: [{ name: proxy }]
     ports:
       - 80:80

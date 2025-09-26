@@ -3,7 +3,7 @@ standard_pod_path_prefix: "/opt/pods"
 
 pods:
   - name: traefik
-    image: public.ecr.aws/docker/library/traefik:v3.5.2
+    image: public.ecr.aws/docker/library/traefik:3.5.3
     network_mode: host
     env:
       BUNNY_API_KEY: "{{ lookup('ripplefcl.bwscache.secret', 'bunny_api').value }}"
