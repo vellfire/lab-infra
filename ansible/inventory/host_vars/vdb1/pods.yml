@@ -23,7 +23,7 @@ pods:
       - "/opt/pods/mariadb_bnt/backup:/backup"
 
   - name: media-db
-    image: public.ecr.aws/docker/library/postgres:17.6
+    image: public.ecr.aws/docker/library/postgres:18.0
     networks: [{ name: db }]
     ports: ["15002:5432"]
     user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
