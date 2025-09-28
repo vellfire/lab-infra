@@ -3,20 +3,14 @@ variable "vm_pet_cfg" {
     name   = string
     cpus   = number
     memory = string
-    vlan50 = bool
   }))
   default = {
-    "dl1"  = { name = "dl1", cpus = 2, memory = "2GiB", vlan50 = true }
-    "vdb1" = { name = "vdb1", cpus = 4, memory = "8GiB", vlan50 = false }
+    "vdb1" = { name = "vdb1", cpus = 4, memory = "8GiB"}
+    "vin1" = { name = "vin1", cpus = 2, memory = "2GiB"}
   }
 }
 
 resource "macaddress" "vm_pet_mac_vlan1" {
-  for_each = var.vm_pet_cfg
-  prefix   = [16, 102, 106]
-}
-
-resource "macaddress" "vm_pet_mac_vlan50" {
   for_each = var.vm_pet_cfg
   prefix   = [16, 102, 106]
 }
@@ -67,8 +61,6 @@ resource "incus_instance" "vm_pet" {
       {
         name       = each.value.name,
         vlan1_mac  = macaddress.vm_pet_mac_vlan1[each.key].address,
-        vlan50_mac = macaddress.vm_pet_mac_vlan50[each.key].address,
-        vlan50     = each.value.vlan50
     })
   }
 
@@ -99,19 +91,6 @@ resource "incus_instance" "vm_pet" {
     properties = {
       network = "incusbr0"
       hwaddr  = macaddress.vm_pet_mac_vlan1[each.key].address
-    }
-  }
-
-  dynamic "device" {
-    for_each = each.value.vlan50 ? [1] : []
-    content {
-      name = "incusbr50"
-      type = "nic"
-
-      properties = {
-        network = "incusbr50"
-        hwaddr  = macaddress.vm_pet_mac_vlan50[each.key].address
-      }
     }
   }
 }

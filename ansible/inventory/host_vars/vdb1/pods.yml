@@ -22,7 +22,18 @@ pods:
       - "/opt/pods/mariadb_bnt/data:/var/lib/mysql"
       - "/opt/pods/mariadb_bnt/backup:/backup"
 
-  - name: mariadb_backup
+  - name: media-db
+    image: public.ecr.aws/docker/library/postgres:17.6
+    networks: [{ name: db }]
+    ports: ["15002:5432"]
+    user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
+    env:
+      POSTGRES_USER: "media"
+      POSTGRES_PASSWORD: "{{ lookup('ripplefcl.bwscache.secret', 'media_db_pass').value }}"
+    volumes:
+      - "/opt/pods/media-db/pgdata:/var/lib/postgresql/data"
+
+  - name: db_backup
     image: ghcr.io/tiredofit/docker-db-backup:4.1.21
     networks: [{ name: db }]
     env:
@@ -32,7 +43,6 @@ pods:
       DEFAULT_BACKUP_INTERVAL: "1440"
       DEFAULT_BACKUP_BEGIN: "0000"
       DEFAULT_CLEANUP_TIME: "10080"
-      DEFAULT_PORT: "3306"
       DEFAULT_MYSQL_CLIENT: "mariadb"
       DEFAULT_S3_BUCKET: "mariadb-bucket"
       DEFAULT_S3_KEY_ID: "{{ lookup('ripplefcl.bwscache.secret', 'mariadb_bucket_key_id').value }}"
@@ -53,6 +63,12 @@ pods:
       DB02_NAME: "ALL"
       DB02_USER: "root"
       DB02_PASS: "{{ lookup('ripplefcl.bwscache.secret', 'dad_db_root').value }}"
+      DB03_S3_PATH: "media"
+      DB03_TYPE: "pgsql"
+      DB03_HOST: "media-db"
+      DB03_NAME: "ALL"
+      DB03_USER: "media"
+      DB03_PASS: "{{ lookup('ripplefcl.bwscache.secret', 'media_db_pass').value }}"
 
 pod_networks:
   - name: db

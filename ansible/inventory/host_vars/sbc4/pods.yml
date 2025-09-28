@@ -9,7 +9,6 @@ pods:
     network_mode: host
     env:
       LOG_LEVEL: info
-      INSTANCE_IP: "{{ ansible_default_ipv4.address }}"
     log_driver: json-file
     log_options:
       max-size: "10m"
@@ -97,7 +96,7 @@ pods:
   - name: meshmon
     image: ghcr.io/ripplefcl/meshmon:v3.1.1
     user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
-    ports: ["8010:8000"]
+    ports: ["8000:8000"]
     volumes: ["{{ standard_pod_path_prefix }}/meshmon/config:/app/config"]
 
 pod_volumes:

@@ -20,6 +20,7 @@ pods:
       - "~/pods/traefik/config/traefik.yml:/traefik.yml:ro"
       - "~/pods/traefik/config/providers:/providers:ro"
       - "~/pods/traefik/config/acme.json:/acme.json"
+    state: absent
 
   - name: pma_ams
     image: public.ecr.aws/docker/library/phpmyadmin:5.2.2
@@ -40,10 +41,12 @@ pods:
   - name: it-tools
     image: ghcr.io/home-operations/it-tools:2024.10.22
     networks: [{ name: proxy }]
+    state: absent
 
   - name: cyberchef
     image: ghcr.io/gchq/cyberchef:10.19.4
     networks: [{ name: proxy }]
+    state: absent
 
   - name: scrutiny-db
     image: public.ecr.aws/docker/library/influxdb:2.7
@@ -72,16 +75,6 @@ pods:
       COLLECTOR_RUN_STARTUP: "true"
     volumes: ["/run/udev:/run/udev:ro"]
     devices: ["/dev/nvme0"]
-
-  - name: media-db
-    image: public.ecr.aws/docker/library/postgres:17.6
-    networks: [{ name: media }]
-    user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
-    env:
-      POSTGRES_USER: "media"
-      POSTGRES_PASSWORD: "{{ lookup('ripplefcl.bwscache.secret', 'media_db_pass').value }}"
-    volumes:
-      - "/opt/pods/media-db/pgdata:/var/lib/postgresql/data"
 
   - name: plex
     image: ghcr.io/home-operations/plex:1.42.2
