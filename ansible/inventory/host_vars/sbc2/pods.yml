@@ -86,7 +86,7 @@ pods:
       - "/opt/shares/pods/sonarr:/backup"
 
   - name: radarr
-    image: ghcr.io/home-operations/radarr:6.0.0
+    image: ghcr.io/home-operations/radarr:6.0.1
     networks:
       - name: media
       - name: proxy
