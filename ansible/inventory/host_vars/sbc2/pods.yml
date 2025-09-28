@@ -1,27 +1,5 @@
 ---
 pods:
-  - name: traefik
-    image: public.ecr.aws/docker/library/traefik:3.5.3
-    networks: [{ name: proxy }]
-    ports:
-      - 80:80
-      - 443:443
-    user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
-    env:
-      BUNNY_API_KEY: "{{ lookup('ripplefcl.bwscache.secret', 'bunny_api').value }}"
-      BUNNY_POLLING_TIMEOUT: "600"
-      BUNNY_POLLING_INTERVAL: "5"
-      BUNNY_TTL: "3600"
-      CF_API_EMAIL: "{{ lookup('ripplefcl.bwscache.secret', 'will_email').value }}"
-      CF_API_KEY: "{{ lookup('ripplefcl.bwscache.secret', 'cf_token').value }}"
-    volumes:
-      - "/etc/localtime:/etc/localtime:ro"
-      - "/var/run/docker.sock:/var/run/docker.sock:ro"
-      - "~/pods/traefik/config/traefik.yml:/traefik.yml:ro"
-      - "~/pods/traefik/config/providers:/providers:ro"
-      - "~/pods/traefik/config/acme.json:/acme.json"
-    state: absent
-
   - name: pma_ams
     image: public.ecr.aws/docker/library/phpmyadmin:5.2.2
     networks: [{ name: proxy }]
@@ -38,16 +16,6 @@ pods:
       PMA_USER: "pma"
       PMA_PASSWORD: "{{ lookup('ripplefcl.bwscache.secret', 'pma_pass').value }}"
 
-  - name: it-tools
-    image: ghcr.io/home-operations/it-tools:2024.10.22
-    networks: [{ name: proxy }]
-    state: absent
-
-  - name: cyberchef
-    image: ghcr.io/gchq/cyberchef:10.19.4
-    networks: [{ name: proxy }]
-    state: absent
-
   - name: scrutiny-db
     image: public.ecr.aws/docker/library/influxdb:2.7
     networks: [{ name: scrutiny }]
@@ -58,6 +26,7 @@ pods:
     networks:
       - name: scrutiny
       - name: proxy
+    ports: ["8934:8080"]
     env:
       SCRUTINY_WEB_INFLUXDB_HOST: scrutiny-db
     volumes: ["/opt/pods/scrutiny-web/config:/opt/scrutiny/config"]
@@ -109,6 +78,7 @@ pods:
     networks:
       - name: media
       - name: proxy
+    ports: ["8989:8989"]
     user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
     volumes:
       - "/opt/pods/sonarr/config:/config"
@@ -120,6 +90,7 @@ pods:
     networks:
       - name: media
       - name: proxy
+    ports: ["7878:7878"]
     user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
     volumes:
       - "/opt/pods/radarr/config:/config"
@@ -132,6 +103,7 @@ pods:
       - name: media
       - name: proxy
     user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
+    ports: ["8238:8080"]
     volumes:
       - "/opt/pods/sabnzbd/config:/config"
       - "/opt/shares/pods/media:/media"
@@ -142,6 +114,7 @@ pods:
     networks:
       - name: media
       - name: proxy
+    ports: ["9696:9696"]
     user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
     volumes:
       - "/opt/pods/prowlarr/config:/config"
@@ -152,6 +125,7 @@ pods:
     networks:
       - name: media
       - name: proxy
+    ports: ["6246:6246"]
     user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
     volumes: ["/opt/pods/maintainerr/config:/opt/data"]
 
@@ -160,6 +134,7 @@ pods:
     networks:
       - name: media
       - name: proxy
+    ports: ["8181:8181"]
     user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
     volumes:
       - "/opt/pods/tautulli/config:/config"
@@ -169,6 +144,7 @@ pods:
     image: ghcr.io/dani-garcia/vaultwarden:1.34.3
     networks: [{ name: proxy }]
     user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
+    ports: ["8723:80"]
     env:
       DOMAIN: "{{ lookup('ripplefcl.bwscache.secret', 'vw_domain').value }}"
     volumes: ["/opt/pods/vaultwarden/data:/data"]
@@ -228,6 +204,23 @@ pods:
     volumes:
       - "/opt/shares/pods/media/library/photos:/usr/src/app/upload"
       - "/etc/localtime:/etc/localtime:ro"
+
+  - name: zipline
+    image: ghcr.io/diced/zipline:4.3.1
+    ports: ["3020:3000"]
+    user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
+    env:
+      CORE_SECRET: "{{ lookup('ripplefcl.bwscache.secret', 'zipline_core_secret').value }}"
+      DATABASE_URL: "{{ 'postgresql://media:' ~ lookup('ripplefcl.bwscache.secret', 'media_db_pass').value ~ '@vdb1:15002/zipline' }}"
+    volumes:
+      - "/opt/pods/zipline/uploads:/zipline/uploads"
+      - "/opt/pods/zipline/public:/zipline/public"
+      - "/opt/pods/zipline/themes:/zipline/themes"
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://zipline:3000/api/healthcheck"]
+      interval: 15s
+      timeout: 2s
+      retries: 2
 
 pod_volumes:
   - name: model-cache

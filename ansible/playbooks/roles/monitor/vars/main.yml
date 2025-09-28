@@ -8,6 +8,7 @@ monitor_pods_def:
     networks:
       - name: proxy
       - name: monitor
+    ports: ["9090:9090"]
     volumes:
       - "{{ monitor_pods_path }}/prometheus/config/prometheus.yml:/etc/prometheus/prometheus.yml:ro"
       - "{{ monitor_pods_path }}/prometheus/data:/prometheus"
@@ -36,6 +37,7 @@ monitor_pods_def:
     networks:
       - name: proxy
       - name: monitor
+    ports: ["3000:3000"]
     env:
       GF_INSTALL_PLUGINS: grafana-clock-panel,natel-discrete-panel,grafana-piechart-panel
     volumes:
@@ -103,7 +105,7 @@ monitor_prometheus_config:
   - job_name: mysql
     metrics_path: /probe
     static_configs:
-      - targets: ["10.10.0.185:15000"]
+      - targets: ["vdb1:15000"]
     relabel_configs:
       - source_labels: [__address__]
         target_label: __param_target
