@@ -54,7 +54,7 @@ pods:
     user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
     env:
       PLEX_ADVERTISE_URL: "{{ 'https://' + lookup('ripplefcl.bwscache.secret', 'plex_domain').value }}"
-      PLEX_NO_AUTH_NETWORKS: "10.10.0.0/21, fd72:1432:d17a::/48"
+      PLEX_NO_AUTH_NETWORKS: "10.10.0.0/21, 2001:8b0:1947::/48"
       PLEX_CLAIM_TOKEN: "{{ lookup('ripplefcl.bwscache.secret', 'plex_claim_token').value }}"
     volumes:
       - "/opt/pods/plex/config:/config"

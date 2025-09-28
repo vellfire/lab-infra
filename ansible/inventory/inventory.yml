@@ -10,16 +10,6 @@ unix:
       hosts:
         sbc2:
         sbc4:
-        # vps1:
-        vps-0b70285a:
-          ansible_host: vps-0b70285a.vps.ovh.net
-          ansible_user: ubuntu
-        vps-69db86d9:
-          ansible_host: vps-69db86d9.vps.ovh.net
-          ansible_user: ubuntu
-        vps-fc85e1e4:
-          ansible_host: vps1.ext.mcda.dev
-          ansible_user: automation
         nas1:
         kvm1:
         vwkr[1:3]:
@@ -50,10 +40,3 @@ unix:
       hosts:
         vwkr[1:3]:
           ansible_user: automation
-
-    remote:
-      hosts:
-        # vps1:
-        vps-0b70285a:
-        vps-69db86d9:
-        vps-fc85e1e4:
