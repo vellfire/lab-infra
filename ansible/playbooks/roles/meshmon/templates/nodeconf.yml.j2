@@ -1,6 +1,10 @@
 ---
 networks:
-  - directory: {{ meshmon_directory }}
+  - directory: test
     node_id: {{ meshmon_node_id }}
-    config_type: {{ meshmon_config_type }}
-    git_repo: {{ meshmon_git_repo }}
+    config_type: git
+    git_repo: https://github.com/Overengineers-Anonymous/labbers-meshmon-config.git
+  - directory: meshmon-public-network
+    node_id: {{ meshmon_node_id }}
+    config_type: git
+    git_repo: https://github.com/rippleFCL/meshmon-public-network.git

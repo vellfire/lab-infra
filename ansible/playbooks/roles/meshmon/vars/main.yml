@@ -1,4 +1,1 @@
 ---
-meshmon_directory: test
-meshmon_config_type: git
-meshmon_git_repo: https://github.com/rippleFCL/distmon-test.git
