@@ -22,7 +22,7 @@ monitor_pods_def:
       - "{{ monitor_pods_path }}/mktxp/config:/mktxp"
 
   - name: mysqld_exporter
-    image: docker.io/prom/mysqld-exporter:v0.17.2
+    image: docker.io/prom/mysqld-exporter:v0.18.0
     user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
     networks:
       - name: monitor
