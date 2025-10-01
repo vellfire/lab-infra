@@ -46,18 +46,55 @@
         - setup
         - all
 
-    - name: Install node exporter
-      when:
-        - req_monitor | default(false)
-        - ansible_facts.services['node_exporter.service'] is not defined
+    - name: Setup Alloy
+      when: req_monitor | default(false)
+      tags:
+        - prometheus
       ansible.builtin.include_role:
-        name: prometheus.prometheus.node_exporter
+        name: grafana.grafana.alloy
         apply:
           become: true
           tags:
             - prometheus
-      tags:
-        - prometheus
+      vars:
+        alloy_config: |
+            prometheus.exporter.unix "node" {
+              cpu {}
+              disk {}
+              ethtool {}
+              hwmon {}
+              ntp {}
+              netclass {}
+              netstat {}
+              perf {}
+              sysctl {}
+              systemd {}
+              netdev {
+              device_exclude = "^(docker.*|br-.*|veth.*|tap[0-9A-Za-z]+)$"
+              }
+              filesystem {
+                mount_points_exclude = "^/(dev|proc|run/credentials/.+|sys|var/lib/docker/.+|opt/shares/.+)($|/)"
+              }
+            }
+
+            prometheus.scrape "node" {
+              targets         = prometheus.exporter.unix.node.targets
+              job_name        = "node-exporter"
+              scrape_interval = "15s"
+              forward_to      = [prometheus.relabel.relabel.receiver]
+            }
+
+            prometheus.relabel "relabel" {
+              rule {
+              target_label = "instance"
+              replacement  = env("HOSTNAME")
+              }
+              forward_to = [prometheus.remote_write.prom.receiver]
+            }
+
+            prometheus.remote_write "prom" {
+              endpoint { url = "https://prom.mcda.dev/api/v1/write" }
+            }
 
     - name: Setup NUT client
       when: req_nut | default(false)

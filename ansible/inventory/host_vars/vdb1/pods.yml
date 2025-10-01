@@ -30,8 +30,16 @@ pods:
     env:
       POSTGRES_USER: "media"
       POSTGRES_PASSWORD: "{{ lookup('ripplefcl.bwscache.secret', 'media_db_pass').value }}"
+    volumes: ["/opt/pods/media-db/pgdata:/var/lib/postgresql/data"]
+
+  - name: alloy
+    image: docker.io/grafana/alloy:v1.10.2
+    ports: ["12345:12345"]
+    command: "run --server.http.listen-addr=0.0.0.0:12345 --storage.path=/var/lib/alloy/data /etc/alloy/config.alloy"
     volumes:
-      - "/opt/pods/media-db/pgdata:/var/lib/postgresql/data"
+      - "/opt/pods/alloy/data:/var/lib/alloy/data"
+      - "/opt/pods/alloy/config/config.alloy:/etc/alloy/config.alloy"
+    state: absent
 
   - name: db_backup
     image: ghcr.io/tiredofit/docker-db-backup:4.1.21

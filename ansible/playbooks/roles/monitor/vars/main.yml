@@ -9,6 +9,10 @@ monitor_pods_def:
       - name: proxy
       - name: monitor
     ports: ["9090:9090"]
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
+      - "--web.enable-remote-write-receiver"
     volumes:
       - "{{ monitor_pods_path }}/prometheus/config/prometheus.yml:/etc/prometheus/prometheus.yml:ro"
       - "{{ monitor_pods_path }}/prometheus/data:/prometheus"
@@ -48,6 +52,7 @@ monitor_pods_def:
     user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
     networks:
       - name: monitor
+    ports: ["3100:3100"]
     volumes:
       - "{{ monitor_pods_path }}/loki/config:/mnt/config"
       - "{{ monitor_pods_path }}/loki/data:/loki"
