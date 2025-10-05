@@ -70,16 +70,6 @@ monitor_prometheus_config:
     scheme: http
     static_configs:
       - targets:
-          - 'sbc2:9100'
-          - 'sbc4:9100'
-          - 'nas1:9100'
-          - 'kvm1:9100'
-          - 'vin1:9100'
-          - 'vws1:9100'
-          - 'vwkr1:9100'
-          - 'vwkr2:9100'
-          - 'vwkr3:9100'
-          - 'vdb1:9100'
           - 'homeassistant:9100'
     relabel_configs:
       - source_labels: [__address__]

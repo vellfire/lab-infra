@@ -46,6 +46,22 @@
         - setup
         - all
 
+    - name: Setup NTP
+      when: req_ntp | default(false)
+      tags: ["time"]
+      ansible.builtin.include_role:
+        name: geerlingguy.ntp
+        apply:
+          become: true
+          tags:
+            - time
+      vars:
+        ntp_enabled: true
+        ntp_timezone: "Europe/London"
+        ntp_manage_config: true
+        ntp_servers:
+          - "10.10.0.1"
+
     - name: Setup Alloy
       when: req_monitor | default(false)
       tags:
@@ -57,44 +73,113 @@
           tags:
             - prometheus
       vars:
+        alloy_env_file_vars:
+          CUSTOM_ARGS: "--disable-reporting"
         alloy_config: |
-            prometheus.exporter.unix "node" {
-              cpu {}
-              disk {}
-              ethtool {}
-              hwmon {}
-              ntp {}
-              netclass {}
-              netstat {}
-              perf {}
-              sysctl {}
-              systemd {}
-              netdev {
-              device_exclude = "^(docker.*|br-.*|veth.*|tap[0-9A-Za-z]+)$"
-              }
-              filesystem {
-                mount_points_exclude = "^/(dev|proc|run/credentials/.+|sys|var/lib/docker/.+|opt/shares/.+)($|/)"
-              }
+          prometheus.exporter.unix "node" {
+            cpu {
+              guest = {{ (ansible_facts.virtualization_role == 'guest') | lower }}
             }
-
-            prometheus.scrape "node" {
-              targets         = prometheus.exporter.unix.node.targets
-              job_name        = "node-exporter"
-              scrape_interval = "15s"
-              forward_to      = [prometheus.relabel.relabel.receiver]
+            disk {}
+            ethtool {}
+            hwmon {}
+            ntp {}
+            netclass {}
+            netstat {}
+            perf {}
+            sysctl {}
+            systemd {}
+            vmstat {}
+            netdev {
+                device_exclude = "^(docker.*|br-.*|veth.*|tap.*|cni-podman.*|podman.*|tailscale.*)$"
             }
+            filesystem {
+              mount_points_exclude = "^/(dev|proc|run/credentials/.+|sys|var/lib/docker/.+|opt/shares/.+)($|/)"
+            }
+          }
 
-            prometheus.relabel "relabel" {
-              rule {
+          prometheus.scrape "node" {
+            targets         = prometheus.exporter.unix.node.targets
+            job_name        = "node-exporter"
+            scrape_interval = "15s"
+            forward_to      = [prometheus.relabel.node.receiver]
+          }
+
+          prometheus.relabel "node" {
+            rule {
               target_label = "instance"
               replacement  = env("HOSTNAME")
+            }
+            forward_to = [prometheus.remote_write.prom.receiver]
+          }
+
+          prometheus.remote_write "prom" {
+            endpoint {
+              url = "https://prom.mcda.dev/api/v1/write"
+            }
+          }
+
+          loki.source.journal "systemd" {
+            max_age = "12h"
+            labels = {
+              job  = "systemd-journal",
+              host = env("HOSTNAME"),
+              source = "systemd",
+            }
+            forward_to = [loki.process.systemd.receiver]
+          }
+
+          loki.process "systemd" {
+            stage.static_labels {
+              values = {
+                agent = "alloy",
+                log_type = "systemd",
               }
-              forward_to = [prometheus.remote_write.prom.receiver]
             }
 
-            prometheus.remote_write "prom" {
-              endpoint { url = "https://prom.mcda.dev/api/v1/write" }
+            stage.match {
+              selector = "{job=\"systemd-journal\"}"
+              stage.static_labels {
+                values = {
+                  service_type = "system",
+                }
+              }
             }
+
+            forward_to = [loki.write.loki.receiver]
+          }
+
+          loki.source.file "varlog" {
+            targets = [
+              { __path__ = "/var/log/*.log", job = "linux-varlog", host = env("HOSTNAME"), source = "file" },
+              { __path__ = "/var/log/syslog", job = "linux-syslog", host = env("HOSTNAME"), source = "file" },
+              { __path__ = "/var/log/auth.log", job = "linux-auth", host = env("HOSTNAME"), source = "file" },
+            ]
+            forward_to = [loki.process.file_logs.receiver]
+          }
+
+          loki.process "file_logs" {
+            stage.static_labels {
+              values = {
+                agent = "alloy",
+                log_type = "file",
+              }
+            }
+            forward_to = [loki.write.loki.receiver]
+          }
+
+          loki.process "add_labels" {
+            stage.static_labels {
+              values = { agent = "alloy" }
+            }
+            forward_to = [loki.write.loki.receiver]
+          }
+
+          loki.write "loki" {
+            endpoint {
+              url = "https://loki.mcda.dev/loki/api/v1/push"
+            }
+          }
 
     - name: Setup NUT client
       when: req_nut | default(false)

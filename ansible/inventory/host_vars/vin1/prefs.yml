@@ -4,3 +4,4 @@ req_docker: false
 req_libvirt: false
 req_monitor: true
 req_meshmon: false
+req_ntp: true
