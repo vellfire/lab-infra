@@ -16,7 +16,7 @@ docker_users:
   - "{{ automation_user }}"
 
 # Nut Client Configuration
-nut_client_server: homeassistant
+nut_client_server: sbc1
 nut_client_username: observer
 nut_client_state: started
 nut_client_enabled: true
