@@ -8,6 +8,8 @@ unix:
 
     linux:
       hosts:
+        sbc1:
+          ansible_user: automation
         sbc2:
         sbc4:
         nas1:
@@ -23,6 +25,8 @@ unix:
 
     home:
       hosts:
+        sbc1:
+          ansible_user: automation
         sbc2:
         sbc4:
         nas1:

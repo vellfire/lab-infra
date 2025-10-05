@@ -2,7 +2,6 @@
 pods:
   - name: pma_ams
     image: public.ecr.aws/docker/library/phpmyadmin:5.2.2
-    networks: [{ name: proxy }]
     env:
       PMA_HOST: vdb1:15000
       PMA_USER: "pma"
@@ -10,7 +9,6 @@ pods:
 
   - name: pma_bnt
     image: public.ecr.aws/docker/library/phpmyadmin:5.2.2
-    networks: [{ name: proxy }]
     env:
       PMA_HOST: vdb1:15001
       PMA_USER: "pma"
@@ -47,9 +45,7 @@ pods:
 
   - name: plex
     image: ghcr.io/home-operations/plex:1.42.2
-    networks:
-      - name: media
-      - name: proxy
+    networks: [{ name: media }]
     ports: ["32400:32400"]
     user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
     env:
@@ -64,9 +60,7 @@ pods:
 
   - name: overseerr
     image: ghcr.io/sct/overseerr:07dc8d755a0e94d100ecd8b1e950e43da1c0a7dd
-    networks:
-      - name: media
-      - name: proxy
+    networks: [{ name: media }]
     ports: ["5055:5055"]
     user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
     env:
@@ -75,9 +69,7 @@ pods:
 
   - name: sonarr
     image: ghcr.io/home-operations/sonarr:4.0.15
-    networks:
-      - name: media
-      - name: proxy
+    networks: [{ name: media }]
     ports: ["8989:8989"]
     user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
     volumes:
@@ -87,9 +79,7 @@ pods:
 
   - name: radarr
     image: ghcr.io/home-operations/radarr:6.0.1
-    networks:
-      - name: media
-      - name: proxy
+    networks: [{ name: media }]
     ports: ["7878:7878"]
     user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
     volumes:
@@ -99,9 +89,7 @@ pods:
 
   - name: sabnzbd
     image: ghcr.io/home-operations/sabnzbd:4.5.3
-    networks:
-      - name: media
-      - name: proxy
+    networks: [{ name: media }]
     user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
     ports: ["8238:8080"]
     volumes:
@@ -111,9 +99,7 @@ pods:
 
   - name: prowlarr
     image: ghcr.io/home-operations/prowlarr:2.1.2
-    networks:
-      - name: media
-      - name: proxy
+    networks: [{ name: media }]
     ports: ["9696:9696"]
     user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
     volumes:
@@ -122,18 +108,14 @@ pods:
 
   - name: maintainerr
     image: ghcr.io/jorenn92/maintainerr:2.19.0
-    networks:
-      - name: media
-      - name: proxy
+    networks: [{ name: media }]
     ports: ["6246:6246"]
     user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
     volumes: ["/opt/pods/maintainerr/config:/opt/data"]
 
   - name: tautulli
     image: ghcr.io/home-operations/tautulli:2.16.0
-    networks:
-      - name: media
-      - name: proxy
+    networks: [{ name: media }]
     ports: ["8181:8181"]
     user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
     volumes:
@@ -159,8 +141,7 @@ pods:
 
   - name: immich-machine-learning
     image: ghcr.io/immich-app/immich-machine-learning:v2.0.0
-    networks:
-      - name: immich
+    networks: [{ name: immich }]
     volumes:
       - "model-cache:/cache"
       - "/dev/bus/usb:/dev/bus/usb"
@@ -190,9 +171,7 @@ pods:
 
   - name: immich_server
     image: ghcr.io/immich-app/immich-server:v2.0.0
-    networks:
-      - name: immich
-      - name: proxy
+    networks: [{ name: immich }]
     env:
       REDIS_HOSTNAME: immich_redis
       POSTGRES_HOSTNAME: immich_postgres
