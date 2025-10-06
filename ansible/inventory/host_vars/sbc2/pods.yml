@@ -78,7 +78,7 @@ pods:
       - "/opt/shares/pods/sonarr:/backup"
 
   - name: radarr
-    image: ghcr.io/home-operations/radarr:6.0.1
+    image: ghcr.io/home-operations/radarr:6.0.2
     networks: [{ name: media }]
     ports: ["7878:7878"]
     user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
