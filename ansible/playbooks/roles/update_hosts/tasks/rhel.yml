@@ -2,7 +2,7 @@
 - name: Upgrade using dnf
   ansible.builtin.dnf:
     state: latest
-    name: '*' # noqa package-latest
+    name: '*'  # noqa package-latest
 
 - name: DNF autoremove packages
   ansible.builtin.dnf:

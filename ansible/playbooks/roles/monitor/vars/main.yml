@@ -5,9 +5,7 @@ monitor_pods_def:
   - name: prometheus
     image: quay.io/prometheus/prometheus:v3.6.0
     user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
-    networks:
-      - name: proxy
-      - name: monitor
+    networks: [{name: monitor}]
     ports: ["9090:9090"]
     command:
       - "--config.file=/etc/prometheus/prometheus.yml"
@@ -20,16 +18,14 @@ monitor_pods_def:
   - name: mktxp
     image: ghcr.io/akpw/mktxp:1.2.14
     user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
-    networks:
-      - name: monitor
+    networks: [{name: monitor}]
     volumes:
       - "{{ monitor_pods_path }}/mktxp/config:/mktxp"
 
   - name: mysqld_exporter
     image: docker.io/prom/mysqld-exporter:v0.18.0
     user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
-    networks:
-      - name: monitor
+    networks: [{name: monitor}]
     env:
       MYSQLD_EXPORTER_PASSWORD: "{{ lookup('ripplefcl.bwscache.secret', 'dad_db_root').value }}"
     volumes:
@@ -38,9 +34,7 @@ monitor_pods_def:
   - name: grafana
     image: docker.io/grafana/grafana:12.2.0
     user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
-    networks:
-      - name: proxy
-      - name: monitor
+    networks: [{name: monitor}]
     ports: ["3000:3000"]
     env:
       GF_INSTALL_PLUGINS: grafana-clock-panel,natel-discrete-panel,grafana-piechart-panel
@@ -50,20 +44,11 @@ monitor_pods_def:
   - name: loki
     image: grafana/loki:3.5.5
     user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
-    networks:
-      - name: monitor
+    networks: [{name: monitor}]
     ports: ["3100:3100"]
     volumes:
       - "{{ monitor_pods_path }}/loki/config:/mnt/config"
       - "{{ monitor_pods_path }}/loki/data:/loki"
-
-  - name: promtail
-    image: grafana/promtail:3.5.5
-    networks:
-      - name: monitor
-    volumes:
-      - "{{ monitor_pods_path }}/promtail/config:/mnt/config"
-      - "/var/log:/var/log"
 
 monitor_prometheus_config:
   - job_name: "node-exporter"
