@@ -62,124 +62,113 @@
         ntp_servers:
           - "10.10.0.1"
 
-    - name: Setup Alloy
+    - name: Setup Alloy monitoring
       when: req_monitor | default(false)
       tags:
         - prometheus
-      ansible.builtin.include_role:
-        name: grafana.grafana.alloy
-        apply:
-          become: true
-          tags:
-            - prometheus
-      vars:
-        alloy_env_file_vars:
-          CUSTOM_ARGS: "--disable-reporting"
-        alloy_config: |
-          prometheus.exporter.unix "node" {
-            cpu {
-              guest = {{ (ansible_facts.virtualization_role == 'guest') | lower }}
-            }
-            disk {}
-            ethtool {}
-            hwmon {}
-            ntp {}
-            netclass {}
-            netstat {}
-            perf {}
-            sysctl {}
-            systemd {}
-            vmstat {}
-            netdev {
-                device_exclude = "^(docker.*|br-.*|veth.*|tap.*|cni-podman.*|podman.*|tailscale.*)$"
-            }
-            filesystem {
-              mount_points_exclude = "^/(dev|proc|run/credentials/.+|sys|var/lib/docker/.+|opt/shares/.+)($|/)"
-            }
-          }
-
-          prometheus.scrape "node" {
-            targets         = prometheus.exporter.unix.node.targets
-            job_name        = "node-exporter"
-            scrape_interval = "15s"
-            forward_to      = [prometheus.relabel.node.receiver]
-          }
-
-          prometheus.relabel "node" {
-            rule {
-              target_label = "instance"
-              replacement  = env("HOSTNAME")
-            }
-            forward_to = [prometheus.remote_write.prom.receiver]
-          }
-
-          prometheus.remote_write "prom" {
-            endpoint {
-              url = "https://prom.mcda.dev/api/v1/write"
-            }
-          }
-
-          loki.source.journal "systemd" {
-            max_age = "12h"
-            labels = {
-              job  = "systemd-journal",
-              host = env("HOSTNAME"),
-              source = "systemd",
-            }
-            forward_to = [loki.process.systemd.receiver]
-          }
-
-          loki.process "systemd" {
-            stage.static_labels {
-              values = {
-                agent = "alloy",
-                log_type = "systemd",
+      block:
+        - name: Install and configure Alloy
+          ansible.builtin.include_role:
+            name: grafana.grafana.alloy
+            apply:
+              become: true
+          vars:
+            alloy_env_file_vars:
+              CUSTOM_ARGS: "--disable-reporting"
+            alloy_config: |
+              // Prometheus metrics collection
+              prometheus.exporter.unix "node" {
+                cpu { guest = {{ (ansible_facts.virtualization_role == 'guest') | lower }} }
+                disk {}
+                ethtool {}
+                hwmon {}
+                ntp {}
+                netclass {}
+                netstat {}
+                perf {}
+                sysctl {}
+                systemd {}
+                vmstat {}
+                netdev { device_exclude = "^(docker.*|br-.*|veth.*|tap.*|cni-podman.*|podman.*|tailscale.*)$" }
+                filesystem { mount_points_exclude = "^/(dev|proc|run/credentials/.+|sys|var/lib/docker/.+|opt/shares/.+)($|/)" }
               }
-            }
 
-            stage.match {
-              selector = "{job=\"systemd-journal\"}"
-              stage.static_labels {
-                values = {
-                  service_type = "system",
+              prometheus.scrape "node" {
+                targets         = prometheus.exporter.unix.node.targets
+                job_name        = "node-exporter"
+                scrape_interval = "15s"
+                forward_to      = [prometheus.relabel.node.receiver]
+              }
+
+              prometheus.relabel "node" {
+                rule {
+                  target_label = "instance"
+                  replacement  = env("HOSTNAME")
                 }
+                forward_to = [prometheus.remote_write.prom.receiver]
               }
-            }
 
-            forward_to = [loki.write.loki.receiver]
-          }
-
-          loki.source.file "varlog" {
-            targets = [
-              { __path__ = "/var/log/*.log", job = "linux-varlog", host = env("HOSTNAME"), source = "file" },
-              { __path__ = "/var/log/syslog", job = "linux-syslog", host = env("HOSTNAME"), source = "file" },
-              { __path__ = "/var/log/auth.log", job = "linux-auth", host = env("HOSTNAME"), source = "file" },
-            ]
-            forward_to = [loki.process.file_logs.receiver]
-          }
-
-          loki.process "file_logs" {
-            stage.static_labels {
-              values = {
-                agent = "alloy",
-                log_type = "file",
+              prometheus.remote_write "prom" {
+                endpoint { url = "https://prom.mcda.dev/api/v1/write" }
               }
-            }
-            forward_to = [loki.write.loki.receiver]
-          }
 
-          loki.process "add_labels" {
-            stage.static_labels {
-              values = { agent = "alloy" }
-            }
-            forward_to = [loki.write.loki.receiver]
-          }
+              loki.source.journal "all" {
+                max_age    = "12h"
+                path       = "/var/log/journal"
+                labels     = { job = "systemd-journal", host = env("HOSTNAME"), source = "journal" }
+                forward_to = [loki.process.journal.receiver]
+              }
 
-          loki.write "loki" {
-            endpoint {
-              url = "https://loki.mcda.dev/loki/api/v1/push"
-            }
-          }
+              {% raw %}loki.process "journal" {
+                stage.labels {
+                  values = {
+                    priority       = "{{ .Priority }}",
+                    unit           = "{{ or .__journal__SYSTEMD_UNIT .__journal__SYSTEMD_USER_UNIT \"\" }}",
+                    container_name = "{{ .__journal_CONTAINER_NAME }}",
+                    container_id   = "{{ .__journal_CONTAINER_ID_FULL }}",
+                    identifier     = "{{ .__journal_SYSLOG_IDENTIFIER }}",
+                  }
+                }
+                stage.match {
+                  selector = "{container_name=~\"alloy|grafana-alloy\"}"
+                  action   = "drop"
+                }
+                forward_to = [loki.write.loki.receiver]
+              }{% endraw %}
+
+              loki.source.file "system_logs" {
+                targets = [
+                  { __path__ = "/var/log/auth.log", job = "auth", host = env("HOSTNAME"), source = "file" },
+                  { __path__ = "/var/log/kern.log", job = "kernel", host = env("HOSTNAME"), source = "file" },
+                  { __path__ = "/var/log/syslog", job = "syslog", host = env("HOSTNAME"), source = "file" },
+                ]
+                forward_to = [loki.process.system_files.receiver]
+              }
+
+              {% raw %}loki.process "system_files" {
+                stage.static_labels { values = { log_type = "file" } }
+                stage.regex {
+                  expression = "^(?P<timestamp>\\S+\\s+\\d+\\s+\\S+)\\s+(?P<hostname>\\S+)\\s+(?P<service>\\S+?)(?:\\[(?P<pid>\\d+)\\])?:\\s+(?P<message>.*)$"
+                }
+                stage.labels { values = { service = "{{ .service }}" } }
+                stage.timestamp {
+                  source = "timestamp"
+                  format = "Jan _2 15:04:05"
+                }
+                forward_to = [loki.write.loki.receiver]
+              }{% endraw %}
+
+              loki.write "loki" {
+                endpoint { url = "https://loki.mcda.dev/loki/api/v1/push" }
+              }
+
+        - name: Add alloy user to systemd-journal group
+          become: true
+          ansible.builtin.user:
+            name: alloy
+            groups: systemd-journal
+            append: true
+          notify: Restart alloy service
 
     - name: Setup NUT client
       when: req_nut | default(false)
