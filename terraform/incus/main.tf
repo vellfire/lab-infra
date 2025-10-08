@@ -18,6 +18,11 @@ import {
   id = "default/nvme0"
 }
 
+import {
+  to = incus_storage_pool.nvme1
+  id = "default/nvme1"
+}
+
 resource "incus_image" "ubuntu-stable" {
   source_image = {
     remote = "images"
