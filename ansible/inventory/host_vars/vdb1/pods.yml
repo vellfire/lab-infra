@@ -1,7 +1,7 @@
 ---
 pods:
   - name: mariadb_ams
-    image: public.ecr.aws/docker/library/mariadb:10.5.23
+    image: public.ecr.aws/docker/library/mariadb:10.11.14
     networks: [{ name: db }]
     ports: ["15000:3306"]
     env:
@@ -13,7 +13,7 @@ pods:
       - "/opt/pods/mariadb_ams/backup:/backup"
 
   - name: mariadb_bnt
-    image: public.ecr.aws/docker/library/mariadb:10.5.23
+    image: public.ecr.aws/docker/library/mariadb:10.11.14
     networks: [{ name: db }]
     ports: ["15001:3306"]
     env:
