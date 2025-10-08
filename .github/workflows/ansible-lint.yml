@@ -13,6 +13,6 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
-      - uses: ansible/ansible-lint@v25.9.1
+      - uses: ansible/ansible-lint@v25.9.2
         with:
           requirements_file: ansible/requirements.yml
