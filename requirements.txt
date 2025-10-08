@@ -1,6 +1,6 @@
 ansible==12.1.0
 ansible-compat==25.8.2
-ansible-lint==25.9.1
+ansible-lint==25.9.2
 lxml==6.0.2
 passlib==1.7.4
 resolvelib >= 0.5.3, < 2.0.0
