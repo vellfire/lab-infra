@@ -1,14 +1,14 @@
 ---
 pods:
   - name: pma_ams
-    image: public.ecr.aws/docker/library/phpmyadmin:5.2.2
+    image: public.ecr.aws/docker/library/phpmyadmin:5.2.3
     env:
       PMA_HOST: vdb1:15000
       PMA_USER: "pma"
       PMA_PASSWORD: "{{ lookup('ripplefcl.bwscache.secret', 'pma_pass').value }}"
 
   - name: pma_bnt
-    image: public.ecr.aws/docker/library/phpmyadmin:5.2.2
+    image: public.ecr.aws/docker/library/phpmyadmin:5.2.3
     env:
       PMA_HOST: vdb1:15001
       PMA_USER: "pma"
