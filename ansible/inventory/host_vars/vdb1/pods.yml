@@ -33,7 +33,7 @@ pods:
     volumes: ["/opt/pods/media-db/pgdata:/var/lib/postgresql/data"]
 
   - name: alloy
-    image: docker.io/grafana/alloy:v1.11.0
+    image: docker.io/grafana/alloy:v1.11.1
     ports:
       - "12346:12345"
       - "1514:1514/udp"
