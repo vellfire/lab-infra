@@ -4,20 +4,26 @@ resource "macaddress" "vm_wkr_mac_vlan1" {
 }
 
 resource "incus_storage_volume" "vm_wkr_data" {
-  count = var.vm_wkr_count
-  name = "${var.vm_wkr_name}${count.index + 1}_data"
-  pool = incus_storage_pool.nvme1.name
+  count        = var.vm_wkr_count
+  name         = "${var.vm_wkr_name}${count.index + 1}_data"
+  pool         = incus_storage_pool.tank.name
+  project      = "default"
+  type         = "custom"
   content_type = "block"
   config = {
     "size" = "32GiB"
   }
+  lifecycle {
+    ignore_changes = [config["size"]]
+  }
 }
 
 resource "incus_instance" "vm_wkr" {
-  count = var.vm_wkr_count
-  name = "${var.vm_wkr_name}${count.index + 1}"
-  type = "virtual-machine"
-  image = incus_image.ubuntu-stable.fingerprint
+  count     = var.vm_wkr_count
+  name      = "${var.vm_wkr_name}${count.index + 1}"
+  project   = "default"
+  type      = "virtual-machine"
+  image     = incus_image.ubuntu-stable.fingerprint
   ephemeral = false
 
   wait_for {
@@ -25,12 +31,12 @@ resource "incus_instance" "vm_wkr" {
   }
 
   config = {
-    "limits.cpu" = 2
+    "limits.cpu"    = 2
     "limits.memory" = "4GiB"
 
-    "agent.nic_config" = true
+    "agent.nic_config"    = true
     "security.secureboot" = false
-    "boot.autostart" = true
+    "boot.autostart"      = true
 
     "cloud-init.user-data" = templatefile(
       "${path.module}/templates/vms-wkr/user-data.tftpl",
@@ -49,17 +55,17 @@ resource "incus_instance" "vm_wkr" {
       {
         name = "${var.vm_wkr_name}${count.index + 1}",
         mac  = macaddress.vm_wkr_mac_vlan1[count.index].address
-      })
+    })
   }
 
   device {
     name = "${var.vm_wkr_name}${count.index + 1}_os"
     type = "disk"
     properties = {
-      "pool" = "nvme0"
+      "pool"          = "nvme0"
       "boot.priority" = "1"
-      "path" = "/"
-      "size" = "16GiB"
+      "path"          = "/"
+      "size"          = "16GiB"
     }
   }
 
@@ -67,7 +73,7 @@ resource "incus_instance" "vm_wkr" {
     name = "${var.vm_wkr_name}${count.index + 1}_data"
     type = "disk"
     properties = {
-      "pool" = "nvme1"
+      "pool"   = "tank"
       "source" = incus_storage_volume.vm_wkr_data[count.index].name
     }
   }
@@ -78,8 +84,8 @@ resource "incus_instance" "vm_wkr" {
 
     properties = {
       nictype = "bridged"
-      parent = "br0"
-      hwaddr = macaddress.vm_wkr_mac_vlan1[count.index].address
+      parent  = "br0"
+      hwaddr  = macaddress.vm_wkr_mac_vlan1[count.index].address
     }
   }
 }

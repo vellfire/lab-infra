@@ -17,10 +17,15 @@ resource "macaddress" "vm_dad_mac_vlan1" {
 resource "incus_storage_volume" "vm_dad_data" {
   for_each     = var.vm_dad_cfg
   name         = "${each.value.name}_data"
-  pool         = incus_storage_pool.nvme1.name
+  pool         = incus_storage_pool.tank.name
+  project      = "default"
+  type         = "custom"
   content_type = "block"
   config = {
     "size" = "32GiB"
+  }
+  lifecycle {
+    ignore_changes = [config["size"]]
   }
 }
 
@@ -41,7 +46,7 @@ resource "incus_instance" "vm_dad" {
 
     "agent.nic_config"    = true
     "security.secureboot" = false
-    "boot.autostart" = true
+    "boot.autostart"      = true
 
     "cloud-init.user-data" = templatefile(
       "${path.module}/templates/vms-dad/user-data.tftpl",
@@ -81,7 +86,7 @@ resource "incus_instance" "vm_dad" {
     name = "${each.value.name}_data"
     type = "disk"
     properties = {
-      "pool"   = "nvme1"
+      "pool"   = "tank"
       "source" = incus_storage_volume.vm_dad_data[each.key].name
     }
   }

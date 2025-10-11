@@ -12,4 +12,6 @@ terraform {
   }
 }
 
-provider "incus" {}
+provider "incus" {
+  project = "default"
+}

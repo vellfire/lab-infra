@@ -5,8 +5,8 @@ variable "vm_pet_cfg" {
     memory = string
   }))
   default = {
-    "vdb1" = { name = "vdb1", cpus = 4, memory = "8GiB"}
-    "vin1" = { name = "vin1", cpus = 2, memory = "2GiB"}
+    "vdb1" = { name = "vdb1", cpus = 4, memory = "8GiB" }
+    "vin1" = { name = "vin1", cpus = 2, memory = "2GiB" }
   }
 }
 
@@ -18,10 +18,15 @@ resource "macaddress" "vm_pet_mac_vlan1" {
 resource "incus_storage_volume" "vm_pet_data" {
   for_each     = var.vm_pet_cfg
   name         = "${each.value.name}_data"
-  pool         = incus_storage_pool.nvme1.name
+  pool         = incus_storage_pool.tank.name
+  project      = "default"
+  type         = "custom"
   content_type = "block"
   config = {
     "size" = "32GiB"
+  }
+  lifecycle {
+    ignore_changes = [config["size"]]
   }
 }
 
@@ -42,7 +47,7 @@ resource "incus_instance" "vm_pet" {
 
     "agent.nic_config"    = true
     "security.secureboot" = false
-    "boot.autostart" = true
+    "boot.autostart"      = true
 
     "cloud-init.user-data" = templatefile(
       "${path.module}/templates/vms-pet/user-data.tftpl",
@@ -59,8 +64,8 @@ resource "incus_instance" "vm_pet" {
     "cloud-init.network-config" = templatefile(
       "${path.module}/templates/vms-pet/network-config.tftpl",
       {
-        name       = each.value.name,
-        vlan1_mac  = macaddress.vm_pet_mac_vlan1[each.key].address,
+        name      = each.value.name,
+        vlan1_mac = macaddress.vm_pet_mac_vlan1[each.key].address,
     })
   }
 
@@ -79,7 +84,7 @@ resource "incus_instance" "vm_pet" {
     name = "${each.value.name}_data"
     type = "disk"
     properties = {
-      "pool"   = "nvme1"
+      "pool"   = "tank"
       "source" = incus_storage_volume.vm_pet_data[each.key].name
     }
   }
