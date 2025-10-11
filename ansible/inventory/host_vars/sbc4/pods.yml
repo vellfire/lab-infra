@@ -5,7 +5,7 @@ storage_pod_path_prefix: "/tank/pods"
 pods:
   - name: gravity
     hostname: "{{ inventory_hostname }}"
-    image: ghcr.io/beryju/gravity:v0.28.1
+    image: ghcr.io/beryju/gravity:007613bad35f68afea28c40b2644e2fb09d75860
     network_mode: host
     env:
       LOG_LEVEL: info
