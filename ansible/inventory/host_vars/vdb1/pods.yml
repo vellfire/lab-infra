@@ -37,7 +37,8 @@ pods:
     ports:
       - "12346:12345"
       - "1514:1514/udp"
-    command: "run --server.http.listen-addr=0.0.0.0:12345 --storage.path=/var/lib/alloy/data /etc/alloy/config.alloy"
+      - "1515:1515/udp"
+    command: "run --disable-reporting --server.http.listen-addr=0.0.0.0:12345 --storage.path=/var/lib/alloy/data /etc/alloy/config.alloy"
     volumes:
       - "/opt/pods/alloy/data:/var/lib/alloy/data"
       - "/opt/pods/alloy/config/config.alloy:/etc/alloy/config.alloy"
