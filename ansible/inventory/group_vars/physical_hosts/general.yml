@@ -1,2 +1,3 @@
 ---
+req_monitor: true
 req_ntp: true
