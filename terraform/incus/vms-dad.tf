@@ -1,11 +1,10 @@
 variable "vm_dad_cfg" {
   type = map(object({
-    name   = string
     cpus   = number
     memory = string
   }))
   default = {
-    "vws1" = { name = "vws1", cpus = 4, memory = "4GiB" }
+    "vws1" = { cpus = 4, memory = "4GiB" }
   }
 }
 
@@ -16,7 +15,7 @@ resource "macaddress" "vm_dad_mac_vlan1" {
 
 resource "incus_storage_volume" "vm_dad_data" {
   for_each     = var.vm_dad_cfg
-  name         = "${each.value.name}_data"
+  name         = "${each.key}_data"
   pool         = incus_storage_pool.tank.name
   project      = "default"
   type         = "custom"
@@ -31,7 +30,7 @@ resource "incus_storage_volume" "vm_dad_data" {
 
 resource "incus_instance" "vm_dad" {
   for_each  = var.vm_dad_cfg
-  name      = each.value.name
+  name      = each.key
   type      = "virtual-machine"
   image     = incus_image.ubuntu-stable.fingerprint
   ephemeral = false
@@ -51,7 +50,7 @@ resource "incus_instance" "vm_dad" {
     "cloud-init.user-data" = templatefile(
       "${path.module}/templates/vms-dad/user-data.tftpl",
       {
-        name                = each.value.name,
+        name                = each.key,
         timezone            = var.vm_timezone,
         standard_username   = var.standard_username,
         standard_ssh_key    = var.standard_ssh_key
@@ -66,13 +65,13 @@ resource "incus_instance" "vm_dad" {
     "cloud-init.network-config" = templatefile(
       "${path.module}/templates/vms-dad/network-config.tftpl",
       {
-        name      = each.value.name,
+        name      = each.key,
         vlan1_mac = macaddress.vm_dad_mac_vlan1[each.key].address,
     })
   }
 
   device {
-    name = "${each.value.name}_os"
+    name = "${each.key}_os"
     type = "disk"
     properties = {
       "pool"          = "nvme0"
@@ -83,7 +82,7 @@ resource "incus_instance" "vm_dad" {
   }
 
   device {
-    name = "${each.value.name}_data"
+    name = "${each.key}_data"
     type = "disk"
     properties = {
       "pool"   = "tank"
