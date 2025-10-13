@@ -20,28 +20,6 @@ pods:
       - /dev/sdc
       - /dev/sdd
 
-  - name: bw-backup
-    image: docker.io/reaper0x1/bitwarden-portal:1.0.2
-    env:
-      PUID: "{{ ansible_facts.user_uid | string }}"
-      PGID: "{{ ansible_facts.user_gid | string }}"
-      CRON_SCHEDULE: "0 0 * * *"
-      ENCRYPTION_PASSWORD: "{{ lookup('ripplefcl.bwscache.secret', 'bwb_encryption').value }}"
-      SOURCE_ACCOUNT: "{{ lookup('ripplefcl.bwscache.secret', 'will_email').value }}"
-      SOURCE_PASSWORD: "{{ lookup('ripplefcl.bwscache.secret', 'bw_pass').value }}"
-      SOURCE_CLIENTID: "{{ lookup('ripplefcl.bwscache.secret', 'bw_clientid').value }}"
-      SOURCE_CLIENT_SECRET: "{{ lookup('ripplefcl.bwscache.secret', 'bw_clientsecret').value }}"
-      SOURCE_SERVER: "https://vault.bitwarden.com"
-      DEST_ACCOUNT: "{{ lookup('ripplefcl.bwscache.secret', 'will_email').value }}"
-      DEST_PASSWORD: "{{ lookup('ripplefcl.bwscache.secret', 'vw_pass').value }}"
-      DEST_CLIENTID: "{{ lookup('ripplefcl.bwscache.secret', 'vw_clientid').value }}"
-      DEST_CLIENT_SECRET: "{{ lookup('ripplefcl.bwscache.secret', 'vw_clientsecret').value }}"
-      DEST_SERVER: "{{ lookup('ripplefcl.bwscache.secret', 'vw_domain').value }}"
-      ENABLE_PRUNING: "true"
-      RETENTION_DAYS: "30"
-      MIN_FILES: "10"
-    volumes: ["/tank/backups/bitwarden:/app/backups"]
-
   - name: garage
     image: docker.io/dxflrs/garage:v2.1.0
     network_mode: host

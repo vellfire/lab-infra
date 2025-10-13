@@ -6,6 +6,7 @@ pods:
       PMA_HOST: vdb1:15000
       PMA_USER: "pma"
       PMA_PASSWORD: "{{ lookup('ripplefcl.bwscache.secret', 'pma_pass').value }}"
+    state: absent
 
   - name: pma_bnt
     image: public.ecr.aws/docker/library/phpmyadmin:5.2.3
@@ -13,123 +14,20 @@ pods:
       PMA_HOST: vdb1:15001
       PMA_USER: "pma"
       PMA_PASSWORD: "{{ lookup('ripplefcl.bwscache.secret', 'pma_pass').value }}"
-
-  - name: scrutiny-db
-    image: public.ecr.aws/docker/library/influxdb:2.7
-    networks: [{ name: scrutiny }]
-    volumes: ["/opt/pods/scrutiny-db/data:/var/lib/influxdb2"]
-
-  - name: scrutiny-web
-    image: ghcr.io/analogj/scrutiny:v0.8.1-web
-    networks:
-      - name: scrutiny
-      - name: proxy
-    ports: ["8934:8080"]
-    env:
-      SCRUTINY_WEB_INFLUXDB_HOST: scrutiny-db
-    volumes: ["/opt/pods/scrutiny-web/config:/opt/scrutiny/config"]
+    state: absent
 
   - name: scrutiny-collector
     image: ghcr.io/analogj/scrutiny:v0.8.1-collector
-    networks: [{ name: scrutiny }]
     capabilities:
       - SYS_ADMIN
       - SYS_RAWIO
     env:
-      COLLECTOR_API_ENDPOINT: "http://scrutiny-web:8080"
+      COLLECTOR_API_ENDPOINT: "http://vpod:8934"
       COLLECTOR_HOST_ID: "{{ inventory_hostname }}"
       COLLECTOR_CRON_SCHEDULE: "0 * * * *"
       COLLECTOR_RUN_STARTUP: "true"
     volumes: ["/run/udev:/run/udev:ro"]
     devices: ["/dev/nvme0"]
-
-  - name: plex
-    image: ghcr.io/home-operations/plex:1.42.2
-    networks: [{ name: media }]
-    ports: ["32400:32400"]
-    user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
-    env:
-      PLEX_ADVERTISE_URL: "{{ 'https://' + lookup('ripplefcl.bwscache.secret', 'plex_domain').value }}"
-      PLEX_NO_AUTH_NETWORKS: "10.10.0.0/21, 2001:8b0:1947::/48"
-      PLEX_CLAIM_TOKEN: "{{ lookup('ripplefcl.bwscache.secret', 'plex_claim_token').value }}"
-    volumes:
-      - "/opt/pods/plex/config:/config"
-      - "/opt/shares/pods/media:/media"
-      - "/opt/shares/pods/plex:/backup"
-    devices: ["/dev/dri:/dev/dri"]
-
-  - name: overseerr
-    image: ghcr.io/sct/overseerr:07dc8d755a0e94d100ecd8b1e950e43da1c0a7dd
-    networks: [{ name: media }]
-    ports: ["5055:5055"]
-    user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
-    env:
-      LOG_LEVEL: info
-    volumes: ["/opt/pods/overseerr/config:/app/config"]
-
-  - name: sonarr
-    image: ghcr.io/home-operations/sonarr:4.0.15
-    networks: [{ name: media }]
-    ports: ["8989:8989"]
-    user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
-    volumes:
-      - "/opt/pods/sonarr/config:/config"
-      - "/opt/shares/pods/media:/media"
-      - "/opt/shares/pods/sonarr:/backup"
-
-  - name: radarr
-    image: ghcr.io/home-operations/radarr:6.0.2
-    networks: [{ name: media }]
-    ports: ["7878:7878"]
-    user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
-    volumes:
-      - "/opt/pods/radarr/config:/config"
-      - "/opt/shares/pods/media:/media"
-      - "/opt/shares/pods/radarr:/backup"
-
-  - name: sabnzbd
-    image: ghcr.io/home-operations/sabnzbd:4.5.3
-    networks: [{ name: media }]
-    user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
-    ports: ["8238:8080"]
-    volumes:
-      - "/opt/pods/sabnzbd/config:/config"
-      - "/opt/shares/pods/media:/media"
-      - "/opt/shares/pods/sabnzbd:/backup"
-
-  - name: prowlarr
-    image: ghcr.io/home-operations/prowlarr:2.1.3
-    networks: [{ name: media }]
-    ports: ["9696:9696"]
-    user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
-    volumes:
-      - "/opt/pods/prowlarr/config:/config"
-      - "/opt/shares/pods/prowlarr:/backup"
-
-  - name: maintainerr
-    image: ghcr.io/jorenn92/maintainerr:2.19.0
-    networks: [{ name: media }]
-    ports: ["6246:6246"]
-    user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
-    volumes: ["/opt/pods/maintainerr/config:/opt/data"]
-
-  - name: tautulli
-    image: ghcr.io/home-operations/tautulli:2.16.0
-    networks: [{ name: media }]
-    ports: ["8181:8181"]
-    user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
-    volumes:
-      - "/opt/pods/tautulli/config:/config"
-      - "/opt/shares/pods/tautulli/backup:/config/backups"
-
-  - name: vaultwarden
-    image: ghcr.io/dani-garcia/vaultwarden:1.34.3
-    networks: [{ name: proxy }]
-    user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
-    ports: ["8723:80"]
-    env:
-      DOMAIN: "{{ lookup('ripplefcl.bwscache.secret', 'vw_domain').value }}"
-    volumes: ["/opt/pods/vaultwarden/data:/data"]
 
   - name: garage
     image: docker.io/dxflrs/garage:v2.1.0
@@ -138,68 +36,6 @@ pods:
       - "/opt/pods/garage/config/garage.toml:/etc/garage.toml"
       - "/opt/pods/garage/meta:/var/lib/garage/meta"
       - "/opt/pods/garage/data:/var/lib/garage/data"
-
-  - name: immich-machine-learning
-    image: ghcr.io/immich-app/immich-machine-learning:v2.0.1
-    networks: [{ name: immich }]
-    volumes:
-      - "model-cache:/cache"
-      - "/dev/bus/usb:/dev/bus/usb"
-    devices: ["/dev/dri:/dev/dri"]
-    device_cgroup_rules: ["c 189:* rmw"]
-
-  - name: immich_redis
-    image: docker.io/valkey/valkey:8-bookworm@sha256:fea8b3e67b15729d4bb70589eb03367bab9ad1ee89c876f54327fc7c6e618571
-    networks: [{ name: immich }]
-    exposed_ports: ["6379/tcp"]
-    healthcheck:
-      test: redis-cli ping || exit 1
-
-  - name: immich_postgres
-    image: ghcr.io/immich-app/postgres:14-vectorchord0.4.3-pgvectors0.2.0@sha256:bcf63357191b76a916ae5eb93464d65c07511da41e3bf7a8416db519b40b1c23
-    networks:
-      - name: immich
-        aliases: database
-    exposed_ports: ["5432/tcp"]
-    env:
-      POSTGRES_USER: "postgres"
-      POSTGRES_PASSWORD: "{{ lookup('ripplefcl.bwscache.secret', 'immich_db_pass').value }}"
-      POSTGRES_DB: "immich"
-      POSTGRES_INITDB_ARGS: "--data-checksums"
-    shm_size: 128m
-    volumes: ["/opt/pods/immich/db:/var/lib/postgresql/data"]
-
-  - name: immich_server
-    image: ghcr.io/immich-app/immich-server:v2.0.1
-    networks: [{ name: immich }]
-    env:
-      REDIS_HOSTNAME: immich_redis
-      POSTGRES_HOSTNAME: immich_postgres
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: "{{ lookup('ripplefcl.bwscache.secret', 'immich_db_pass').value }}"
-      POSTGRES_DB: immich
-    ports: ["2283:2283"]
-    devices: ["/dev/dri:/dev/dri"]
-    volumes:
-      - "/opt/shares/pods/media/library/photos:/usr/src/app/upload"
-      - "/etc/localtime:/etc/localtime:ro"
-
-  - name: zipline
-    image: ghcr.io/diced/zipline:4.3.1
-    ports: ["3020:3000"]
-    user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
-    env:
-      CORE_SECRET: "{{ lookup('ripplefcl.bwscache.secret', 'zipline_core_secret').value }}"
-      DATABASE_URL: "{{ 'postgresql://media:' ~ lookup('ripplefcl.bwscache.secret', 'media_db_pass').value ~ '@vdb1:15002/zipline' }}"
-    volumes:
-      - "/opt/pods/zipline/uploads:/zipline/uploads"
-      - "/opt/pods/zipline/public:/zipline/public"
-      - "/opt/pods/zipline/themes:/zipline/themes"
-    healthcheck:
-      test: ["CMD", "wget", "-q", "--spider", "http://zipline:3000/api/healthcheck"]
-      interval: 15s
-      timeout: 2s
-      retries: 2
 
 pod_volumes:
   - name: model-cache

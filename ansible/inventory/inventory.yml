@@ -34,6 +34,7 @@ unix:
         vgm1:
         vdb1:
         vin1:
+        vpod:
 
     vm_dads:
       hosts:
