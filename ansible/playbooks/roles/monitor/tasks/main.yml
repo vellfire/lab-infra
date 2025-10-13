@@ -1,3 +1,0 @@
----
-- name: Include pods task
-  ansible.builtin.include_tasks: pods.yml
