@@ -75,143 +75,6 @@
           vars:
             alloy_env_file_vars:
               CUSTOM_ARGS: "--disable-reporting"
-            alloy_config: |
-              prometheus.exporter.unix "node" {
-                cpu { guest = {{ (ansible_facts.virtualization_role == 'guest') | lower }} }
-                disk {}
-                ethtool {}
-                hwmon {}
-                ntp {}
-                netclass {}
-                netstat {}
-                perf {}
-                sysctl {}
-                systemd {}
-                vmstat {}
-                netdev { device_exclude = "^(docker.*|br-.*|veth.*|tap.*|cni-podman.*|podman.*|tailscale.*)$" }
-                filesystem { mount_points_exclude = "^/(dev|proc|run/credentials/.+|sys|var/lib/docker/.+|opt/shares/.+)($|/)" }
-              }
-
-              prometheus.scrape "node" {
-                targets         = prometheus.exporter.unix.node.targets
-                job_name        = "node-exporter"
-                scrape_interval = "15s"
-                forward_to      = [prometheus.relabel.node.receiver]
-              }
-
-              prometheus.relabel "node" {
-                rule {
-                  target_label = "instance"
-                  replacement  = env("HOSTNAME")
-                }
-                forward_to = [prometheus.remote_write.prom.receiver]
-              }
-
-              prometheus.remote_write "prom" {
-                endpoint { url = "https://{{ lookup('ripplefcl.bwscache.secret', 'prometheus_domain').value }}/api/v1/write" }
-              }
-
-              loki.source.journal "all" {
-                max_age    = "12h"
-                path       = "/var/log/journal"
-                labels     = { job = "systemd-journal", host = env("HOSTNAME"), source = "journal" }
-                forward_to = [loki.process.journal.receiver]
-              }
-
-              {% raw %}loki.process "journal" {
-                stage.labels {
-                  values = {
-                    priority = "{{ .Priority }}",
-                    unit     = "{{ or .__journal__SYSTEMD_UNIT .__journal__SYSTEMD_USER_UNIT \"\" }}",
-                  }
-                }
-                stage.match {
-                  selector = "{unit=~\"alloy.*\"}"
-                  action   = "drop"
-                }
-                forward_to = [loki.write.loki.receiver]
-              }{% endraw %}
-
-              loki.source.file "system_logs" {
-                targets = [
-                  { __path__ = "/var/log/auth.log", job = "auth", host = env("HOSTNAME"), source = "file" },
-                  { __path__ = "/var/log/kern.log", job = "kernel", host = env("HOSTNAME"), source = "file" },
-                  { __path__ = "/var/log/syslog", job = "syslog", host = env("HOSTNAME"), source = "file" },
-                ]
-                forward_to = [loki.process.system_files.receiver]
-              }
-
-              {% raw %}loki.process "system_files" {
-                stage.static_labels { values = { log_type = "file" } }
-                stage.regex {
-                  expression = "^(?P<timestamp>\\S+\\s+\\d+\\s+\\S+)\\s+(?P<hostname>\\S+)\\s+(?P<service>\\S+?)(?:\\[(?P<pid>\\d+)\\])?:\\s+(?P<message>.*)$"
-                }
-                stage.labels { values = { service = "{{ .service }}" } }
-                stage.timestamp {
-                  source = "timestamp"
-                  format = "Jan _2 15:04:05"
-                }
-                forward_to = [loki.write.loki.receiver]
-              }{% endraw %}
-
-              loki.write "loki" {
-                endpoint { url = "https://{{ lookup('ripplefcl.bwscache.secret', 'loki_domain').value }}/loki/api/v1/push" }
-              }
-
-              {% if 'docker.service' in ansible_facts.services %}
-              discovery.docker "containers" {
-                host             = "unix:///var/run/docker.sock"
-                refresh_interval = "5s"
-              }
-
-              discovery.relabel "containers" {
-                targets = discovery.docker.containers.targets
-
-                rule {
-                  target_label = "job"
-                  replacement  = "docker"
-                }
-
-                rule {
-                  target_label = "source"
-                  replacement  = "docker"
-                }
-
-                rule {
-                  target_label = "host"
-                  replacement  = env("HOSTNAME")
-                }
-
-                rule {
-                  source_labels = ["__meta_docker_container_name"]
-                  regex         = "/(.*)"
-                  target_label  = "container"
-                }
-
-                rule {
-                  source_labels = ["__meta_docker_container_name"]
-                  regex         = "/(.*)"
-                  target_label  = "instance"
-                }
-
-                rule {
-                  source_labels = ["__meta_docker_container_image"]
-                  target_label  = "image"
-                }
-
-                rule {
-                  source_labels = ["__meta_docker_container_log_stream"]
-                  target_label  = "stream"
-                }
-              }
-
-              loki.source.docker "containers" {
-                host             = "unix:///var/run/docker.sock"
-                targets          = discovery.relabel.containers.output
-                forward_to       = [loki.write.loki.receiver]
-                refresh_interval = "5s"
-              }
-              {% endif %}
 
         - name: Add alloy user to systemd-journal group
           become: true
@@ -247,9 +110,21 @@
                 - nut
               no_log: true
 
+    - name: Setup podman pods
+      when: pods is defined and req_podman | default(false)
+      ansible.builtin.include_role:
+        name: podman
+        apply:
+          become: false
+          tags:
+            - podman
+            - pods
+      tags:
+        - podman
+        - pods
+
     - name: Setup docker
-      when:
-        - req_docker | default(false)
+      when: req_docker | default(false)
       ansible.builtin.include_role:
         name: geerlingguy.docker
         apply:
@@ -259,22 +134,8 @@
       tags:
         - docker
 
-    - name: Configure meshmon
-      when: req_meshmon | default(false)
-      ansible.builtin.include_role:
-        name: meshmon
-        apply:
-          become: true
-          tags:
-            - docker
-            - meshmon
-      tags:
-        - docker
-        - meshmon
-
     - name: Setup pods
-      when:
-        - pods is defined
+      when: pods is defined and req_docker | default(false)
       ansible.builtin.include_role:
         name: setup_pods
         apply:
@@ -304,16 +165,3 @@
               tags:
                 - pods
                 - monitor
-
-    - name: Setup libvirt
-      when:
-        - req_libvirt | default(false)
-        - ansible_os_family == 'Debian'
-      ansible.builtin.include_role:
-        name: deb_libvirt
-        apply:
-          become: true
-          tags:
-            - virt
-      tags:
-        - virt
