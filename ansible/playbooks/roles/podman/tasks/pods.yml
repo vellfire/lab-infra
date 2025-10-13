@@ -1,0 +1,29 @@
+---
+- name: Create directories from volume bind mounts
+  become: true
+  ansible.builtin.file:
+    path: "{{ volume.split(':')[0] }}"
+    state: directory
+    recurse: true
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: '0755'
+  loop: "{{ pods | selectattr('volume', 'defined') | map(attribute='volume') | flatten }}"
+  loop_control:
+    loop_var: volume
+    label: "{{ volume.split(':')[0] }}"
+  when:
+    - volume is string
+    - "':' in volume"
+    - volume.split(':')[0].startswith('/opt/pods/')
+
+- name: Create podman quadlets  # noqa args[module]
+  containers.podman.podman_container: "{{ podman_container_defaults | combine(pod) }}"
+  loop: "{{ pods }}"
+  loop_control:
+    label: "{{ pod.name }}"
+    loop_var: pod
+  register: podman_quadlet_results
+  notify:
+    - Reload user daemon
+    - Restart container services

@@ -1,0 +1,42 @@
+---
+podman_conf: |
+  [containers]
+  ipv6 = true
+
+  log_size_max = 10485760
+  log_driver = "k8s-file"
+
+  pids_limit = 4096
+
+  prepare_volume_on_create = true
+
+  [engine]
+  events_logger = "file"
+  events_logfile_max_size = "10m"
+
+  database_backend = "sqlite"
+
+  image_parallel_copies = 3
+
+  compression_format = "zstd"
+  compression_level = 3
+
+  stop_timeout = 30
+
+  healthcheck_events = true
+
+  [network]
+  network_backend = "netavark"
+  firewall_driver = "nftables"
+
+podman_container_defaults:
+  state: quadlet
+  recreate: false
+  quadlet_file_mode: '0644'
+  quadlet_options:
+    - |
+      [Service]
+      Restart=always
+    - |
+      [Install]
+      WantedBy=default.target

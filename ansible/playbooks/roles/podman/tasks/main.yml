@@ -1,0 +1,18 @@
+---
+- name: Configure podman
+  ansible.builtin.include_tasks:
+    file: config.yml
+    apply:
+      become: true
+
+- name: Create podman networks
+  when: pod_networks is defined
+  ansible.builtin.include_tasks: networks.yml
+
+- name: Create podman volumes
+  when: pod_volumes is defined
+  ansible.builtin.include_tasks: volumes.yml
+
+- name: Create podman containers
+  when: pods is defined
+  ansible.builtin.include_tasks: pods.yml
