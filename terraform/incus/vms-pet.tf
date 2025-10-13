@@ -7,6 +7,7 @@ variable "vm_pet_cfg" {
     "vdb1" = { cpus = 4, memory = "8GiB" }
     "vin1" = { cpus = 2, memory = "2GiB" }
     "vgm1" = { cpus = 6, memory = "12GiB" }
+    "vpod" = { cpus = 6, memory = "16GiB"}
   }
 }
 
