@@ -1,4 +1,6 @@
 ---
+podman_dns_searches: "{{ ['dns.podman'] + (ansible_dns.search | default([])) }}"
+
 podman_conf: |
   [containers]
   ipv6 = true
@@ -9,6 +11,8 @@ podman_conf: |
   pids_limit = 4096
 
   prepare_volume_on_create = true
+
+  dns_searches = {{ podman_dns_searches | to_json }}
 
   [engine]
   events_logger = "file"
