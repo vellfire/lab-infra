@@ -24,6 +24,53 @@
     label: "{{ pod.name }}"
     loop_var: pod
   register: podman_quadlet_results
-  notify:
-    - Reload user daemon
-    - Restart container services
+
+- name: Remove quadlet files for absent pods
+  ansible.builtin.file:
+    path: "~/.config/containers/systemd/{{ pod.name }}.container"
+    state: absent
+  loop: "{{ pods }}"
+  loop_control:
+    label: "{{ pod.name }}"
+    loop_var: pod
+  when: pod.state | default('present') == 'absent'
+  register: podman_quadlet_removal_results
+
+- name: Set fact for changed containers
+  ansible.builtin.set_fact:
+    podman_changed_pods: "{{ podman_quadlet_results.results | selectattr('changed', 'equalto', true) | map(attribute='pod') | list }}"
+
+- name: Reload user daemon
+  ansible.builtin.systemd_service:
+    daemon_reload: true
+    scope: user
+  environment:
+    XDG_RUNTIME_DIR: "/run/user/{{ ansible_facts.user_uid }}"
+  when: podman_quadlet_results is changed or podman_quadlet_removal_results is changed
+
+- name: Enable and start container services
+  ansible.builtin.systemd_service:
+    name: "{{ item.name }}.service"
+    enabled: true
+    state: started
+    scope: user
+  environment:
+    XDG_RUNTIME_DIR: "/run/user/{{ ansible_facts.user_uid }}"
+  loop: "{{ pods }}"
+  loop_control:
+    label: "{{ item.name }}"
+  when: item.state | default('present') != 'absent'
+
+- name: Restart changed container services
+  ansible.builtin.systemd_service:
+    name: "{{ item.name }}.service"
+    state: restarted
+    scope: user
+  environment:
+    XDG_RUNTIME_DIR: "/run/user/{{ ansible_facts.user_uid }}"
+  loop: "{{ podman_changed_pods }}"
+  loop_control:
+    label: "{{ item.name }}"
+  when:
+    - podman_changed_pods | length > 0
+    - item.state | default('present') != 'absent'
