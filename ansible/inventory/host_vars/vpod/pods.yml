@@ -13,6 +13,11 @@ pods:
     user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
     quadlet_options:
       - "UserNS=keep-id"
+      - |
+        [Unit]
+        RequiresMountsFor=/opt/shares/pods
+        BindsTo=opt-shares-pods.mount
+        After=opt-shares-pods.mount
 
   - name: radarr
     image: ghcr.io/home-operations/radarr:6.0.2
@@ -27,6 +32,11 @@ pods:
     user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
     quadlet_options:
       - "UserNS=keep-id"
+      - |
+        [Unit]
+        RequiresMountsFor=/opt/shares/pods
+        BindsTo=opt-shares-pods.mount
+        After=opt-shares-pods.mount
 
   - name: prowlarr
     image: ghcr.io/home-operations/prowlarr:2.1.3
@@ -40,6 +50,11 @@ pods:
     user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
     quadlet_options:
       - "UserNS=keep-id"
+      - |
+        [Unit]
+        RequiresMountsFor=/opt/shares/pods
+        BindsTo=opt-shares-pods.mount
+        After=opt-shares-pods.mount
 
   - name: overseerr
     image: ghcr.io/sct/overseerr:07dc8d755a0e94d100ecd8b1e950e43da1c0a7dd
@@ -68,6 +83,11 @@ pods:
     user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
     quadlet_options:
       - "UserNS=keep-id"
+      - |
+        [Unit]
+        RequiresMountsFor=/opt/shares/pods
+        BindsTo=opt-shares-pods.mount
+        After=opt-shares-pods.mount
 
   - name: maintainerr
     image: ghcr.io/jorenn92/maintainerr:2.19.0
@@ -93,6 +113,11 @@ pods:
     user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
     quadlet_options:
       - "UserNS=keep-id"
+      - |
+        [Unit]
+        RequiresMountsFor=/opt/shares/pods
+        BindsTo=opt-shares-pods.mount
+        After=opt-shares-pods.mount
 
   - name: plex
     image: ghcr.io/home-operations/plex:1.42.2
@@ -112,6 +137,11 @@ pods:
     user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
     quadlet_options:
       - "UserNS=keep-id"
+      - |
+        [Unit]
+        RequiresMountsFor=/opt/shares/pods
+        BindsTo=opt-shares-pods.mount
+        After=opt-shares-pods.mount
 
   - name: immich-machine-learning
     image: ghcr.io/immich-app/immich-machine-learning:v2.0.1
@@ -128,9 +158,9 @@ pods:
     network:
       - immich
     env:
-      DB_HOSTNAME: vdb1.conf.mcda.dev
+      DB_HOSTNAME: vdb1
       DB_PORT: 15011
-      REDIS_HOSTNAME: vdb1.conf.mcda.dev
+      REDIS_HOSTNAME: vdb1
       REDIS_PORT: 15012
       DB_USER: postgres
       DB_PASSWORD: "{{ lookup('ripplefcl.bwscache.secret', 'immich_db_pass').value }}"
@@ -145,16 +175,11 @@ pods:
     user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
     quadlet_options:
       - "UserNS=keep-id"
-
-  - name: scrutiny-db
-    image: public.ecr.aws/docker/library/influxdb:2.7
-    network:
-      - scrutiny
-    volume:
-      - "/opt/pods/scrutiny-db/data:/var/lib/influxdb2"
-    user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
-    quadlet_options:
-      - "UserNS=keep-id"
+      - |
+        [Unit]
+        RequiresMountsFor=/opt/shares/pods
+        BindsTo=opt-shares-pods.mount
+        After=opt-shares-pods.mount
 
   - name: scrutiny-web
     image: ghcr.io/analogj/scrutiny:v0.8.1-web
@@ -163,7 +188,8 @@ pods:
     publish:
       - "8934:8080"
     env:
-      SCRUTINY_WEB_INFLUXDB_HOST: scrutiny-db
+      SCRUTINY_WEB_INFLUXDB_HOST: vdb1
+      SCRUTINY_WEB_INFLUXDB_PORT: "8086"
     volume:
       - "/opt/pods/scrutiny-web/config:/opt/scrutiny/config"
     user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
