@@ -135,6 +135,13 @@ pods:
       - "/opt/pods/alloy/data:/var/lib/alloy/data"
       - "/opt/pods/alloy/config/config.alloy:/etc/alloy/config.alloy"
 
+  - name: scrutiny-db
+    image: public.ecr.aws/docker/library/influxdb:2.7
+    ports: ["8086:8086"]
+    volumes:
+      - "/opt/pods/scrutiny-db/data:/var/lib/influxdb2"
+    user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
+
 pod_networks:
   - name: db
     driver: local
