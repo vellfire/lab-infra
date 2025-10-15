@@ -23,7 +23,7 @@ collections:
 
 roles:
   - name: geerlingguy.docker
-    version: 7.6.0
+    version: 7.7.0
   - name: geerlingguy.git
     version: 3.0.1
   - name: geerlingguy.pip
