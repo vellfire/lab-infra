@@ -111,7 +111,7 @@
               no_log: true
 
     - name: Setup podman pods
-      when: pods is defined and req_podman | default(false)
+      when: req_podman | default(false)
       ansible.builtin.include_role:
         name: podman
         apply:
