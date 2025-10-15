@@ -8,7 +8,7 @@ pods:
     image: ghcr.io/beryju/gravity:007613bad35f68afea28c40b2644e2fb09d75860
     network_mode: host
     env:
-      LOG_LEVEL: info
+      LOG_LEVEL: debug,etcd=error
     log_driver: json-file
     log_options:
       max-size: "10m"
@@ -31,46 +31,6 @@ pods:
       - /dev/sdb
       - /dev/sdc
 
-  - name: unifi-db
-    image: public.ecr.aws/docker/library/mongo:8.0.15
-    networks: [{ name: unifi-net }]
-    env:
-      MONGO_INITDB_ROOT_USERNAME: "root"
-      MONGO_INITDB_ROOT_PASSWORD: "{{ lookup('ripplefcl.bwscache.secret', 'unifi_db_pass').value }}"
-      MONGO_USER: "unifi"
-      MONGO_PASS: "{{ lookup('ripplefcl.bwscache.secret', 'unifi_db_pass').value }}"
-      MONGO_DBNAME: "unifi"
-      MONGO_AUTHSOURCE: "admin"
-    volumes:
-      - "/opt/pods/unifi/db:/data/db"
-      - "/opt/pods/unifi/init-mongo.sh:/docker-entrypoint-initdb.d/init-mongo.sh:ro"
-
-  - name: unifi-app
-    image: ghcr.io/linuxserver/unifi-network-application:9.4.19
-    networks: [{ name: unifi-net }]
-    ports:
-      - 8080:8080
-      - 8443:8443
-      - 8880:8880
-      - 8843:8843
-      - 27117:27117
-      - 3478:3478/udp
-      - 10001:10001/udp
-    env:
-      PUID: "{{ ansible_facts.user_uid | string }}"
-      PGID: "{{ ansible_facts.user_gid | string }}"
-      MONGO_INITDB_ROOT_USERNAME: "root"
-      MONGO_INITDB_ROOT_PASSWORD: "{{ lookup('ripplefcl.bwscache.secret', 'unifi_db_pass').value }}"
-      MONGO_USER: "unifi"
-      MONGO_PASS: "{{ lookup('ripplefcl.bwscache.secret', 'unifi_db_pass').value }}"
-      MONGO_DBNAME: "unifi"
-      MONGO_AUTHSOURCE: "admin"
-      MONGO_HOST: "unifi-db"
-      MONGO_PORT: "27017"
-      MEM_STARTUP: "512"
-      MEM_LIMIT: "1024"
-    volumes: ["/opt/pods/unifi/app:/config"]
-
   - name: unpoller
     image: ghcr.io/unpoller/unpoller:v2.15.4
     networks: [{ name: unifi-net }]
@@ -84,6 +44,7 @@ pods:
       UP_UNIFI_DEFAULT_SAVE_SITES: "true"
       UP_INFLUXDB_DISABLE: "true"
       UP_POLLER_DEBUG: "true"
+    state: absent
 
   - name: garage
     image: docker.io/dxflrs/garage:v2.1.0
