@@ -19,17 +19,18 @@
     cmd: "loginctl enable-linger {{ ansible_user }}"
     creates: "/var/lib/systemd/linger/{{ ansible_user }}"
 
-- name: Create /opt/podman/storage directory
+- name: Ensure .local/share/containers directory exists
   ansible.builtin.file:
-    path: /opt/podman/storage
+    path: "/home/{{ ansible_user }}/.local/share/containers"
     state: directory
     owner: "{{ ansible_user }}"
     group: "{{ ansible_user }}"
     mode: '0700'
 
-- name: Ensure .local/share/containers directory exists
+- name: Create /opt/podman/storage directory
+  become: true
   ansible.builtin.file:
-    path: "/home/{{ ansible_user }}/.local/share/containers"
+    path: /opt/podman/storage
     state: directory
     owner: "{{ ansible_user }}"
     group: "{{ ansible_user }}"
@@ -42,3 +43,4 @@
     owner: "{{ ansible_user }}"
     group: "{{ ansible_user }}"
     state: link
+    force: true
