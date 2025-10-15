@@ -126,6 +126,9 @@ pods:
 
   - name: alloy
     image: docker.io/grafana/alloy:v1.11.2
+    networks:
+      - name: monitor
+      - name: db
     ports:
       - "12346:12345"
       - "1514:1514/udp"
@@ -141,6 +144,20 @@ pods:
     volumes:
       - "/opt/pods/scrutiny-db/data:/var/lib/influxdb2"
     user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
+
+  - name: unifi-db
+    image: public.ecr.aws/docker/library/mongo:8.0.15
+    ports: ["27017:27017"]
+    env:
+      MONGO_INITDB_ROOT_USERNAME: "root"
+      MONGO_INITDB_ROOT_PASSWORD: "{{ lookup('ripplefcl.bwscache.secret', 'unifi_db_pass').value }}"
+      MONGO_USER: "unifi"
+      MONGO_PASS: "{{ lookup('ripplefcl.bwscache.secret', 'unifi_db_pass').value }}"
+      MONGO_DBNAME: "unifi"
+      MONGO_AUTHSOURCE: "admin"
+    volumes:
+      - "/opt/pods/unifi-db/db:/data/db"
+      - "/opt/pods/unifi-db/init-mongo.sh:/docker-entrypoint-initdb.d/init-mongo.sh:ro"
 
 pod_networks:
   - name: db
