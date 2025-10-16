@@ -25,7 +25,7 @@ resource "incus_instance" "vm_wkr" {
   project   = "default"
   remote    = "kvm2"
   type      = "virtual-machine"
-  image     = incus_image.ubuntu-stable.fingerprint
+  image     = incus_image.kvm2-ubuntu-stable.fingerprint
   ephemeral = false
 
   wait_for {
@@ -65,7 +65,6 @@ resource "incus_instance" "vm_wkr" {
     type = "disk"
     properties = {
       "pool"          = "default"
-      "boot.priority" = "1"
       "path"          = "/"
       "size"          = "16GiB"
     }
@@ -75,8 +74,8 @@ resource "incus_instance" "vm_wkr" {
     name = "${var.vm_wkr_name}${count.index + 1}_data"
     type = "disk"
     properties = {
-      "pool"   = "default"
-      "source" = incus_storage_volume.vm_wkr_data[count.index].name
+      "pool"          = "default"
+      "source"        = incus_storage_volume.vm_wkr_data[count.index].name
     }
   }
 
@@ -85,8 +84,7 @@ resource "incus_instance" "vm_wkr" {
     type = "nic"
 
     properties = {
-      nictype = "bridged"
-      parent  = "br0"
+      network = "incusbr0"
       hwaddr  = macaddress.vm_wkr_mac_vlan1[count.index].address
     }
   }
