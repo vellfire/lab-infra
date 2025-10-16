@@ -6,7 +6,6 @@ variable "vm_pet_cfg" {
   default = {
     "vdb1" = { cpus = 4, memory = "8GiB" }
     "vin1" = { cpus = 2, memory = "2GiB" }
-    "vgm1" = { cpus = 6, memory = "12GiB" }
     "vpod" = { cpus = 6, memory = "16GiB"}
   }
 }
@@ -19,7 +18,7 @@ resource "macaddress" "vm_pet_mac_vlan1" {
 resource "incus_storage_volume" "vm_pet_data" {
   for_each     = var.vm_pet_cfg
   name         = "${each.key}_data"
-  pool         = incus_storage_pool.tank.name
+  pool         = "nvme1"
   project      = "default"
   type         = "custom"
   content_type = "block"
@@ -85,7 +84,7 @@ resource "incus_instance" "vm_pet" {
     name = "${each.key}_data"
     type = "disk"
     properties = {
-      "pool"   = "tank"
+      "pool"   = "nvme1"
       "source" = incus_storage_volume.vm_pet_data[each.key].name
     }
   }

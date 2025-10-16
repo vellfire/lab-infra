@@ -6,7 +6,7 @@ resource "macaddress" "vm_wkr_mac_vlan1" {
 resource "incus_storage_volume" "vm_wkr_data" {
   count        = var.vm_wkr_count
   name         = "${var.vm_wkr_name}${count.index + 1}_data"
-  pool         = incus_storage_pool.tank.name
+  pool         = "nvme1"
   project      = "default"
   type         = "custom"
   content_type = "block"
@@ -73,7 +73,7 @@ resource "incus_instance" "vm_wkr" {
     name = "${var.vm_wkr_name}${count.index + 1}_data"
     type = "disk"
     properties = {
-      "pool"   = "tank"
+      "pool"   = "nvme1"
       "source" = incus_storage_volume.vm_wkr_data[count.index].name
     }
   }

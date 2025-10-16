@@ -16,7 +16,7 @@ resource "macaddress" "vm_dad_mac_vlan1" {
 resource "incus_storage_volume" "vm_dad_data" {
   for_each     = var.vm_dad_cfg
   name         = "${each.key}_data"
-  pool         = incus_storage_pool.tank.name
+  pool         = "nvme1"
   project      = "default"
   type         = "custom"
   content_type = "block"
@@ -85,7 +85,7 @@ resource "incus_instance" "vm_dad" {
     name = "${each.key}_data"
     type = "disk"
     properties = {
-      "pool"   = "tank"
+      "pool"   = "nvme1"
       "source" = incus_storage_volume.vm_dad_data[each.key].name
     }
   }

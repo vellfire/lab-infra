@@ -23,21 +23,6 @@ import {
   id = "default/nvme1"
 }
 
-resource "incus_storage_pool" "tank" {
-  name    = "tank"
-  project = "default"
-  driver  = "zfs"
-  config = {
-    source                 = "tank/incus"
-    "volume.zfs.blocksize" = "16KiB"
-  }
-}
-
-import {
-  to = incus_storage_pool.tank
-  id = "default/tank"
-}
-
 resource "incus_image" "ubuntu-stable" {
   source_image = {
     remote       = "images"
