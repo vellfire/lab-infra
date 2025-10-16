@@ -18,6 +18,7 @@ resource "incus_storage_volume" "vm_dad_data" {
   name         = "${each.key}_data"
   pool         = "nvme1"
   project      = "default"
+  remote       = "kvm1"
   type         = "custom"
   content_type = "block"
   config = {
@@ -31,12 +32,18 @@ resource "incus_storage_volume" "vm_dad_data" {
 resource "incus_instance" "vm_dad" {
   for_each  = var.vm_dad_cfg
   name      = each.key
+  project   = "default"
+  remote    = "kvm1"
   type      = "virtual-machine"
   image     = incus_image.ubuntu-stable.fingerprint
   ephemeral = false
 
   wait_for {
     type = "agent"
+  }
+
+  lifecycle {
+    ignore_changes = [image]
   }
 
   config = {

@@ -1,13 +1,14 @@
 resource "macaddress" "vm_wkr_mac_vlan1" {
   count  = var.vm_wkr_count
-  prefix = [16, 102, 106] # 10:66:6a
+  prefix = [16, 102, 106]
 }
 
 resource "incus_storage_volume" "vm_wkr_data" {
   count        = var.vm_wkr_count
   name         = "${var.vm_wkr_name}${count.index + 1}_data"
-  pool         = "nvme1"
+  pool         = "default"
   project      = "default"
+  remote       = "kvm2"
   type         = "custom"
   content_type = "block"
   config = {
@@ -22,6 +23,7 @@ resource "incus_instance" "vm_wkr" {
   count     = var.vm_wkr_count
   name      = "${var.vm_wkr_name}${count.index + 1}"
   project   = "default"
+  remote    = "kvm2"
   type      = "virtual-machine"
   image     = incus_image.ubuntu-stable.fingerprint
   ephemeral = false
@@ -62,7 +64,7 @@ resource "incus_instance" "vm_wkr" {
     name = "${var.vm_wkr_name}${count.index + 1}_os"
     type = "disk"
     properties = {
-      "pool"          = "nvme0"
+      "pool"          = "default"
       "boot.priority" = "1"
       "path"          = "/"
       "size"          = "16GiB"
@@ -73,7 +75,7 @@ resource "incus_instance" "vm_wkr" {
     name = "${var.vm_wkr_name}${count.index + 1}_data"
     type = "disk"
     properties = {
-      "pool"   = "nvme1"
+      "pool"   = "default"
       "source" = incus_storage_volume.vm_wkr_data[count.index].name
     }
   }

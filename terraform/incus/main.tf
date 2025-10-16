@@ -1,17 +1,19 @@
 resource "incus_storage_pool" "nvme0" {
   name    = "nvme0"
   project = "default"
+  remote  = "kvm1"
   driver  = "dir"
 }
 
 import {
   to = incus_storage_pool.nvme0
-  id = "default/nvme0"
+  id = "kvm1:default/nvme0"
 }
 
 resource "incus_storage_pool" "nvme1" {
   name    = "nvme1"
   project = "default"
+  remote  = "kvm1"
   driver  = "dir"
   config = {
     "source" = "/opt/virt"
@@ -20,7 +22,7 @@ resource "incus_storage_pool" "nvme1" {
 
 import {
   to = incus_storage_pool.nvme1
-  id = "default/nvme1"
+  id = "kvm1:default/nvme1"
 }
 
 resource "incus_image" "ubuntu-stable" {
