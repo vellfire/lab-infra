@@ -32,7 +32,6 @@ unix:
 
     vm_pets:
       hosts:
-        vgm1:
         vdb1:
         vin1:
         vpod:
