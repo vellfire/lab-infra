@@ -154,7 +154,7 @@ pods:
       - /dev/bus/usb:/dev/bus/usb
 
   - name: immich-server
-    image: ghcr.io/immich-app/immich-server:v2.0.1
+    image: ghcr.io/immich-app/immich-server:v2.1.0
     network:
       - immich
     env:
