@@ -32,15 +32,3 @@ podman_conf: |
   [network]
   network_backend = "netavark"
   firewall_driver = "nftables"
-
-podman_container_defaults:
-  state: quadlet
-  recreate: false
-  quadlet_file_mode: '0644'
-  quadlet_options:
-    - |
-      [Service]
-      Restart=always
-    - |
-      [Install]
-      WantedBy=default.target

@@ -17,13 +17,27 @@
     - "':' in volume"
     - volume.split(':')[0].startswith('/opt/pods/')
 
-- name: Create podman quadlets  # noqa args[module]
-  containers.podman.podman_container: "{{ podman_container_defaults | combine(pod) }}"
-  loop: "{{ pods }}"
-  loop_control:
-    label: "{{ pod.name }}"
-    loop_var: pod
-  register: podman_quadlet_results
+- name: Create podman quadlets
+  module_defaults:
+    containers.podman.podman_container:
+      state: quadlet
+      recreate: false
+      quadlet_file_mode: '0644'
+      quadlet_options:
+        - |
+          [Service]
+          Restart=always
+        - |
+          [Install]
+          WantedBy=default.target
+  block:
+    - name: Create podman quadlets  # noqa args[module]
+      containers.podman.podman_container: "{{ pod }}"
+      loop: "{{ pods }}"
+      loop_control:
+        label: "{{ pod.name }}"
+        loop_var: pod
+      register: podman_quadlet_results
 
 - name: Remove quadlet files for absent pods
   ansible.builtin.file:
@@ -48,10 +62,9 @@
     XDG_RUNTIME_DIR: "/run/user/{{ ansible_facts.user_uid }}"
   when: podman_quadlet_results is changed or podman_quadlet_removal_results is changed
 
-- name: Enable and start container services
+- name: Start container services
   ansible.builtin.systemd_service:
     name: "{{ item.name }}.service"
-    enabled: true
     state: started
     scope: user
   environment:
