@@ -16,9 +16,9 @@ resource "macaddress" "vm_dad_mac_vlan1" {
 resource "incus_storage_volume" "vm_dad_data" {
   for_each     = var.vm_dad_cfg
   name         = "${each.key}_data"
-  pool         = "nvme1"
+  pool         = "data"
   project      = "default"
-  remote       = "kvm1"
+  remote       = "kvm2"
   type         = "custom"
   content_type = "block"
   config = {
@@ -33,9 +33,9 @@ resource "incus_instance" "vm_dad" {
   for_each  = var.vm_dad_cfg
   name      = each.key
   project   = "default"
-  remote    = "kvm1"
+  remote    = "kvm2"
   type      = "virtual-machine"
-  image     = incus_image.ubuntu-stable.fingerprint
+  image     = incus_image.kvm2-ubuntu-stable.fingerprint
   ephemeral = false
 
   wait_for {
@@ -81,7 +81,7 @@ resource "incus_instance" "vm_dad" {
     name = "${each.key}_os"
     type = "disk"
     properties = {
-      "pool"          = "nvme0"
+      "pool"          = "fast"
       "boot.priority" = "1"
       "path"          = "/"
       "size"          = "16GiB"
@@ -92,7 +92,7 @@ resource "incus_instance" "vm_dad" {
     name = "${each.key}_data"
     type = "disk"
     properties = {
-      "pool"   = "nvme1"
+      "pool"   = "data"
       "source" = incus_storage_volume.vm_dad_data[each.key].name
     }
   }
