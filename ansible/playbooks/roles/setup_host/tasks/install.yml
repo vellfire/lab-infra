@@ -1,7 +1,10 @@
 ---
 - name: Install standard packages
   ansible.builtin.apt:
-    name:
+    name: "{{ standard_packages + (additional_packages | default([])) }}"
+    state: present
+  vars:
+    standard_packages:
       - git
       - vim
       - tmux
@@ -13,4 +16,3 @@
       - curl
       - systemd-resolved
       - python3-requests
-    state: present

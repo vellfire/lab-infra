@@ -36,7 +36,7 @@
     - name: Run standard setup tasks
       when: ansible_os_family == 'Debian'
       ansible.builtin.include_role:
-        name: deb_setup
+        name: setup_host
         apply:
           become: true
           tags:
@@ -76,20 +76,12 @@
             alloy_env_file_vars:
               CUSTOM_ARGS: "--disable-reporting"
 
-        - name: Add alloy user to systemd-journal group
-          become: true
-          ansible.builtin.user:
-            name: alloy
-            groups: systemd-journal
-            append: true
-
-        - name: Add alloy user to docker group
-          when: "'docker.service' in ansible_facts.services"
-          become: true
-          ansible.builtin.user:
-            name: alloy
-            groups: docker
-            append: true
+        - name: Install smartctl exporter
+          when: "'physical_hosts' in group_names"
+          ansible.builtin.include_role:
+            name: prometheus.prometheus.smartctl_exporter
+            apply:
+              become: true
 
     - name: Setup NUT client
       when: req_nut | default(false)
