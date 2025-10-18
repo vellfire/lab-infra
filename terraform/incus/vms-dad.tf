@@ -35,7 +35,7 @@ resource "incus_instance" "vm_dad" {
   project   = "default"
   remote    = "kvm2"
   type      = "virtual-machine"
-  image     = incus_image.kvm2-ubuntu-stable.fingerprint
+  image     = incus_image.ubuntu-stable.fingerprint
   ephemeral = false
 
   wait_for {

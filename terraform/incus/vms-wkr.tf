@@ -6,7 +6,7 @@ resource "macaddress" "vm_wkr_mac_vlan1" {
 resource "incus_storage_volume" "vm_wkr_data" {
   count        = var.vm_wkr_count
   name         = "${var.vm_wkr_name}${count.index + 1}_data"
-  pool         = "default"
+  pool         = "data"
   project      = "default"
   remote       = "kvm2"
   type         = "custom"
@@ -25,7 +25,7 @@ resource "incus_instance" "vm_wkr" {
   project   = "default"
   remote    = "kvm2"
   type      = "virtual-machine"
-  image     = incus_image.kvm2-ubuntu-stable.fingerprint
+  image     = incus_image.ubuntu-stable.fingerprint
   ephemeral = false
 
   wait_for {
@@ -64,7 +64,8 @@ resource "incus_instance" "vm_wkr" {
     name = "${var.vm_wkr_name}${count.index + 1}_os"
     type = "disk"
     properties = {
-      "pool"          = "default"
+      "pool"          = "fast"
+      "boot.priority" = "1"
       "path"          = "/"
       "size"          = "16GiB"
     }
@@ -74,8 +75,8 @@ resource "incus_instance" "vm_wkr" {
     name = "${var.vm_wkr_name}${count.index + 1}_data"
     type = "disk"
     properties = {
-      "pool"          = "default"
-      "source"        = incus_storage_volume.vm_wkr_data[count.index].name
+      "pool"   = "data"
+      "source" = incus_storage_volume.vm_wkr_data[count.index].name
     }
   }
 
