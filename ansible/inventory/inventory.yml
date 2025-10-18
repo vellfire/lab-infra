@@ -22,13 +22,13 @@ unix:
 
     virtual_machines:
       children:
-        vm_workers:
+        # vm_workers:
         vm_pets:
         vm_dads:
 
-    vm_workers:
-      hosts:
-        vwkr[1:3]:
+    # vm_workers:
+    #   hosts:
+    #     vwkr[1:3]:
 
     vm_pets:
       hosts:
@@ -45,6 +45,6 @@ unix:
         physical_hosts:
         virtual_machines:
 
-    k8s_home:
-      children:
-        vm_workers:
+    # k8s_home:
+    #   children:
+    #     vm_workers:
