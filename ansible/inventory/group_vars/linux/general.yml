@@ -159,3 +159,20 @@ alloy_config: |
     refresh_interval = "5s"
   }
   {% endif %}
+
+  {% if 'physical_hosts' in group_names %}
+  prometheus.scrape "smartctl" {
+    targets         = [{ __address__ = "127.0.0.1:9633" }]
+    job_name        = "smartctl"
+    scrape_interval = "60s"
+    forward_to      = [prometheus.relabel.smartctl.receiver]
+  }
+
+  prometheus.relabel "smartctl" {
+    rule {
+      target_label = "instance"
+      replacement  = env("HOSTNAME")
+    }
+    forward_to = [prometheus.remote_write.prom.receiver]
+  }
+  {% endif %}

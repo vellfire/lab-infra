@@ -1,3 +1,9 @@
 ---
 req_monitor: true
 req_ntp: true
+
+additional_packages:
+  - smartmontools
+
+smartctl_exporter_system_user: root
+smartctl_exporter_system_group: root
