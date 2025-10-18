@@ -17,7 +17,7 @@ unix:
         sbc2:
         sbc4:
         nas1:
-        kvm1:
+        # kvm1:
         kvm2:
 
     virtual_machines:
@@ -45,6 +45,6 @@ unix:
         physical_hosts:
         virtual_machines:
 
-    # k8s_home:
+    # k8s:
     #   children:
     #     vm_workers:
