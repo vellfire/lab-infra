@@ -21,18 +21,16 @@
   module_defaults:
     containers.podman.podman_container:
       state: quadlet
-      recreate: false
       quadlet_file_mode: '0644'
-      quadlet_options:
-        - |
-          [Service]
-          Restart=always
-        - |
-          [Install]
-          WantedBy=default.target
   block:
     - name: Create podman quadlets  # noqa args[module]
-      containers.podman.podman_container: "{{ pod }}"
+      containers.podman.podman_container: >-
+        {{
+          pod | combine({
+            'quadlet_options': (pod.quadlet_options | default([]))
+              + podman_quadlet_defaults
+          })
+        }}
       loop: "{{ pods }}"
       loop_control:
         label: "{{ pod.name }}"

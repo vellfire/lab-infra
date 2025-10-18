@@ -1,6 +1,14 @@
 ---
 podman_dns_searches: "{{ ['dns.podman'] + (ansible_dns.search | default([])) }}"
 
+podman_quadlet_defaults:
+  - |
+    [Service]
+    Restart=always
+  - |
+    [Install]
+    WantedBy=default.target
+
 podman_conf: |
   [containers]
   ipv6 = true
