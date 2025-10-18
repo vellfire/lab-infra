@@ -16,6 +16,7 @@
     - volume is string
     - "':' in volume"
     - volume.split(':')[0].startswith('/opt/pods/')
+    - not (volume.split(':')[0] | basename | regex_search('\.'))
 
 - name: Create podman quadlets
   module_defaults:
