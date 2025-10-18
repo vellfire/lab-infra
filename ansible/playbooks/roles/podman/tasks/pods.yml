@@ -28,7 +28,7 @@
         {{
           pod | combine({
             'quadlet_options': (pod.quadlet_options | default([]))
-              + podman_quadlet_defaults
+              + (podman_quadlet_defaults | default([]))
           })
         }}
       loop: "{{ pods }}"
