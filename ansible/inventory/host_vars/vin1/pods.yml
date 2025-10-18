@@ -1,0 +1,22 @@
+---
+pods:
+  - name: traefik
+    image: public.ecr.aws/docker/library/traefik:3.5.3
+    network:
+      - pasta
+    publish:
+      - "80:80"
+      - "443:443"
+    env:
+      BUNNY_API_KEY: "{{ lookup('ripplefcl.bwscache.secret', 'bunny_api').value }}"
+      BUNNY_POLLING_TIMEOUT: "600"
+      BUNNY_POLLING_INTERVAL: "5"
+      BUNNY_TTL: "3600"
+      CF_API_EMAIL: "{{ lookup('ripplefcl.bwscache.secret', 'will_email').value }}"
+      CF_API_KEY: "{{ lookup('ripplefcl.bwscache.secret', 'cf_token').value }}"
+    volume:
+      - "/etc/localtime:/etc/localtime:ro"
+      - "/opt/pods/traefik/config/traefik.yml:/traefik.yml:ro"
+      - "/opt/pods/traefik/config/providers:/providers:ro"
+      - "/opt/pods/traefik/config/certs:/certs:ro"
+      - "/opt/pods/traefik/config/acme.json:/acme.json"
