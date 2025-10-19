@@ -22,6 +22,13 @@ user_pods:
         BindsTo=opt-shares-pods.mount
         After=opt-shares-pods.mount
 
+  - name: openspeedtest
+    image: docker.io/openspeedtest/latest:v2.0.6
+    publish:
+      - "27031:3000"
+      - "27032:3001"
+    state: absent
+
 system_pods:
   - name: gravity
     hostname: "{{ inventory_hostname }}"
