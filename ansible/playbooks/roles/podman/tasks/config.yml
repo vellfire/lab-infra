@@ -3,6 +3,11 @@
   ansible.builtin.apt:
     name:
       - podman
+      - aardvark-dns
+      - netavark
+      - passt
+      - slirp4netns
+      - buildah
     state: present
 
 - name: Deploy containers.conf

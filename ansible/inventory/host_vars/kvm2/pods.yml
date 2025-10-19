@@ -3,9 +3,6 @@ user_pods:
   - name: traefik
     image: public.ecr.aws/docker/library/traefik:3.5.3
     network: host
-    publish:
-      - "80:80"
-      - "443:443"
     env:
       BUNNY_API_KEY: "{{ lookup('ripplefcl.bwscache.secret', 'bunny_api').value }}"
       BUNNY_POLLING_TIMEOUT: "600"
