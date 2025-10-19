@@ -14,5 +14,5 @@
   ansible.builtin.include_tasks: volumes.yml
 
 - name: Create podman containers
-  when: pods is defined
+  when: user_pods is defined or system_pods is defined
   ansible.builtin.include_tasks: pods.yml

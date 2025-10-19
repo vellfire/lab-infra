@@ -1,5 +1,5 @@
 ---
-- name: Create directories from volume bind mounts
+- name: Create directories from volume bind mounts (user pods)
   become: true
   ansible.builtin.file:
     path: "{{ volume.split(':')[0] }}"
@@ -8,7 +8,7 @@
     owner: "{{ ansible_user }}"
     group: "{{ ansible_user }}"
     mode: '0755'
-  loop: "{{ pods | selectattr('volume', 'defined') | map(attribute='volume') | flatten }}"
+  loop: "{{ user_pods | default([]) | selectattr('volume', 'defined') | map(attribute='volume') | flatten }}"
   loop_control:
     loop_var: volume
     label: "{{ volume.split(':')[0] }}"
@@ -18,40 +18,85 @@
     - volume.split(':')[0].startswith('/opt/pods/')
     - not (volume.split(':')[0] | basename | regex_search('\.'))
 
-- name: Create podman quadlets
+- name: Create directories from volume bind mounts (system pods)
+  become: true
+  ansible.builtin.file:
+    path: "{{ volume.split(':')[0] }}"
+    state: directory
+    recurse: true
+    owner: root
+    group: root
+    mode: '0755'
+  loop: "{{ system_pods | default([]) | selectattr('volume', 'defined') | map(attribute='volume') | flatten }}"
+  loop_control:
+    loop_var: volume
+    label: "{{ volume.split(':')[0] }}"
+  when:
+    - volume is string
+    - "':' in volume"
+    - volume.split(':')[0].startswith('/opt/pods/')
+    - not (volume.split(':')[0] | basename | regex_search('\.'))
+
+- name: Create user podman quadlets  # noqa args[module]
+  containers.podman.podman_container: >-
+    {{
+      pod | combine({
+        'quadlet_options': (pod.quadlet_options | default([]))
+          + (podman_quadlet_defaults | default([]))
+      })
+    }}
+  loop: "{{ user_pods | default([]) }}"
+  loop_control:
+    label: "{{ pod.name }}"
+    loop_var: pod
+  register: podman_user_quadlet_results
   module_defaults:
     containers.podman.podman_container:
       state: quadlet
       quadlet_file_mode: '0644'
-  block:
-    - name: Create podman quadlets  # noqa args[module]
-      containers.podman.podman_container: >-
-        {{
-          pod | combine({
-            'quadlet_options': (pod.quadlet_options | default([]))
-              + (podman_quadlet_defaults | default([]))
-          })
-        }}
-      loop: "{{ pods }}"
-      loop_control:
-        label: "{{ pod.name }}"
-        loop_var: pod
-      register: podman_quadlet_results
 
-- name: Remove quadlet files for absent pods
+- name: Create system podman quadlets  # noqa args[module]
+  become: true
+  containers.podman.podman_container: >-
+    {{
+      pod | combine({
+        'quadlet_options': (pod.quadlet_options | default([]))
+          + (podman_quadlet_defaults | default([]))
+      })
+    }}
+  loop: "{{ system_pods | default([]) }}"
+  loop_control:
+    label: "{{ pod.name }}"
+    loop_var: pod
+  register: podman_system_quadlet_results
+  module_defaults:
+    containers.podman.podman_container:
+      state: quadlet
+      quadlet_dir: /etc/containers/systemd
+      quadlet_file_mode: '0644'
+
+- name: Remove user quadlet files for absent pods
   ansible.builtin.file:
     path: "~/.config/containers/systemd/{{ pod.name }}.container"
     state: absent
-  loop: "{{ pods }}"
+  loop: "{{ user_pods | default([]) }}"
   loop_control:
     label: "{{ pod.name }}"
     loop_var: pod
   when: pod.state | default('present') == 'absent'
-  register: podman_quadlet_removal_results
+  register: podman_user_quadlet_removal_results
 
-- name: Set fact for changed containers
-  ansible.builtin.set_fact:
-    podman_changed_pods: "{{ podman_quadlet_results.results | selectattr('changed', 'equalto', true) | map(attribute='pod') | list }}"
+- name: Remove system quadlet files for absent pods
+  become: true
+  ansible.builtin.file:
+    path: "/etc/containers/systemd/{{ pod.name }}.container"
+    state: absent
+  loop: "{{ system_pods | default([]) }}"
+  loop_control:
+    label: "{{ pod.name }}"
+    loop_var: pod
+  when: pod.state | default('present') == 'absent'
+  register: podman_system_quadlet_removal_results
 
 - name: Reload user daemon
   ansible.builtin.systemd_service:
@@ -59,30 +104,57 @@
     scope: user
   environment:
     XDG_RUNTIME_DIR: "/run/user/{{ ansible_facts.user_uid }}"
-  when: podman_quadlet_results is changed or podman_quadlet_removal_results is changed
+  when: podman_user_quadlet_results is changed or podman_user_quadlet_removal_results is changed
 
-- name: Start container services
+- name: Reload system daemon
+  become: true
+  ansible.builtin.systemd_service:
+    daemon_reload: true
+    scope: system
+  when: podman_system_quadlet_results is changed or podman_system_quadlet_removal_results is changed
+
+- name: Start user container services
   ansible.builtin.systemd_service:
     name: "{{ item.name }}.service"
     state: started
     scope: user
   environment:
     XDG_RUNTIME_DIR: "/run/user/{{ ansible_facts.user_uid }}"
-  loop: "{{ pods }}"
+  loop: "{{ user_pods | default([]) }}"
   loop_control:
     label: "{{ item.name }}"
   when: item.state | default('present') != 'absent'
 
-- name: Restart changed container services
+- name: Start system container services
+  become: true
+  ansible.builtin.systemd_service:
+    name: "{{ item.name }}.service"
+    state: started
+    scope: system
+  loop: "{{ system_pods | default([]) }}"
+  loop_control:
+    label: "{{ item.name }}"
+  when: item.state | default('present') != 'absent'
+
+- name: Restart changed user container services
   ansible.builtin.systemd_service:
     name: "{{ item.name }}.service"
     state: restarted
     scope: user
   environment:
     XDG_RUNTIME_DIR: "/run/user/{{ ansible_facts.user_uid }}"
-  loop: "{{ podman_changed_pods }}"
+  loop: "{{ podman_user_quadlet_results.results | default([]) | selectattr('changed', 'equalto', true) | map(attribute='pod') | list }}"
   loop_control:
     label: "{{ item.name }}"
-  when:
-    - podman_changed_pods | length > 0
-    - item.state | default('present') != 'absent'
+  when: item.state | default('present') != 'absent'
+
+- name: Restart changed system container services
+  become: true
+  ansible.builtin.systemd_service:
+    name: "{{ item.name }}.service"
+    state: restarted
+    scope: system
+  loop: "{{ podman_system_quadlet_results.results | default([]) | selectattr('changed', 'equalto', true) | map(attribute='pod') | list }}"
+  loop_control:
+    label: "{{ item.name }}"
+  when: item.state | default('present') != 'absent'
