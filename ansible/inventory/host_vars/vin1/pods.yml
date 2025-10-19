@@ -1,5 +1,5 @@
 ---
-pods:
+user_pods:
   - name: traefik
     image: public.ecr.aws/docker/library/traefik:3.5.3
     network:

@@ -1,0 +1,37 @@
+---
+user_pods:
+  - name: plex
+    image: ghcr.io/home-operations/plex:1.42.2
+    publish:
+      - "32400:32400"
+    env:
+      PLEX_ADVERTISE_URL: "{{ 'https://' + lookup('ripplefcl.bwscache.secret', 'plex_domain').value }}"
+      PLEX_CLAIM_TOKEN: "{{ lookup('ripplefcl.bwscache.secret', 'plex_claim_token').value }}"
+    volume:
+      - "/opt/pods/plex/config:/config"
+      - "/opt/shares/pods/media:/media"
+      - "/opt/shares/pods/plex:/backup"
+    device:
+      - "/dev/dri:/dev/dri"
+    user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
+    quadlet_options:
+      - "UserNS=keep-id"
+      - |
+        [Unit]
+        RequiresMountsFor=/opt/shares/pods
+        BindsTo=opt-shares-pods.mount
+        After=opt-shares-pods.mount
+
+system_pods:
+  - name: gravity
+    hostname: "{{ inventory_hostname }}"
+    image: ghcr.io/beryju/gravity:007613bad35f68afea28c40b2644e2fb09d75860
+    network: host
+    capabilities:
+      - NET_ADMIN
+      - NET_RAW
+    env:
+      LOG_LEVEL: info,dhcp=debug
+    volume:
+      - "/opt/pods/gravity/config:/config"
+      - "/opt/pods/gravity/data:/data"

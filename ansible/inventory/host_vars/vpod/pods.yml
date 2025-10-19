@@ -1,5 +1,5 @@
 ---
-pods:
+user_pods:
   - name: sonarr
     image: ghcr.io/home-operations/sonarr:4.0.15
     network:
@@ -119,30 +119,6 @@ pods:
         BindsTo=opt-shares-pods.mount
         After=opt-shares-pods.mount
 
-  - name: plex
-    image: ghcr.io/home-operations/plex:1.42.2
-    network:
-      - media
-    publish:
-      - "32400:32400"
-    env:
-      PLEX_ADVERTISE_URL: "{{ 'https://' + lookup('ripplefcl.bwscache.secret', 'plex_domain').value }}"
-      PLEX_CLAIM_TOKEN: "{{ lookup('ripplefcl.bwscache.secret', 'plex_claim_token').value }}"
-    volume:
-      - "/opt/pods/plex/config:/config"
-      - "/opt/shares/pods/media:/media"
-      - "/opt/shares/pods/plex:/backup"
-    device:
-      - "/dev/dri:/dev/dri"
-    user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
-    quadlet_options:
-      - "UserNS=keep-id"
-      - |
-        [Unit]
-        RequiresMountsFor=/opt/shares/pods
-        BindsTo=opt-shares-pods.mount
-        After=opt-shares-pods.mount
-
   - name: immich-machine-learning
     image: ghcr.io/immich-app/immich-machine-learning:v2.1.0
     network:
@@ -233,6 +209,25 @@ pods:
       - "/opt/pods/unifi/cert:/usr/lib/unifi/cert"
       - "/opt/pods/unifi/data:/usr/lib/unifi/data"
       - "/opt/pods/unifi/logs:/usr/lib/unifi/logs"
+    user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
+    quadlet_options:
+      - "UserNS=keep-id"
+
+  - name: unpoller
+    image: ghcr.io/unpoller/unpoller:v2.15.4
+    network:
+      - unifi-net
+    publish:
+      - "9130:9130"
+    env:
+      UP_UNIFI_DEFAULT_USER: poller
+      UP_UNIFI_DEFAULT_PASS: "{{ lookup('ripplefcl.bwscache.secret', 'unpoller_pass').value }}"
+      UP_UNIFI_DYNAMIC: "false"
+      UP_UNIFI_DEFAULT_URL: "https://unifi:8443"
+      UP_UNIFI_DEFAULT_VERIFY_SSL: "false"
+      UP_UNIFI_DEFAULT_SAVE_SITES: "true"
+      UP_INFLUXDB_DISABLE: "true"
+      UP_POLLER_DEBUG: "true"
     user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
     quadlet_options:
       - "UserNS=keep-id"
