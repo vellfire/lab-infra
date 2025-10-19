@@ -39,7 +39,7 @@ user_pods:
         After=opt-shares-pods.mount
 
   - name: prowlarr
-    image: ghcr.io/home-operations/prowlarr:2.1.3
+    image: ghcr.io/home-operations/prowlarr:2.1.5
     network:
       - media
     publish:
