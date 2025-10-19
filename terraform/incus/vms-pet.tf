@@ -5,7 +5,6 @@ variable "vm_pet_cfg" {
   }))
   default = {
     "vdb1" = { cpus = 4, memory = "8GiB" }
-    "vin1" = { cpus = 2, memory = "2GiB" }
     "vpod" = { cpus = 6, memory = "16GiB"}
   }
 }
