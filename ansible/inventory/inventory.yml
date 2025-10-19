@@ -17,7 +17,6 @@ unix:
         sbc2:
         sbc4:
         nas1:
-        # kvm1:
         kvm2:
 
     virtual_machines:

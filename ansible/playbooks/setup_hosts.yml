@@ -2,6 +2,24 @@
 - name: Run host setup tasks
   hosts: linux
   gather_facts: true
+  tasks:
+    # Added due to a series of unfortunate events
+    - name: Verify remote hostname matches inventory
+      ansible.builtin.assert:
+        that:
+          - inventory_hostname == ansible_hostname
+        fail_msg: "Expected '{{ inventory_hostname }}' but got '{{ ansible_hostname }}'. Skipping this host."
+        quiet: true
+      failed_when: false
+      register: hostname_check
+
+    - name: End play for hosts with hostname mismatch
+      ansible.builtin.meta: end_host
+      when: hostname_check.failed | default(false)
+
+- name: Run host setup tasks
+  hosts: linux
+  gather_facts: true
   module_defaults:
     community.docker.docker_container:
       default_host_ip: ""
