@@ -38,6 +38,7 @@ user_pods:
         RequiresMountsFor=/opt/shares/pods
         BindsTo=opt-shares-pods.mount
         After=opt-shares-pods.mount
+    state: absent
 
   - name: openspeedtest
     image: docker.io/openspeedtest/latest:v2.0.6
@@ -45,6 +46,26 @@ user_pods:
       - "27031:3000"
       - "27032:3001"
     state: absent
+
+  - name: bws-cache
+    image: ghcr.io/ripplefcl/bws-cache:v3.1.0
+    user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
+    publish:
+      - "5000:5000"
+    env:
+      LOG_LEVEL: "DEBUG"
+      ENABLE_TELEMETRY: "true"
+      SENTRY_ENVIRONMENT: "william"
+
+  - name: meshmon
+    image: ghcr.io/ripplefcl/meshmon:v4.0.0-beta.6
+    user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
+    publish:
+      - "8000:8000"
+      - "42069:42069"
+    volume: ["/opt/pods/meshmon/config:/app/config"]
+    quadlet_options:
+      - "UserNS=keep-id"
 
 system_pods:
   - name: gravity

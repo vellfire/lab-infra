@@ -1,7 +1,3 @@
 ---
-req_ntp: true
 req_podman: true
-
-nut_client_ups: apc
-
 ansible_user: automation

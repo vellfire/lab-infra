@@ -1,57 +1,93 @@
 ---
-pods:
+user_pods:
   - name: mariadb_ams
     image: public.ecr.aws/docker/library/mariadb:10.5.23
-    networks: [{ name: db }]
-    ports: ["15000:3306"]
+    network:
+      - db
+    publish:
+      - "15000:3306"
     env:
-      MARIADB_ROOT_PASSWORD: "{{ lookup('ripplefcl.bwscache.secret', 'dad_db_root').value }}"
-    volumes:
-      - "/opt/pods/mariadb_ams/data:/var/lib/mysql"
+      MARIADB_ROOT_PASSWORD: "{{ lookup('ripplefcl.bwscache.secret', 'dad_db_root').value | replace('%', '%%') }}"
+    volume:
+      - "/opt/pods/mariadb_ams/data:/var/lib/mysql:U"
       - "/opt/pods/mariadb_ams/config/my.cnf:/etc/mysql/my.cnf"
       - "/opt/pods/mariadb_ams/config/backup.cnf:/etc/mysql/backup.cnf"
-      - "/opt/pods/mariadb_ams/backup:/backup"
+
+  - name: pma_ams
+    image: public.ecr.aws/docker/library/phpmyadmin:5.2.3
+    env:
+      PMA_HOST: vdb1:15000
+      PMA_USER: "pma"
+      PMA_PASSWORD: "{{ lookup('ripplefcl.bwscache.secret', 'pma_pass').value | replace('%', '%%') }}"
 
   - name: mariadb_bnt
     image: public.ecr.aws/docker/library/mariadb:10.5.23
-    networks: [{ name: db }]
-    ports: ["15001:3306"]
+    network:
+      - db
+    publish:
+      - "15001:3306"
     env:
-      MARIADB_ROOT_PASSWORD: "{{ lookup('ripplefcl.bwscache.secret', 'dad_db_root').value }}"
-    volumes:
-      - "/opt/pods/mariadb_bnt/data:/var/lib/mysql"
-      - "/opt/pods/mariadb_bnt/backup:/backup"
+      MARIADB_ROOT_PASSWORD: "{{ lookup('ripplefcl.bwscache.secret', 'dad_db_root').value | replace('%', '%%') }}"
+    volume:
+      - "/opt/pods/mariadb_bnt/data:/var/lib/mysql:U"
+
+  - name: pma_bnt
+    image: public.ecr.aws/docker/library/phpmyadmin:5.2.3
+    env:
+      PMA_HOST: vdb1:15001
+      PMA_USER: "pma"
+      PMA_PASSWORD: "{{ lookup('ripplefcl.bwscache.secret', 'pma_pass').value | replace('%', '%%') }}"
 
   - name: media-db
     image: public.ecr.aws/docker/library/postgres:17.6
-    networks: [{ name: db }]
-    ports: ["15002:5432"]
-    user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
+    network:
+      - db
+    publish:
+      - "15002:5432"
     env:
       POSTGRES_USER: "media"
-      POSTGRES_PASSWORD: "{{ lookup('ripplefcl.bwscache.secret', 'media_db_pass').value }}"
-    volumes: ["/opt/pods/media-db/pgdata:/var/lib/postgresql/data"]
+      POSTGRES_PASSWORD: "{{ lookup('ripplefcl.bwscache.secret', 'media_db_pass').value | replace('%', '%%') }}"
+    volume:
+      - "/opt/pods/media-db/pgdata:/var/lib/postgresql/data:U"
+
+  - name: gitea-db
+    image: public.ecr.aws/docker/library/postgres:17.6
+    network:
+      - db
+    publish:
+      - "15003:5432"
+    env:
+      POSTGRES_USER: "gitea"
+      POSTGRES_PASSWORD: "{{ lookup('ripplefcl.bwscache.secret', 'gitea_db_pass').value | replace('%', '%%') }}"
+      POSTGRES_DB: "gitea"
+    volume:
+      - "/opt/pods/gitea-db/pgdata:/var/lib/postgresql/data:U"
 
   - name: immich_postgres
     image: ghcr.io/immich-app/postgres:14-vectorchord0.4.3-pgvectors0.2.0@sha256:bcf63357191b76a916ae5eb93464d65c07511da41e3bf7a8416db519b40b1c23
-    ports: ["15011:5432"]
+    publish:
+      - "15011:5432"
     env:
       POSTGRES_USER: "postgres"
-      POSTGRES_PASSWORD: "{{ lookup('ripplefcl.bwscache.secret', 'immich_db_pass').value }}"
+      POSTGRES_PASSWORD: "{{ lookup('ripplefcl.bwscache.secret', 'immich_db_pass').value | replace('%', '%%') }}"
       POSTGRES_DB: "immich"
       POSTGRES_INITDB_ARGS: "--data-checksums"
-    shm_size: 128m
-    volumes: ["/opt/pods/immich_postgres/db:/var/lib/postgresql/data"]
+    volume:
+      - "/opt/pods/immich_postgres/db:/var/lib/postgresql/data:U"
+    quadlet_options:
+      - "ShmSize=128m"
 
   - name: immich_redis
     image: docker.io/valkey/valkey:8-bookworm@sha256:fea8b3e67b15729d4bb70589eb03367bab9ad1ee89c876f54327fc7c6e618571
-    ports: ["15012:6379"]
-    healthcheck:
-      test: redis-cli ping || exit 1
+    publish:
+      - "15012:6379"
+    quadlet_options:
+      - "HealthCmd=redis-cli ping || exit 1"
 
   - name: db_backup
     image: ghcr.io/tiredofit/docker-db-backup:4.1.21
-    networks: [{ name: db }]
+    network:
+      - db
     env:
       MODE: "AUTO"
       DEFAULT_BACKUP_LOCATION: "S3"
@@ -61,10 +97,10 @@ pods:
       DEFAULT_CLEANUP_TIME: "10080"
       DEFAULT_MYSQL_CLIENT: "mariadb"
       DEFAULT_S3_BUCKET: "mariadb-bucket"
-      DEFAULT_S3_KEY_ID: "{{ lookup('ripplefcl.bwscache.secret', 'mariadb_bucket_key_id').value }}"
-      DEFAULT_S3_KEY_SECRET: "{{ lookup('ripplefcl.bwscache.secret', 'mariadb_bucket_key_secret').value }}"
+      DEFAULT_S3_KEY_ID: "{{ lookup('ripplefcl.bwscache.secret', 'mariadb_bucket_key_id').value | replace('%', '%%') }}"
+      DEFAULT_S3_KEY_SECRET: "{{ lookup('ripplefcl.bwscache.secret', 'mariadb_bucket_key_secret').value | replace('%', '%%') }}"
       DEFAULT_S3_REGION: "garage"
-      DEFAULT_S3_HOST: "{{ lookup('ripplefcl.bwscache.secret', 's3_domain').value }}"
+      DEFAULT_S3_HOST: "{{ lookup('ripplefcl.bwscache.secret', 's3_domain').value | replace('%', '%%') }}"
       DEFAULT_S3_PROTOCOL: "https"
       DEFAULT_S3_CERT_SKIP_VERIFY: "false"
       CONTAINER_ENABLE_MONITORING: "false"
@@ -73,95 +109,98 @@ pods:
       DB01_HOST: "mariadb_ams"
       DB01_NAME: "ALL"
       DB01_USER: "backup"
-      DB01_PASS: "{{ lookup('ripplefcl.bwscache.secret', 'dad_db_root').value }}"
+      DB01_PASS: "{{ lookup('ripplefcl.bwscache.secret', 'dad_db_root').value | replace('%', '%%') }}"
       DB02_S3_PATH: "bnt"
       DB02_TYPE: "mysql"
       DB02_HOST: "mariadb_bnt"
       DB02_NAME: "ALL"
       DB02_USER: "root"
-      DB02_PASS: "{{ lookup('ripplefcl.bwscache.secret', 'dad_db_root').value }}"
+      DB02_PASS: "{{ lookup('ripplefcl.bwscache.secret', 'dad_db_root').value | replace('%', '%%') }}"
       DB03_S3_PATH: "media"
       DB03_TYPE: "pgsql"
       DB03_HOST: "media-db"
       DB03_NAME: "ALL"
       DB03_USER: "media"
-      DB03_PASS: "{{ lookup('ripplefcl.bwscache.secret', 'media_db_pass').value }}"
+      DB03_PASS: "{{ lookup('ripplefcl.bwscache.secret', 'media_db_pass').value | replace('%', '%%') }}"
+      DB04_S3_PATH: "gitea"
+      DB04_TYPE: "pgsql"
+      DB04_HOST: "gitea-db"
+      DB04_NAME: "ALL"
+      DB04_USER: "gitea"
+      DB04_PASS: "{{ lookup('ripplefcl.bwscache.secret', 'gitea_db_pass').value | replace('%', '%%') }}"
 
   - name: prometheus
     image: quay.io/prometheus/prometheus:v3.7.1
     user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
-    networks: [{name: monitor}]
-    ports: ["9090:9090"]
+    network:
+      - monitor
+    publish:
+      - "9090:9090"
     command:
       - "--config.file=/etc/prometheus/prometheus.yml"
       - "--storage.tsdb.path=/prometheus"
       - "--web.enable-remote-write-receiver"
-    volumes:
+    volume:
       - "/opt/pods/prometheus/config/prometheus.yml:/etc/prometheus/prometheus.yml:ro"
       - "/opt/pods/prometheus/data:/prometheus"
-
-  - name: mysqld_exporter
-    image: docker.io/prom/mysqld-exporter:v0.18.0
-    user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
-    networks: [{name: monitor}]
-    env:
-      MYSQLD_EXPORTER_PASSWORD: "{{ lookup('ripplefcl.bwscache.secret', 'dad_db_root').value }}"
-    volumes:
-      - "/opt/pods/mysqld_exporter/config/user_my.cnf:/.my.cnf"
+    quadlet_options:
+      - "UserNS=keep-id"
 
   - name: mktxp
     image: ghcr.io/akpw/mktxp:1.2.14
     user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
-    networks: [{name: monitor}]
-    volumes:
+    network:
+      - monitor
+    volume:
       - "/opt/pods/mktxp/config:/mktxp"
+    quadlet_options:
+      - "UserNS=keep-id"
 
   - name: loki
-    image: grafana/loki:3.5.7
+    image: docker.io/grafana/loki:3.5.7
     user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
-    networks: [{name: monitor}]
-    ports: ["3100:3100"]
-    volumes:
+    network:
+      - monitor
+    publish:
+      - "3100:3100"
+    volume:
       - "/opt/pods/loki/config:/mnt/config"
       - "/opt/pods/loki/data:/loki"
+    quadlet_options:
+      - "UserNS=keep-id"
 
   - name: alloy
     image: docker.io/grafana/alloy:v1.11.2
-    networks:
-      - name: monitor
-      - name: db
-    ports:
+    user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
+    network:
+      - monitor
+      - db
+    publish:
       - "12346:12345"
       - "1514:1514/udp"
       - "1515:1515/udp"
     command: "run --disable-reporting --server.http.listen-addr=0.0.0.0:12345 --storage.path=/var/lib/alloy/data /etc/alloy/config.alloy"
-    volumes:
+    volume:
       - "/opt/pods/alloy/data:/var/lib/alloy/data"
       - "/opt/pods/alloy/config/config.alloy:/etc/alloy/config.alloy"
-
-  - name: scrutiny-db
-    image: public.ecr.aws/docker/library/influxdb:2.7
-    ports: ["8086:8086"]
-    volumes:
-      - "/opt/pods/scrutiny-db/data:/var/lib/influxdb2"
-    user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
+    quadlet_options:
+      - "UserNS=keep-id"
 
   - name: unifi-db
     image: public.ecr.aws/docker/library/mongo:8.0.15
-    ports: ["27017:27017"]
+    publish:
+      - "27017:27017"
     env:
       MONGO_INITDB_ROOT_USERNAME: "root"
-      MONGO_INITDB_ROOT_PASSWORD: "{{ lookup('ripplefcl.bwscache.secret', 'unifi_db_pass').value }}"
+      MONGO_INITDB_ROOT_PASSWORD: "{{ lookup('ripplefcl.bwscache.secret', 'unifi_db_pass').value | replace('%', '%%') }}"
       MONGO_USER: "unifi"
-      MONGO_PASS: "{{ lookup('ripplefcl.bwscache.secret', 'unifi_db_pass').value }}"
+      MONGO_PASS: "{{ lookup('ripplefcl.bwscache.secret', 'unifi_db_pass').value | replace('%', '%%') }}"
       MONGO_DBNAME: "unifi"
       MONGO_AUTHSOURCE: "admin"
-    volumes:
-      - "/opt/pods/unifi-db/db:/data/db"
+    volume:
+      - "/opt/pods/unifi-db/db:/data/db:U"
       - "/opt/pods/unifi-db/init-mongo.sh:/docker-entrypoint-initdb.d/init-mongo.sh:ro"
 
 pod_networks:
   - name: db
-    driver: local
   - name: monitor
-    driver: local

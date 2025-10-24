@@ -1,8 +1,5 @@
 ---
 shares:
-  - name: common
-    src_path: nas1:/tank/common
-    dest_path: /opt/shares/common
   - name: backup
     src_path: nas1:/tank/backup
     dest_path: /opt/shares/backup

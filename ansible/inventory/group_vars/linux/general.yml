@@ -160,6 +160,26 @@ alloy_config: |
   }
   {% endif %}
 
+  {% if 'incus.service' in ansible_facts.services %}
+  prometheus.scrape "incus" {
+    targets         = [{ __address__ = "127.0.0.1:8443", __metrics_path__ = "/1.0/metrics", __scheme__ = "https" }]
+    job_name        = env("HOSTNAME")
+    scrape_interval = "15s"
+    forward_to      = [prometheus.relabel.incus.receiver]
+    tls_config {
+      insecure_skip_verify = true
+    }
+  }
+
+  prometheus.relabel "incus" {
+    rule {
+      target_label = "instance"
+      replacement  = env("HOSTNAME")
+    }
+    forward_to = [prometheus.remote_write.prom.receiver]
+  }
+  {% endif %}
+
   {% if 'physical_hosts' in group_names %}
   prometheus.scrape "smartctl" {
     targets         = [{ __address__ = "127.0.0.1:9633" }]

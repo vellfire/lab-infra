@@ -2,6 +2,8 @@
 req_monitor: true
 req_ntp: true
 
+nut_client_ups: apc
+
 additional_packages:
   - smartmontools
 

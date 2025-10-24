@@ -157,21 +157,6 @@ user_pods:
         BindsTo=opt-shares-pods.mount
         After=opt-shares-pods.mount
 
-  - name: scrutiny-web
-    image: ghcr.io/analogj/scrutiny:v0.8.1-web
-    network:
-      - scrutiny
-    publish:
-      - "8934:8080"
-    env:
-      SCRUTINY_WEB_INFLUXDB_HOST: vdb1
-      SCRUTINY_WEB_INFLUXDB_PORT: "8086"
-    volume:
-      - "/opt/pods/scrutiny-web/config:/opt/scrutiny/config"
-    user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
-    quadlet_options:
-      - "UserNS=keep-id"
-
   - name: grafana
     image: docker.io/grafana/grafana:12.2.0
     publish:
@@ -232,11 +217,30 @@ user_pods:
     quadlet_options:
       - "UserNS=keep-id"
 
+  - name: gitea
+    image: docker.gitea.com/gitea:1.24.6-rootless
+    env:
+      GITEA__database__DB_TYPE: postgres
+      GITEA__database__HOST: vdb1:15003
+      GITEA__database__NAME: gitea
+      GITEA__database__USER: gitea
+      GITEA__database__PASSWD: "{{ lookup('ripplefcl.bwscache.secret', 'gitea_db_pass').value | replace('%', '%%') }}"
+    volume:
+      - "/opt/pods/gitea/data:/var/lib/gitea"
+      - "/opt/pods/gitea/config:/etc/gitea"
+      - "/etc/timezone:/etc/timezone:ro"
+      - "/etc/localtime:/etc/localtime:ro"
+    publish:
+      - "8029:3000"
+      - "2222:2222"
+    user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
+    quadlet_options:
+      - "UserNS=keep-id"
+
 pod_volumes:
   - name: model-cache
 
 pod_networks:
-  - name: scrutiny
   - name: media
   - name: immich
   - name: unifi-net

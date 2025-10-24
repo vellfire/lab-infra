@@ -19,6 +19,7 @@ pods:
       - /dev/sdb
       - /dev/sdc
       - /dev/sdd
+    state: absent
 
   - name: garage
     image: docker.io/dxflrs/garage:v2.1.0

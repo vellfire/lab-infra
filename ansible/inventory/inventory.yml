@@ -17,22 +17,47 @@ unix:
         sbc2:
         sbc4:
         nas1:
+        kvm1:
         kvm2:
 
     virtual_machines:
       children:
-        # vm_workers:
+        k8s_cluster:
+        tst_cluster:
         vm_pets:
         vm_dads:
 
-    # vm_workers:
-    #   hosts:
-    #     vwkr[1:3]:
+    k8s_cluster:
+      children:
+        k8s_control:
+        k8s_workers:
+
+    k8s_control:
+      hosts:
+        k8s-control:
+
+    k8s_workers:
+      hosts:
+        k8s-worker[1:2]:
+
+    tst_cluster:
+      children:
+        tst_control:
+        tst_workers:
+
+    tst_control:
+      hosts:
+        tst-ctrl:
+
+    tst_workers:
+      hosts:
+        tst-wkr[1:2]:
 
     vm_pets:
       hosts:
         vdb1:
         vpod:
+        wrk-test:
 
     vm_dads:
       hosts:
@@ -42,7 +67,3 @@ unix:
       children:
         physical_hosts:
         virtual_machines:
-
-    # k8s:
-    #   children:
-    #     vm_workers:

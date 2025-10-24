@@ -1,21 +1,5 @@
 ---
 pods:
-  - name: pma_ams
-    image: public.ecr.aws/docker/library/phpmyadmin:5.2.3
-    env:
-      PMA_HOST: vdb1:15000
-      PMA_USER: "pma"
-      PMA_PASSWORD: "{{ lookup('ripplefcl.bwscache.secret', 'pma_pass').value }}"
-    state: absent
-
-  - name: pma_bnt
-    image: public.ecr.aws/docker/library/phpmyadmin:5.2.3
-    env:
-      PMA_HOST: vdb1:15001
-      PMA_USER: "pma"
-      PMA_PASSWORD: "{{ lookup('ripplefcl.bwscache.secret', 'pma_pass').value }}"
-    state: absent
-
   - name: scrutiny-collector
     image: ghcr.io/analogj/scrutiny:v0.8.1-collector
     capabilities:
@@ -28,6 +12,7 @@ pods:
       COLLECTOR_RUN_STARTUP: "true"
     volumes: ["/run/udev:/run/udev:ro"]
     devices: ["/dev/nvme0"]
+    state: absent
 
   - name: garage
     image: docker.io/dxflrs/garage:v2.1.0
