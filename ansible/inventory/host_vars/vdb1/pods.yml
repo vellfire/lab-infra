@@ -1,7 +1,7 @@
 ---
 user_pods:
   - name: mariadb_ams
-    image: public.ecr.aws/docker/library/mariadb:10.5.23
+    image: public.ecr.aws/docker/library/mariadb:10.11.14
     network:
       - db
     publish:
@@ -21,7 +21,7 @@ user_pods:
       PMA_PASSWORD: "{{ lookup('ripplefcl.bwscache.secret', 'pma_pass').value | replace('%', '%%') }}"
 
   - name: mariadb_bnt
-    image: public.ecr.aws/docker/library/mariadb:10.5.23
+    image: public.ecr.aws/docker/library/mariadb:10.11.14
     network:
       - db
     publish:
