@@ -46,3 +46,4 @@ override.tf.json
 # Ignore CLI configuration files
 .terraformrc
 terraform.rc
+ansible/inventory/host_vars/wrk-test/prefs.yml
