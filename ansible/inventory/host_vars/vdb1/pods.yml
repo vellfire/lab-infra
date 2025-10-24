@@ -130,7 +130,7 @@ user_pods:
       DB04_PASS: "{{ lookup('ripplefcl.bwscache.secret', 'gitea_db_pass').value | replace('%', '%%') }}"
 
   - name: prometheus
-    image: quay.io/prometheus/prometheus:v3.7.1
+    image: quay.io/prometheus/prometheus:v3.7.2
     user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
     network:
       - monitor
