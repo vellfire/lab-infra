@@ -2,9 +2,10 @@ variable "vm_dad_cfg" {
   type = map(object({
     cpus   = number
     memory = string
+    vlan   = optional(number)
   }))
   default = {
-    "vws1" = { cpus = 4, memory = "4GiB" }
+    "vws1" = { cpus = 2, memory = "2GiB" }
   }
 }
 
@@ -98,12 +99,16 @@ resource "incus_instance" "vm_dad" {
   }
 
   device {
-    name = "incusbr0"
+    name = "eth0"
     type = "nic"
 
-    properties = {
-      network = "incusbr0"
-      hwaddr  = macaddress.vm_dad_mac_vlan1[each.key].address
-    }
+    properties = merge(
+      {
+        nictype = "sriov"
+        parent  = "nic0"
+        hwaddr  = macaddress.vm_dad_mac_vlan1[each.key].address
+      },
+      each.value.vlan != null ? { vlan = each.value.vlan } : {}
+    )
   }
 }

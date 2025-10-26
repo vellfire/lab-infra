@@ -1,6 +1,7 @@
 #cloud-config
 "ethernets":
   "enp5s0":
+    "set-name": "eth0"
     "match":
       "macaddress": "${mac}"
     "accept-ra": true

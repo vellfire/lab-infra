@@ -2,10 +2,12 @@ variable "vm_pet_cfg" {
   type = map(object({
     cpus   = number
     memory = string
+    vlan   = optional(number)
   }))
   default = {
     "vdb1" = { cpus = 4, memory = "8GiB" }
-    "vpod" = { cpus = 6, memory = "16GiB"}
+    "vpod" = { cpus = 4, memory = "8GiB"}
+    "wrk-test" = { cpus = 2, memory = "2GiB", vlan = 110 }
   }
 }
 
@@ -96,12 +98,16 @@ resource "incus_instance" "vm_pet" {
   }
 
   device {
-    name = "incusbr0"
+    name = "eth0"
     type = "nic"
 
-    properties = {
-      network = "incusbr0"
-      hwaddr  = macaddress.vm_pet_mac_vlan1[each.key].address
-    }
+    properties = merge(
+      {
+        nictype = "sriov"
+        parent  = "nic0"
+        hwaddr  = macaddress.vm_pet_mac_vlan1[each.key].address
+      },
+      each.value.vlan != null ? { vlan = each.value.vlan } : {}
+    )
   }
 }
