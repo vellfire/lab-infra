@@ -14,7 +14,7 @@ podman_conf: |
   ipv6 = true
 
   log_size_max = 10485760
-  log_driver = "k8s-file"
+  log_driver = "journald"
 
   pids_limit = 4096
 

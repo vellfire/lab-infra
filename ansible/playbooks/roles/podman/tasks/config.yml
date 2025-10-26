@@ -8,6 +8,8 @@
       - passt
       - slirp4netns
       - buildah
+      - iptables
+      - nftables
     state: present
 
 - name: Deploy containers.conf

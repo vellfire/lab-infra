@@ -10,14 +10,14 @@
     owner: "{{ ansible_user }}"
     group: "{{ ansible_user }}"
     mode: '0755'
-  loop: "{{ pods }}"
+  loop: "{{ user_pods }}"
   loop_control:
     label: "{{ pod.name }}"
     loop_var: pod
 
 - name: "Create docker containers"  # noqa args[module]
   community.docker.docker_container: "{{ pod | default([]) }}"
-  loop: "{{ pods }}"
+  loop: "{{ user_pods }}"
   loop_control:
     label: "{{ pod.name }}"
     loop_var: pod

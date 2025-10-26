@@ -145,7 +145,7 @@
         - docker
 
     - name: Setup pods
-      when: pods is defined and req_docker | default(false)
+      when: user_pods is defined and req_docker | default(false)
       ansible.builtin.include_role:
         name: setup_pods
         apply:

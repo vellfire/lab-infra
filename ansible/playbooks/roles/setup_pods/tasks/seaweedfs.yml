@@ -1,0 +1,21 @@
+---
+- name: Configure SeaweedFS
+  when: user_pods is defined and (user_pods | selectattr('name', 'search', 'seaweedfs') | list | length > 0)
+  become: true
+  block:
+    - name: Create SeaweedFS config directory
+      ansible.builtin.file:
+        path: "{{ standard_pod_path_prefix | default('/opt/pods') }}/seaweedfs/config"
+        state: directory
+        recurse: true
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: '0755'
+
+    - name: Deploy SeaweedFS filer configuration
+      ansible.builtin.copy:
+        content: "{{ seaweedfs_filer_config }}"
+        dest: "{{ standard_pod_path_prefix | default('/opt/pods') }}/seaweedfs/config/filer.toml"
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: '0644'

@@ -8,7 +8,9 @@
     owner: "{{ ansible_user }}"
     group: "{{ ansible_user }}"
     mode: '0755'
-  loop: "{{ user_pods | default([]) | selectattr('volume', 'defined') | map(attribute='volume') | flatten }}"
+  loop: "{{ ((user_pods | default([]) | selectattr('volume', 'defined') | map(attribute='volume') | list)
+           + (user_pods | default([]) | selectattr('volumes', 'defined') | map(attribute='volumes') | list))
+           | flatten }}"
   loop_control:
     loop_var: volume
     label: "{{ volume.split(':')[0] }}"
@@ -17,6 +19,7 @@
     - "':' in volume"
     - volume.split(':')[0].startswith('/opt/pods/')
     - not (volume.split(':')[0] | basename | regex_search('\.'))
+    - not (volume | regex_search(':U($|:)'))
 
 - name: Create directories from volume bind mounts (system pods)
   become: true
@@ -27,7 +30,9 @@
     owner: root
     group: root
     mode: '0755'
-  loop: "{{ system_pods | default([]) | selectattr('volume', 'defined') | map(attribute='volume') | flatten }}"
+  loop: "{{ ((system_pods | default([]) | selectattr('volume', 'defined') | map(attribute='volume') | list)
+           + (system_pods | default([]) | selectattr('volumes', 'defined') | map(attribute='volumes') | list))
+           | flatten }}"
   loop_control:
     loop_var: volume
     label: "{{ volume.split(':')[0] }}"
@@ -36,6 +41,7 @@
     - "':' in volume"
     - volume.split(':')[0].startswith('/opt/pods/')
     - not (volume.split(':')[0] | basename | regex_search('\.'))
+    - not (volume | regex_search(':U($|:)'))
 
 - name: Create user podman quadlets  # noqa args[module]
   containers.podman.podman_container: >-
