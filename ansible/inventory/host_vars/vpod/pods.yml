@@ -221,7 +221,7 @@ user_pods:
       - "UserNS=keep-id"
 
   - name: gitea
-    image: docker.gitea.com/gitea:1.24.6-rootless
+    image: docker.gitea.com/gitea:1.24.7-rootless
     env:
       GITEA__database__DB_TYPE: postgres
       GITEA__database__HOST: vdb1:15003
