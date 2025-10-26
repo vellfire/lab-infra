@@ -39,7 +39,7 @@ variable "git_ssh_keys" {
   type        = string
   default     = "gh:vellfire"
 }
-*/
+
 variable "vm_wkr_name" {
   description = "VM name (for hostname and files)"
   type        = string
@@ -51,7 +51,7 @@ variable "vm_wkr_count" {
   type        = number
   default     = 0
 }
-/*
+
 variable "vm_dad_name" {
   description = "VM name (for hostname and files)"
   type        = string
