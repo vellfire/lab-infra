@@ -156,3 +156,14 @@
       tags:
         - docker
         - pods
+
+    - name: Setup restic
+      when: req_restic | default(false)
+      ansible.builtin.include_role:
+        name: roles-ansible.restic
+        apply:
+          become: true
+          tags:
+            - backup
+      tags:
+        - backup

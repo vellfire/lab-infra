@@ -1,0 +1,18 @@
+---
+restic_backups:
+  pods:
+    name: pods
+    repo: seaweed
+    src: /tank/pods
+    scheduled: true
+    schedule_oncalendar: '*-*-* 04:00:00'
+    keep_daily: 7
+    keep_weekly: 4
+    keep_monthly: 6
+    keep_yearly: 2
+    prune: true
+    exclude:
+      - "/tank/pods/media/library/film"
+      - "/tank/pods/media/library/music"
+      - "/tank/pods/media/library/tv"
+      - "/tank/pods/media/downloads"

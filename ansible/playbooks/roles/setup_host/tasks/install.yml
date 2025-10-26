@@ -5,6 +5,7 @@
     state: present
   vars:
     standard_packages:
+      - bzip2
       - git
       - vim
       - tmux

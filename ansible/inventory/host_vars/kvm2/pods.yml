@@ -26,7 +26,7 @@ user_pods:
     image: "{{ seaweedfs_image }}"
     publish:
       - "8090:8090"
-      - "18080:18080"
+      - "18090:18090"
       - "9325:9325"
     volume:
       - "/opt/pods/seaweedfs/volume:/data"

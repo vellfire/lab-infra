@@ -25,7 +25,7 @@ user_pods:
     image: "{{ seaweedfs_image }}"
     ports:
       - "8090:8090"
-      - "18080:18080"
+      - "18090:18090"
       - "9325:9325"
     volumes:
       - "/tank/pods/seaweedfs/volume:/data"

@@ -1,6 +1,7 @@
 ---
 req_monitor: true
 req_ntp: true
+req_restic: true
 
 nut_client_ups: apc
 
