@@ -14,8 +14,6 @@ unix:
     physical_hosts:
       hosts:
         sbc1:
-        sbc2:
-        sbc4:
         nas1:
         kvm1:
         kvm2:
@@ -23,7 +21,6 @@ unix:
     virtual_machines:
       children:
         k8s_cluster:
-        tst_cluster:
         vm_pets:
         vm_dads:
 
@@ -40,19 +37,6 @@ unix:
       hosts:
         k8s-worker[1:2]:
 
-    tst_cluster:
-      children:
-        tst_control:
-        tst_workers:
-
-    tst_control:
-      hosts:
-        tst-ctrl:
-
-    tst_workers:
-      hosts:
-        tst-wkr[1:2]:
-
     vm_pets:
       hosts:
         vdb1:
@@ -62,6 +46,12 @@ unix:
     vm_dads:
       hosts:
         vws1:
+
+    seaweedfs:
+      hosts:
+        kvm1:
+        kvm2:
+        nas1:
 
     home:
       children:

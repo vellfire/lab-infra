@@ -1,8 +1,0 @@
----
-req_nut: true
-req_docker: true
-req_garage: true
-req_meshmon: true
-
-nut_client_ups: apc
-meshmon_node_id: will-lab-home

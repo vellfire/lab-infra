@@ -83,6 +83,7 @@ user_pods:
     user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
     quadlet_options:
       - "UserNS=keep-id"
+      - "HealthCmd=wget --no-verbose --tries=1 --spider 'http://localhost:8080/api?mode=auth'"
       - |
         [Unit]
         RequiresMountsFor=/opt/shares/pods
@@ -151,6 +152,7 @@ user_pods:
     user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
     quadlet_options:
       - "UserNS=keep-id"
+      - "HealthCmd=wget --no-verbose --tries=1 --spider http://localhost:2283/api/server/ping"
       - |
         [Unit]
         RequiresMountsFor=/opt/shares/pods
@@ -168,6 +170,7 @@ user_pods:
     user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
     quadlet_options:
       - "UserNS=keep-id"
+      - "HealthCmd=wget --no-verbose --tries=1 --spider http://localhost:3000/api/health"
 
   - name: unifi
     image: docker.io/goofball222/unifi:9.5
@@ -236,6 +239,7 @@ user_pods:
     user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
     quadlet_options:
       - "UserNS=keep-id"
+      - "HealthCmd=wget --no-verbose --tries=1 --spider http://localhost:3000/api/healthz"
 
 pod_volumes:
   - name: model-cache

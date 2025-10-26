@@ -1,5 +1,0 @@
----
-req_nut: true
-req_docker: true
-
-nut_client_ups: apc
