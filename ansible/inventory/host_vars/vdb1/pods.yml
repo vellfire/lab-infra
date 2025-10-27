@@ -216,7 +216,7 @@ user_pods:
       - "HealthCmd=wget --no-verbose --tries=1 --spider http://localhost:3100/ready"
 
   - name: alloy
-    image: docker.io/grafana/alloy:v1.11.2
+    image: docker.io/grafana/alloy:v1.11.3
     user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
     network:
       - monitor
