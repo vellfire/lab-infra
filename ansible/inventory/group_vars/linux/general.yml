@@ -31,23 +31,6 @@ restic__cache_config: true
 restic__cache_dir: /opt/restic/cache
 restic_version: '0.18.1'
 
-restic_pods_exclude:
-  - "/opt/pods/gravity"
-  - "/opt/pods/seaweedfs/volume"
-  - "/opt/pods/seaweedfs/master"
-  - "/opt/pods/seaweedfs/filer"
-  - "/opt/pods/mariadb_*/data"
-  - "/opt/pods/media-db/pgdata"
-  - "/opt/pods/gitea-db/pgdata"
-  - "/opt/pods/seaweedfs-db/pgdata"
-  - "/opt/pods/immich_postgres/pgdata"
-  - "/opt/pods/*/pgdata"
-  - "/opt/pods/prometheus/data"
-  - "/opt/pods/loki/data"
-  - "/opt/pods/*/cache"
-  - "/opt/pods/*/tmp"
-  - "/opt/seaweedfs"
-
 # Alloy Configuration
 alloy_config: |
   prometheus.exporter.unix "node" {
