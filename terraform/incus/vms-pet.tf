@@ -1,113 +1,69 @@
 variable "vm_pet_cfg" {
   type = map(object({
+    host   = string
     cpus   = number
     memory = string
     vlan   = optional(number)
   }))
   default = {
-    "vdb1" = { cpus = 4, memory = "8GiB" }
-    "vpod" = { cpus = 4, memory = "8GiB"}
-    "wrk-test" = { cpus = 2, memory = "2GiB", vlan = 110 }
+    "vdb1"     = { host = "kvm2", cpus = 4, memory = "8GiB" }
+    "vpod"     = { host = "kvm2", cpus = 4, memory = "8GiB" }
+    "wrk-test" = { host = "kvm2", cpus = 2, memory = "2GiB", vlan = 110 }
+    "vws1"     = { host = "kvm2", cpus = 2, memory = "2GiB" }
   }
 }
 
-resource "macaddress" "vm_pet_mac_vlan1" {
+resource "macaddress" "vm_pet_mac_eth0" {
   for_each = var.vm_pet_cfg
   prefix   = [16, 102, 106]
 }
 
-resource "incus_storage_volume" "vm_pet_data" {
-  for_each     = var.vm_pet_cfg
-  name         = "${each.key}_data"
-  pool         = "data"
-  project      = "default"
-  remote       = "kvm2"
-  type         = "custom"
-  content_type = "block"
-  config = {
-    "size" = "32GiB"
-  }
-  lifecycle {
-    ignore_changes = [config["size"]]
-  }
+module "vm_pet" {
+  source   = "./modules/incus-vm"
+  for_each = var.vm_pet_cfg
+
+  name              = each.key
+  host              = each.value.host
+  cpus              = each.value.cpus
+  memory            = each.value.memory
+  vlan              = each.value.vlan
+  parent_nic        = "nic0"
+  mac_address       = macaddress.vm_pet_mac_eth0[each.key].address
+  image_fingerprint = module.ubuntu_stable_image.fingerprints[each.value.host]
+
+  cloud_init_user_data = templatefile(
+    "${path.module}/templates/vms-pet/user-data.tftpl",
+    {
+      name                = each.key,
+      timezone            = var.vm_timezone,
+      standard_username   = var.standard_username,
+      standard_ssh_key    = var.standard_ssh_key,
+      automation_username = var.automation_username,
+      automation_uid      = var.automation_uid,
+      automation_ssh_key  = var.automation_ssh_key,
+      dad_username        = var.dad_username,
+      dad_uid             = var.dad_uid,
+      dad_ssh_key         = var.dad_ssh_key
+    }
+  )
+
+  cloud_init_network_config = templatefile(
+    "${path.module}/templates/vms-pet/network-config.tftpl",
+    {
+      name      = each.key,
+      vlan1_mac = macaddress.vm_pet_mac_eth0[each.key].address,
+    }
+  )
 }
 
-resource "incus_instance" "vm_pet" {
-  for_each  = var.vm_pet_cfg
-  name      = each.key
-  project   = "default"
-  remote    = "kvm2"
-  type      = "virtual-machine"
-  image     = incus_image.ubuntu-stable.fingerprint
-  ephemeral = false
-
-  wait_for {
-    type = "agent"
-  }
-
-  lifecycle {
-    ignore_changes = [image]
-  }
-
-  config = {
-    "limits.cpu"    = each.value.cpus
-    "limits.memory" = each.value.memory
-
-    "agent.nic_config"    = true
-    "security.secureboot" = false
-    "boot.autostart"      = true
-
-    "cloud-init.user-data" = templatefile(
-      "${path.module}/templates/vms-pet/user-data.tftpl",
-      {
-        name                = each.key,
-        timezone            = var.vm_timezone,
-        standard_username   = var.standard_username,
-        standard_ssh_key    = var.standard_ssh_key,
-        automation_username = var.automation_username,
-        automation_uid      = var.automation_uid,
-        automation_ssh_key  = var.automation_ssh_key
-      }
-    )
-    "cloud-init.network-config" = templatefile(
-      "${path.module}/templates/vms-pet/network-config.tftpl",
-      {
-        name      = each.key,
-        vlan1_mac = macaddress.vm_pet_mac_vlan1[each.key].address,
-    })
-  }
-
-  device {
-    name = "${each.key}_os"
-    type = "disk"
-    properties = {
-      "pool"          = "fast"
-      "boot.priority" = "1"
-      "path"          = "/"
-      "size"          = "16GiB"
+output "pet_vms" {
+  description = "Pet VMs"
+  value = {
+    for name, vm in module.vm_pet : name => {
+      ipv4 = vm.ipv4_address
+      ipv6 = vm.ipv6_address
+      mac  = vm.mac_address
+      host = var.vm_pet_cfg[name].host
     }
-  }
-
-  device {
-    name = "${each.key}_data"
-    type = "disk"
-    properties = {
-      "pool"   = "data"
-      "source" = incus_storage_volume.vm_pet_data[each.key].name
-    }
-  }
-
-  device {
-    name = "eth0"
-    type = "nic"
-
-    properties = merge(
-      {
-        nictype = "sriov"
-        parent  = "nic0"
-        hwaddr  = macaddress.vm_pet_mac_vlan1[each.key].address
-      },
-      each.value.vlan != null ? { vlan = each.value.vlan } : {}
-    )
   }
 }

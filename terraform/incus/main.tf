@@ -1,9 +1,10 @@
-resource "incus_image" "ubuntu-stable" {
-  remote = "kvm2"
-  source_image = {
-    remote       = "images"
-    name         = "ubuntu/24.04/cloud"
-    type         = "virtual-machine"
-    architecture = "x86_64"
-  }
+locals {
+  incus_hosts = toset(["kvm1", "kvm2"])
+}
+
+module "ubuntu_stable_image" {
+  source = "./modules/incus-image"
+
+  hosts      = local.incus_hosts
+  image_name = "ubuntu/24.04/cloud"
 }

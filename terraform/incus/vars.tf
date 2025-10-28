@@ -17,13 +17,13 @@ variable "standard_ssh_key" {
 }
 
 variable "automation_username" {
-  description = "Automation user name"
+  description = "Automation username"
   type        = string
   default     = "automation"
 }
 
 variable "automation_uid" {
-  description = "Automation user id"
+  description = "Automation UID"
   type        = number
   default     = 1337
 }
@@ -72,7 +72,7 @@ variable "dad_username" {
 }
 
 variable "dad_uid" {
-  description = "Dad's user id"
+  description = "Dad's UID"
   type        = number
   default     = 1338
 }
@@ -86,15 +86,36 @@ variable "dad_ssh_key" {
 /* K8s */
 
 variable "k8s_enabled" {
-  description = "Enable Kubernetes cluster VMs"
+  description = "Enable k8s cluster"
   type        = bool
   default     = true
 }
 
 variable "k8s_worker_count" {
-  description = "Number of Kubernetes worker nodes"
+  description = "k8s worker count"
   type        = number
-  default     = 2
+  default     = 4
+}
+
+variable "k8s_control_host" {
+  description = "k8s control plane host"
+  type        = string
+  default     = "kvm2"
+}
+
+variable "k8s_worker_hosts" {
+  description = "k8s worker host distribution"
+  type        = list(string)
+  default     = ["kvm1", "kvm2"]
+}
+
+variable "k8s_network_parent" {
+  description = "k8s parent NIC per host"
+  type        = map(string)
+  default = {
+    "kvm1" = "nic0"
+    "kvm2" = "nic1"
+  }
 }
 
 /* K8s Control Plane */
@@ -126,25 +147,25 @@ variable "k8s_control_data_size" {
 /* K8s Workers */
 
 variable "k8s_worker_cpu" {
-  description = "CPU cores per Kubernetes worker"
+  description = "k8s worker CPUs"
   type        = number
   default     = 2
 }
 
 variable "k8s_worker_memory" {
-  description = "Memory per Kubernetes worker"
+  description = "k8s worker memory"
   type        = string
   default     = "4GiB"
 }
 
 variable "k8s_worker_os_size" {
-  description = "OS disk size per worker"
+  description = "k8s worker OS disk"
   type        = string
   default     = "32GiB"
 }
 
 variable "k8s_worker_data_size" {
-  description = "Data disk size per worker (container storage)"
+  description = "k8s worker data disk"
   type        = string
   default     = "64GiB"
 }
