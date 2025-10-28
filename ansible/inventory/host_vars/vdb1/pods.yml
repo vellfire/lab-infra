@@ -233,7 +233,7 @@ user_pods:
       - "UserNS=keep-id"
 
   - name: unifi-db
-    image: public.ecr.aws/docker/library/mongo:8.0.15
+    image: public.ecr.aws/docker/library/mongo:8.2.1
     network:
       - db
     publish:
