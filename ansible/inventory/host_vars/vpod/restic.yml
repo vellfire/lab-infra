@@ -1,0 +1,39 @@
+---
+restic_repos:
+  vpod:
+    location: "s3:{{ lookup('ripplefcl.bwscache.secret', 's3_domain').value }}/restic-backup/vpod"
+    init: true
+    password: "{{ lookup('ripplefcl.bwscache.secret', 'restic_s3_secret_key').value }}"
+    aws_access_key: "{{ lookup('ripplefcl.bwscache.secret', 'restic_s3_access_key').value }}"
+    aws_secret_access_key: "{{ lookup('ripplefcl.bwscache.secret', 'restic_s3_secret_key').value }}"
+    aws_default_region: us-east-1
+
+restic_backups:
+  pods:
+    name: pods
+    repo: vpod
+    src: /opt/pods
+    scheduled: true
+    schedule_oncalendar: '*-*-* 04:00:00'
+    keep_daily: 7
+    keep_weekly: 4
+    keep_monthly: 6
+    keep_yearly: 2
+    prune: true
+    exclude:
+      exclude:
+        - "/opt/pods/gravity"
+        - "/opt/pods/seaweedfs/volume"
+        - "/opt/pods/seaweedfs/master"
+        - "/opt/pods/seaweedfs/filer"
+        - "/opt/pods/mariadb_*/data"
+        - "/opt/pods/media-db/pgdata"
+        - "/opt/pods/gitea-db/pgdata"
+        - "/opt/pods/seaweedfs-db/pgdata"
+        - "/opt/pods/immich_postgres/pgdata"
+        - "/opt/pods/*/pgdata"
+        - "/opt/pods/prometheus/data"
+        - "/opt/pods/loki/data"
+        - "/opt/pods/*/cache"
+        - "/opt/pods/*/tmp"
+        - "/opt/seaweedfs"

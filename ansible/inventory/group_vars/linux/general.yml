@@ -22,51 +22,31 @@ nut_client_state: started
 nut_client_enabled: true
 
 # Restic Configuration
+restic_user: root
 restic_log_dir: /var/log/restic
 restic_create_schedule: true
 restic_schedule_type: systemd
-restic_backup_now: true
+restic_backup_now: false
 restic__cache_config: true
 restic__cache_dir: /opt/restic/cache
+restic_version: '0.18.1'
 
-restic_repos:
-  seaweed:
-    location: "s3:{{ lookup('ripplefcl.bwscache.secret', 's3_domain').value }}/restic-backup"
-    init: true
-    password: "{{ lookup('ripplefcl.bwscache.secret', 'restic_s3_secret_key').value }}"
-    aws_access_key: "{{ lookup('ripplefcl.bwscache.secret', 'restic_s3_access_key').value }}"
-    aws_secret_access_key: "{{ lookup('ripplefcl.bwscache.secret', 'restic_s3_secret_key').value }}"
-    aws_default_region: us-east-1
-
-restic_backups:
-  pods:
-    name: pods
-    repo: seaweed
-    src: /opt/pods
-    scheduled: true
-    schedule_oncalendar: '*-*-* 04:00:00'
-    keep_daily: 7
-    keep_weekly: 4
-    keep_monthly: 6
-    keep_yearly: 2
-    prune: true
-    exclude:
-      - "/opt/pods/seaweedfs/volume"
-      - "/opt/pods/seaweedfs/master"
-      - "/opt/pods/seaweedfs/filer"
-
-      - "/opt/pods/mariadb_*/data"
-      - "/opt/pods/media-db/pgdata"
-      - "/opt/pods/gitea-db/pgdata"
-      - "/opt/pods/seaweedfs-db/pgdata"
-      - "/opt/pods/immich_postgres/pgdata"
-      - "/opt/pods/*/pgdata"
-
-      - "/opt/pods/prometheus/data"
-      - "/opt/pods/loki/data"
-
-      - "/opt/pods/*/cache"
-      - "/opt/pods/*/tmp"
+restic_pods_exclude:
+  - "/opt/pods/gravity"
+  - "/opt/pods/seaweedfs/volume"
+  - "/opt/pods/seaweedfs/master"
+  - "/opt/pods/seaweedfs/filer"
+  - "/opt/pods/mariadb_*/data"
+  - "/opt/pods/media-db/pgdata"
+  - "/opt/pods/gitea-db/pgdata"
+  - "/opt/pods/seaweedfs-db/pgdata"
+  - "/opt/pods/immich_postgres/pgdata"
+  - "/opt/pods/*/pgdata"
+  - "/opt/pods/prometheus/data"
+  - "/opt/pods/loki/data"
+  - "/opt/pods/*/cache"
+  - "/opt/pods/*/tmp"
+  - "/opt/seaweedfs"
 
 # Alloy Configuration
 alloy_config: |

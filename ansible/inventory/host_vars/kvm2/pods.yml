@@ -98,7 +98,7 @@ user_pods:
       - "/opt/pods/traefik/config/certs:/certs:ro"
       - "/opt/pods/traefik/config/acme.json:/acme.json"
     quadlet_options:
-      - "HealthCmd=traefik healthcheck --ping"
+      - "HealthCmd=wget --no-verbose --tries=1 --spider https://traefik.mcda.dev/metrics"
 
   - name: plex
     image: ghcr.io/home-operations/plex:1.42.2

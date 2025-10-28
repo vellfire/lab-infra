@@ -7,7 +7,7 @@ user_pods:
       - "19333:19333"
       - "9324:9324"
     volume:
-      - "/opt/pods/seaweedfs/master:/data"
+      - "/opt/seaweedfs/master:/data"
     command:
       - master
       - "-ip={{ ansible_default_ipv4.address }}"
@@ -29,7 +29,7 @@ user_pods:
       - "18090:18090"
       - "9325:9325"
     volume:
-      - "/opt/pods/seaweedfs/volume:/data"
+      - "/opt/seaweedfs/volume:/data"
     command:
       - volume
       - "-mserver={{ seaweedfs_peers.split(',') | join(':9333,') ~ ':9333' }}"
@@ -50,8 +50,8 @@ user_pods:
       - "18889:18889"
       - "9326:9326"
     volume:
-      - "/opt/pods/seaweedfs/filer:/data"
-      - "/opt/pods/seaweedfs/config/filer.toml:/etc/seaweedfs/filer.toml:ro"
+      - "/opt/seaweedfs/filer:/data"
+      - "/opt/seaweedfs/config/filer.toml:/etc/seaweedfs/filer.toml:ro"
     command:
       - filer
       - "-master={{ seaweedfs_peers.split(',') | join(':9333,') ~ ':9333' }}"

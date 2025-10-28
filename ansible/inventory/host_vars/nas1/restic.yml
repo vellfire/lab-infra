@@ -1,8 +1,17 @@
 ---
+restic_repos:
+  nas1:
+    location: "s3:{{ lookup('ripplefcl.bwscache.secret', 's3_domain').value }}/restic-backup/nas1"
+    init: true
+    password: "{{ lookup('ripplefcl.bwscache.secret', 'restic_s3_secret_key').value }}"
+    aws_access_key: "{{ lookup('ripplefcl.bwscache.secret', 'restic_s3_access_key').value }}"
+    aws_secret_access_key: "{{ lookup('ripplefcl.bwscache.secret', 'restic_s3_secret_key').value }}"
+    aws_default_region: us-east-1
+
 restic_backups:
   pods:
     name: pods
-    repo: seaweed
+    repo: nas1
     src: /tank/pods
     scheduled: true
     schedule_oncalendar: '*-*-* 04:00:00'
@@ -11,8 +20,37 @@ restic_backups:
     keep_monthly: 6
     keep_yearly: 2
     prune: true
+    forget_extra_args: --retry-lock 5m
     exclude:
-      - "/tank/pods/media/library/film"
-      - "/tank/pods/media/library/music"
-      - "/tank/pods/media/library/tv"
-      - "/tank/pods/media/downloads"
+      exclude:
+        - "/tank/pods/gravity"
+        - "/tank/pods/seaweedfs/volume"
+        - "/tank/pods/seaweedfs/master"
+        - "/tank/pods/seaweedfs/filer"
+        - "/tank/pods/mariadb_*/data"
+        - "/tank/pods/media-db/pgdata"
+        - "/tank/pods/gitea-db/pgdata"
+        - "/tank/pods/seaweedfs-db/pgdata"
+        - "/tank/pods/immich_postgres/pgdata"
+        - "/tank/pods/*/pgdata"
+        - "/tank/pods/prometheus/data"
+        - "/tank/pods/loki/data"
+        - "/tank/pods/*/cache"
+        - "/tank/pods/*/tmp"
+        - "/tank/pods/media/library/film"
+        - "/tank/pods/media/library/music"
+        - "/tank/pods/media/library/tv"
+        - "/tank/pods/media/downloads"
+
+  datashares:
+    name: datashares
+    repo: nas1
+    src: /tank/datashares
+    scheduled: true
+    schedule_oncalendar: '*-*-* 06:00:00'
+    keep_daily: 7
+    keep_weekly: 4
+    keep_monthly: 6
+    keep_yearly: 2
+    prune: true
+    forget_extra_args: --retry-lock 5m
