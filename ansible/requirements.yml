@@ -32,5 +32,5 @@ roles:
     version: 1.1.0
   - name: geerlingguy.ntp
     version: 3.0.0
-  - name: roles-ansible.restic
-    version: v0.9.1
+  # - name: roles-ansible.restic
+  #   version: v0.9.1
