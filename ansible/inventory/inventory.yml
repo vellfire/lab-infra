@@ -35,7 +35,7 @@ unix:
 
     k8s_workers:
       hosts:
-        k8s-worker[1:2]:
+        k8s-worker[1:4]:
 
     vm_pets:
       hosts:
