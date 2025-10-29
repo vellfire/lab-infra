@@ -1,7 +1,7 @@
 ---
 user_pods:
   - name: mariadb_ams
-    image: public.ecr.aws/docker/library/mariadb:11.4
+    image: public.ecr.aws/docker/library/mariadb:11.8
     network:
       - db
       - monitor
@@ -26,7 +26,7 @@ user_pods:
       - "HealthCmd=curl -f http://localhost/robots.txt"
 
   - name: mariadb_bnt
-    image: public.ecr.aws/docker/library/mariadb:11.4
+    image: public.ecr.aws/docker/library/mariadb:11.8
     network:
       - db
       - monitor
