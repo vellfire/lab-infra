@@ -1,9 +1,10 @@
 ---
 user_pods:
   - name: mariadb_ams
-    image: public.ecr.aws/docker/library/mariadb:10.11.14
+    image: public.ecr.aws/docker/library/mariadb:11.4
     network:
       - db
+      - monitor
     publish:
       - "15000:3306"
     env:
@@ -25,9 +26,10 @@ user_pods:
       - "HealthCmd=curl -f http://localhost/robots.txt"
 
   - name: mariadb_bnt
-    image: public.ecr.aws/docker/library/mariadb:10.11.14
+    image: public.ecr.aws/docker/library/mariadb:11.4
     network:
       - db
+      - monitor
     publish:
       - "15001:3306"
     env:
@@ -50,6 +52,7 @@ user_pods:
     image: public.ecr.aws/docker/library/postgres:17.6
     network:
       - db
+      - monitor
     publish:
       - "15002:5432"
     env:
@@ -64,6 +67,7 @@ user_pods:
     image: public.ecr.aws/docker/library/postgres:17.6
     network:
       - db
+      - monitor
     publish:
       - "15003:5432"
     env:
@@ -79,6 +83,7 @@ user_pods:
     image: public.ecr.aws/docker/library/postgres:17.6
     network:
       - db
+      - monitor
     publish:
       - "15004:5432"
     env:
@@ -96,6 +101,7 @@ user_pods:
     image: ghcr.io/immich-app/postgres:14-vectorchord0.4.3-pgvectors0.2.0@sha256:bcf63357191b76a916ae5eb93464d65c07511da41e3bf7a8416db519b40b1c23
     network:
       - db
+      - monitor
     publish:
       - "15011:5432"
     env:
@@ -215,7 +221,7 @@ user_pods:
       - "UserNS=keep-id"
       - "HealthCmd=wget --no-verbose --tries=1 --spider http://localhost:3100/ready"
 
-  - name: alloy
+  - name: pod-alloy
     image: docker.io/grafana/alloy:v1.11.3
     user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
     network:
@@ -225,10 +231,10 @@ user_pods:
       - "12346:12345"
       - "1514:1514/udp"
       - "1515:1515/udp"
-    command: "run --disable-reporting --server.http.listen-addr=0.0.0.0:12345 --storage.path=/var/lib/alloy/data /etc/alloy/config.alloy"
+    command: "run --disable-reporting --server.http.listen-addr=0.0.0.0:12345 --storage.path=/alloy-data /etc/alloy/config.alloy"
     volume:
-      - "/opt/pods/alloy/data:/var/lib/alloy/data"
-      - "/opt/pods/alloy/config/config.alloy:/etc/alloy/config.alloy"
+      - "/opt/pods/alloy/data:/alloy-data"
+      - "/opt/pods/alloy/config/config.alloy:/etc/alloy/config.alloy:ro"
     quadlet_options:
       - "UserNS=keep-id"
 

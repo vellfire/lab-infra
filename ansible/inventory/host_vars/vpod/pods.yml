@@ -241,6 +241,26 @@ user_pods:
       - "UserNS=keep-id"
       - "HealthCmd=wget --no-verbose --tries=1 --spider http://localhost:3000/api/healthz"
 
+  - name: cyberchef
+    image: ghcr.io/gchq/cyberchef:10.19.4
+    publish:
+      - "8082:80"
+
+  - name: it-tools
+    image: docker.io/corentinth/it-tools:latest
+    publish:
+      - "8083:80"
+
+  - name: networking-toolbox
+    image: ghcr.io/lissy93/networking-toolbox:1.5.0
+    publish:
+      - "8084:3000"
+
+  - name: omni-tools
+    image: docker.io/iib0011/omni-tools:0.6.0
+    publish:
+      - "8085:80"
+
 pod_volumes:
   - name: model-cache
 

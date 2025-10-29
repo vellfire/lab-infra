@@ -1,3 +1,0 @@
----
-ansible_host: "k8s-worker1.k8s.{{ lookup('ripplefcl.bwscache.secret', 'root_domain').value }}"
-req_restic: false

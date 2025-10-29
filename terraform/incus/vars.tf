@@ -97,10 +97,10 @@ variable "k8s_worker_count" {
   default     = 4
 }
 
-variable "k8s_control_host" {
-  description = "k8s control plane host"
-  type        = string
-  default     = "kvm2"
+variable "k8s_control_hosts" {
+  description = "k8s control plane host distribution"
+  type        = list(string)
+  default     = ["kvm2"]
 }
 
 variable "k8s_worker_hosts" {

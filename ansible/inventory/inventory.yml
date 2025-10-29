@@ -20,28 +20,27 @@ unix:
 
     virtual_machines:
       children:
-        k8s_cluster:
+        k8s:
         vm_pets:
         vm_dads:
 
-    k8s_cluster:
+    k8s:
       children:
-        k8s_control:
-        k8s_workers:
+        k8s_ctrl:
+        k8s_wkr:
 
-    k8s_control:
+    k8s_ctrl:
       hosts:
-        k8s-control:
+        k8ctrl1:
 
-    k8s_workers:
+    k8s_wkr:
       hosts:
-        k8s-worker[1:4]:
+        k8wkr[1:4]:
 
     vm_pets:
       hosts:
         vdb1:
         vpod:
-        wrk-test:
 
     vm_dads:
       hosts:

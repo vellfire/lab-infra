@@ -8,7 +8,6 @@ variable "vm_pet_cfg" {
   default = {
     "vdb1"     = { host = "kvm2", cpus = 4, memory = "8GiB" }
     "vpod"     = { host = "kvm2", cpus = 4, memory = "8GiB" }
-    "wrk-test" = { host = "kvm2", cpus = 2, memory = "2GiB", vlan = 110 }
     "vws1"     = { host = "kvm2", cpus = 2, memory = "2GiB" }
   }
 }
