@@ -293,6 +293,10 @@ user_pods:
       AUTHENTIK_POSTGRESQL__PASSWORD: "{{ lookup('ripplefcl.bwscache.secret', 'authentik_db').value | replace('%', '%%') }}"
       POSTGRES_PASSWORD: "{{ lookup('ripplefcl.bwscache.secret', 'authentik_db').value | replace('%', '%%') }}"
       AUTHENTIK_SECRET_KEY: "{{ lookup('ripplefcl.bwscache.secret', 'authentik_secret_key').value | replace('%', '%%') }}"
+      AUTHENTIK_EMAIL__HOST: smtp-relay.gmail.com
+      AUTHENTIK_EMAIL__PORT: "587"
+      AUTHENTIK_EMAIL__USE_TLS: "true"
+      AUTHENTIK_EMAIL__FROM: "{{ lookup('ripplefcl.bwscache.secret', 'authentik_email').value }}"
     volume:
       - "/opt/pods/authentik/media:/media:U"
       - "/opt/pods/authentik/templates:/templates:U"
@@ -310,6 +314,10 @@ user_pods:
       AUTHENTIK_POSTGRESQL__PASSWORD: "{{ lookup('ripplefcl.bwscache.secret', 'authentik_db').value | replace('%', '%%') }}"
       POSTGRES_PASSWORD: "{{ lookup('ripplefcl.bwscache.secret', 'authentik_db').value | replace('%', '%%') }}"
       AUTHENTIK_SECRET_KEY: "{{ lookup('ripplefcl.bwscache.secret', 'authentik_secret_key').value | replace('%', '%%') }}"
+      AUTHENTIK_EMAIL__HOST: smtp-relay.gmail.com
+      AUTHENTIK_EMAIL__PORT: "587"
+      AUTHENTIK_EMAIL__USE_TLS: "true"
+      AUTHENTIK_EMAIL__FROM: "{{ lookup('ripplefcl.bwscache.secret', 'authentik_email').value }}"
     volume:
       - "/opt/pods/authentik/media:/media:U"
       - "/opt/pods/authentik/certs:/certs:U"
