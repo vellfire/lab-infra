@@ -1,7 +1,7 @@
 ---
 user_pods:
   - name: sonarr
-    image: ghcr.io/home-operations/sonarr:4.0.15
+    image: ghcr.io/home-operations/sonarr:4.0.16
     network:
       - media
     publish:
