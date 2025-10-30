@@ -165,6 +165,21 @@ user_pods:
       - "3000:3000"
     env:
       GF_INSTALL_PLUGINS: grafana-clock-panel,natel-discrete-panel,grafana-piechart-panel
+      GF_AUTH_GENERIC_OAUTH_ENABLED: "true"
+      GF_AUTH_GENERIC_OAUTH_NAME: "authentik"
+      GF_AUTH_GENERIC_OAUTH_CLIENT_ID: "{{ lookup('ripplefcl.bwscache.secret', 'grafana_oauth_id').value }}"
+      GF_AUTH_GENERIC_OAUTH_CLIENT_SECRET: "{{ lookup('ripplefcl.bwscache.secret', 'grafana_oauth_key').value }}"
+      GF_AUTH_GENERIC_OAUTH_SCOPES: "openid profile email"
+      GF_AUTH_GENERIC_OAUTH_AUTH_URL: "https://{{ lookup('ripplefcl.bwscache.secret', 'authentik_domain').value }}/application/o/authorize/"
+      GF_AUTH_GENERIC_OAUTH_TOKEN_URL: "https://{{ lookup('ripplefcl.bwscache.secret', 'authentik_domain').value }}/application/o/token/"
+      GF_AUTH_GENERIC_OAUTH_API_URL: "https://{{ lookup('ripplefcl.bwscache.secret', 'authentik_domain').value }}/application/o/userinfo/"
+      GF_AUTH_SIGNOUT_REDIRECT_URL: "https://{{ lookup('ripplefcl.bwscache.secret', 'authentik_domain').value }}/application/o/grafana/end-session/"
+      GF_AUTH_OAUTH_AUTO_LOGIN: "true"
+      GF_AUTH_GENERIC_OAUTH_ROLE_ATTRIBUTE_PATH: >-
+        contains(groups[*], 'Grafana Admins') && 'Admin' ||
+        contains(groups[*], 'Grafana Editors') && 'Editor' ||
+        'Viewer'
+      GF_SERVER_ROOT_URL: "https://graf.mcda.dev"
     volume:
       - "/opt/pods/grafana/data:/var/lib/grafana"
     user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
@@ -261,6 +276,45 @@ user_pods:
     publish:
       - "8085:80"
 
+  - name: authentik-server
+    image: ghcr.io/goauthentik/server:2025.10.0
+    command: server
+    network:
+      - authentik
+    publish:
+      - "9000:9000"
+      - "9443:9443"
+      - "9300:9300"
+    env:
+      AUTHENTIK_POSTGRESQL__HOST: vdb1
+      AUTHENTIK_POSTGRESQL__PORT: "15005"
+      AUTHENTIK_POSTGRESQL__NAME: authentik
+      AUTHENTIK_POSTGRESQL__USER: authentik
+      AUTHENTIK_POSTGRESQL__PASSWORD: "{{ lookup('ripplefcl.bwscache.secret', 'authentik_db').value | replace('%', '%%') }}"
+      POSTGRES_PASSWORD: "{{ lookup('ripplefcl.bwscache.secret', 'authentik_db').value | replace('%', '%%') }}"
+      AUTHENTIK_SECRET_KEY: "{{ lookup('ripplefcl.bwscache.secret', 'authentik_secret_key').value | replace('%', '%%') }}"
+    volume:
+      - "/opt/pods/authentik/media:/media:U"
+      - "/opt/pods/authentik/templates:/templates:U"
+
+  - name: authentik-worker
+    image: ghcr.io/goauthentik/server:2025.10.0
+    command: worker
+    network:
+      - authentik
+    env:
+      AUTHENTIK_POSTGRESQL__HOST: vdb1
+      AUTHENTIK_POSTGRESQL__PORT: "15005"
+      AUTHENTIK_POSTGRESQL__NAME: authentik
+      AUTHENTIK_POSTGRESQL__USER: authentik
+      AUTHENTIK_POSTGRESQL__PASSWORD: "{{ lookup('ripplefcl.bwscache.secret', 'authentik_db').value | replace('%', '%%') }}"
+      POSTGRES_PASSWORD: "{{ lookup('ripplefcl.bwscache.secret', 'authentik_db').value | replace('%', '%%') }}"
+      AUTHENTIK_SECRET_KEY: "{{ lookup('ripplefcl.bwscache.secret', 'authentik_secret_key').value | replace('%', '%%') }}"
+    volume:
+      - "/opt/pods/authentik/media:/media:U"
+      - "/opt/pods/authentik/certs:/certs:U"
+      - "/opt/pods/authentik/templates:/templates:U"
+
 pod_volumes:
   - name: model-cache
 
@@ -268,3 +322,4 @@ pod_networks:
   - name: media
   - name: immich
   - name: unifi-net
+  - name: authentik

@@ -97,6 +97,24 @@ user_pods:
       - "UserNS=keep-id"
       - "HealthCmd=pg_isready -U seaweed"
 
+  - name: authentik-db
+    image: public.ecr.aws/docker/library/postgres:17.6
+    network:
+      - db
+      - monitor
+    publish:
+      - "15005:5432"
+    env:
+      POSTGRES_USER: "authentik"
+      POSTGRES_PASSWORD: "{{ lookup('ripplefcl.bwscache.secret', 'authentik_db').value | replace('%', '%%') }}"
+      POSTGRES_DB: "authentik"
+    volume:
+      - "/opt/pods/authentik-db/pgdata:/var/lib/postgresql/data"
+    user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
+    quadlet_options:
+      - "UserNS=keep-id"
+      - "HealthCmd=pg_isready -U authentik"
+
   - name: immich_postgres
     image: ghcr.io/immich-app/postgres:14-vectorchord0.4.3-pgvectors0.2.0@sha256:bcf63357191b76a916ae5eb93464d65c07511da41e3bf7a8416db519b40b1c23
     network:
@@ -178,6 +196,12 @@ user_pods:
       DB06_NAME: "ALL"
       DB06_USER: "postgres"
       DB06_PASS: "{{ lookup('ripplefcl.bwscache.secret', 'immich_db_pass').value | replace('%', '%%') }}"
+      DB07_S3_PATH: "authentik"
+      DB07_TYPE: "pgsql"
+      DB07_HOST: "authentik-db"
+      DB07_NAME: "ALL"
+      DB07_USER: "authentik"
+      DB07_PASS: "{{ lookup('ripplefcl.bwscache.secret', 'authentik_db').value | replace('%', '%%') }}"
 
   - name: prometheus
     image: quay.io/prometheus/prometheus:v3.7.2
