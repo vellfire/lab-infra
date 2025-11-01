@@ -147,7 +147,7 @@ user_pods:
     device:
       - "/dev/dri:/dev/dri"
     volume:
-      - "/opt/shares/pods/media/library/photos:/usr/src/app/upload"
+      - "/opt/shares/pods/media/library/photos:/usr/src/app/upload:U"
       - "/etc/localtime:/etc/localtime:ro"
     user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
     quadlet_options:
