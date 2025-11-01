@@ -111,6 +111,7 @@ user_pods:
       - immich
     device:
       - /dev/dri:/dev/dri
+      - "nvidia.com/gpu=all"
     volume:
       - model-cache:/cache
       - /dev/bus/usb:/dev/bus/usb
@@ -131,6 +132,7 @@ user_pods:
       - "2283:2283"
     device:
       - "/dev/dri:/dev/dri"
+      - "nvidia.com/gpu=all"
     volume:
       - "/opt/shares/pods/media/library/photos:/usr/src/app/upload:U"
       - "/etc/localtime:/etc/localtime:ro"
@@ -157,3 +159,6 @@ system_pods:
     volume:
       - "/opt/pods/gravity/config:/config"
       - "/opt/pods/gravity/data:/data"
+
+pod_networks:
+  - name: immich
