@@ -121,7 +121,7 @@ user_pods:
         After=opt-shares-pods.mount
 
   - name: immich-machine-learning
-    image: ghcr.io/immich-app/immich-machine-learning:v2.2.0
+    image: ghcr.io/immich-app/immich-machine-learning:v2.2.1
     network:
       - immich
     device:
@@ -131,7 +131,7 @@ user_pods:
       - /dev/bus/usb:/dev/bus/usb
 
   - name: immich-server
-    image: ghcr.io/immich-app/immich-server:v2.2.0
+    image: ghcr.io/immich-app/immich-server:v2.2.1
     network:
       - immich
     env:
