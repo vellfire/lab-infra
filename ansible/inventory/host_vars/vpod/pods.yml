@@ -342,8 +342,45 @@ user_pods:
       - "/opt/pods/authentik/certs:/certs:U"
       - "/opt/pods/authentik/templates:/templates:U"
 
+  - name: romm
+    image: ghcr.io/rommapp/romm:4.3.2
+    publish:
+      - "8031:8080"
+    env:
+      DB_HOST: "{{ lookup('ripplefcl.bwscache.secret', 'db_host').value }}"
+      DB_PORT: "15006"
+      DB_NAME: romm
+      DB_USER: romm
+      DB_PASSWD: "{{ lookup('ripplefcl.bwscache.secret', 'romm_db_pass').value }}"
+      OIDC_ENABLED: true
+      OIDC_PROVIDER: authentik
+      OIDC_CLIENT_ID: romm
+      OIDC_CLIENT_SECRET: "{{ lookup('ripplefcl.bwscache.secret', 'romm_oauth_key').value }}"
+      OIDC_REDIRECT_URI: "https://{{ lookup('ripplefcl.bwscache.secret', 'romm_domain').value }}/api/oauth/openid"
+      OIDC_SERVER_APPLICATION_URL: "https://{{ lookup('ripplefcl.bwscache.secret', 'authentik_domain').value }}/application/o/romm"
+      REDIS_HOST: "{{ lookup('ripplefcl.bwscache.secret', 'db_host').value }}"
+      REDIS_PORT: "15012"
+      ROMM_AUTH_SECRET_KEY: "{{ lookup('ripplefcl.bwscache.secret', 'romm_auth_key').value }}"
+      SCREENSCRAPER_USER: "{{ lookup('ripplefcl.bwscache.secret', 'romm_sc_user').value }}"
+      SCREENSCRAPER_PASSWORD: "{{ lookup('ripplefcl.bwscache.secret', 'romm_sc_pass').value }}"
+      RETROACHIEVEMENTS_API_KEY: "{{ lookup('ripplefcl.bwscache.secret', 'romm_ra_key').value }}"
+      STEAMGRIDDB_API_KEY: "{{ lookup('ripplefcl.bwscache.secret', 'romm_sg_key').value }}"
+      HASHEOUS_API_ENABLED: true
+    volume:
+      - romm_resources:/romm/resources
+      - /opt/shares/pods/romm/library:/romm/library
+      - /opt/shares/pods/romm/assets:/romm/assets
+      - /opt/pods/romm/config:/romm/config
+    quadlet_options:
+      - |
+        [Unit]
+        RequiresMountsFor=/opt/shares/pods
+        BindsTo=opt-shares-pods.mount
+        After=opt-shares-pods.mount
+
 pod_volumes:
   - name: model-cache
+  - name: romm_resources
 
 pod_networks:
   - name: media
