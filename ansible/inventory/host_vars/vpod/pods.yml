@@ -258,11 +258,6 @@ user_pods:
       - "UserNS=keep-id"
       - "HealthCmd=wget --no-verbose --tries=1 --spider http://localhost:3000/api/healthz"
 
-  - name: cyberchef
-    image: ghcr.io/gchq/cyberchef:10.19.4
-    publish:
-      - "8082:80"
-
   - name: renovate-webhook
     image: docker.io/almir/webhook:latest
     network:
@@ -277,6 +272,11 @@ user_pods:
       - "/opt/pods/renovate-webhook/hooks.yaml:/etc/webhook/hooks.yaml:ro"
       - "/opt/pods/renovate-webhook/trigger.sh:/usr/local/bin/trigger.sh:ro"
     command: "-verbose -hooks=/etc/webhook/hooks.yaml -hotreload"
+
+  - name: cyberchef
+    image: ghcr.io/gchq/cyberchef:10.19.4
+    publish:
+      - "8082:80"
 
   - name: it-tools
     image: docker.io/corentinth/it-tools:latest
