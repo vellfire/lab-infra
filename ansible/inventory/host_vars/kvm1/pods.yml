@@ -105,6 +105,45 @@ user_pods:
         BindsTo=opt-shares-pods.mount
         After=opt-shares-pods.mount
 
+  - name: immich-machine-learning
+    image: ghcr.io/immich-app/immich-machine-learning:v2.2.1
+    network:
+      - immich
+    device:
+      - /dev/dri:/dev/dri
+    volume:
+      - model-cache:/cache
+      - /dev/bus/usb:/dev/bus/usb
+
+  - name: immich-server
+    image: ghcr.io/immich-app/immich-server:v2.2.1
+    network:
+      - immich
+    env:
+      DB_HOSTNAME: vdb1
+      DB_PORT: 15011
+      REDIS_HOSTNAME: vdb1
+      REDIS_PORT: 15012
+      DB_USER: postgres
+      DB_PASSWORD: "{{ lookup('ripplefcl.bwscache.secret', 'immich_db_pass').value }}"
+      DB_DATABASE_NAME: immich
+    publish:
+      - "2283:2283"
+    device:
+      - "/dev/dri:/dev/dri"
+    volume:
+      - "/opt/shares/pods/media/library/photos:/usr/src/app/upload:U"
+      - "/etc/localtime:/etc/localtime:ro"
+    user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
+    quadlet_options:
+      - "UserNS=keep-id"
+      - "HealthCmd=wget --no-verbose --tries=1 --spider http://localhost:2283/api/server/ping"
+      - |
+        [Unit]
+        RequiresMountsFor=/opt/shares/pods
+        BindsTo=opt-shares-pods.mount
+        After=opt-shares-pods.mount
+
 system_pods:
   - name: gravity
     hostname: "{{ inventory_hostname }}"

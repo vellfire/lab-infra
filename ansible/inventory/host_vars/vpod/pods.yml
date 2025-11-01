@@ -129,6 +129,7 @@ user_pods:
     volume:
       - model-cache:/cache
       - /dev/bus/usb:/dev/bus/usb
+    state: absent
 
   - name: immich-server
     image: ghcr.io/immich-app/immich-server:v2.2.1
@@ -158,6 +159,7 @@ user_pods:
         RequiresMountsFor=/opt/shares/pods
         BindsTo=opt-shares-pods.mount
         After=opt-shares-pods.mount
+    state: absent
 
   - name: grafana
     image: docker.io/grafana/grafana:12.2.1
@@ -190,7 +192,7 @@ user_pods:
   - name: unifi
     image: docker.io/goofball222/unifi:9.5
     network:
-      - unifi-net
+      - unifi
     publish:
       - "8080:8080"
       - "8443:8443"
@@ -219,7 +221,7 @@ user_pods:
   - name: unpoller
     image: ghcr.io/unpoller/unpoller:v2.15.4
     network:
-      - unifi-net
+      - unifi
     publish:
       - "9130:9130"
     env:
@@ -346,6 +348,6 @@ pod_volumes:
 pod_networks:
   - name: media
   - name: immich
-  - name: unifi-net
+  - name: unifi
   - name: authentik
   - name: gitea
