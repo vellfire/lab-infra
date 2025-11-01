@@ -68,9 +68,15 @@ variable "mac_prefix" {
 }
 
 variable "mac_address" {
-  description = "Pre-generated MAC address"
+  description = "Pre-generated MAC address (leave empty to auto-generate)"
   type        = string
-  default     = null
+  default     = ""
+}
+
+variable "generate_mac" {
+  description = "Whether to generate a MAC address (set to false when providing mac_address)"
+  type        = bool
+  default     = false
 }
 
 # Cloud-init

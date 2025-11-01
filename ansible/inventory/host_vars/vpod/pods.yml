@@ -237,6 +237,8 @@ user_pods:
 
   - name: gitea
     image: docker.gitea.com/gitea:1.25.0-rootless
+    network:
+      - gitea
     env:
       GITEA__database__DB_TYPE: postgres
       GITEA__database__HOST: vdb1:15003
@@ -260,6 +262,21 @@ user_pods:
     image: ghcr.io/gchq/cyberchef:10.19.4
     publish:
       - "8082:80"
+
+  - name: renovate-webhook
+    image: docker.io/almir/webhook:latest
+    network:
+      - gitea
+    publish:
+      - "8081:9000"
+    env:
+      GITEA_TOKEN: "{{ lookup('ripplefcl.bwscache.secret', 'gitea_api_token').value | replace('%', '%%') }}"
+      GITEA_URL: "https://{{ lookup('ripplefcl.bwscache.secret', 'gitea_domain').value }}"
+      WEBHOOK_SECRET: "{{ lookup('ripplefcl.bwscache.secret', 'renovate_webhook_secret').value | replace('%', '%%') }}"
+    volume:
+      - "/opt/pods/renovate-webhook/hooks.yaml:/etc/webhook/hooks.yaml:ro"
+      - "/opt/pods/renovate-webhook/trigger.sh:/usr/local/bin/trigger.sh:ro"
+    command: "-verbose -hooks=/etc/webhook/hooks.yaml -hotreload"
 
   - name: it-tools
     image: docker.io/corentinth/it-tools:latest
@@ -331,3 +348,4 @@ pod_networks:
   - name: immich
   - name: unifi-net
   - name: authentik
+  - name: gitea

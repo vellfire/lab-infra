@@ -1,10 +1,10 @@
 resource "macaddress" "vm_mac" {
-  count  = var.mac_address == null ? 1 : 0
+  count  = var.generate_mac ? 1 : 0
   prefix = var.mac_prefix
 }
 
 locals {
-  mac_address = var.mac_address != null ? var.mac_address : macaddress.vm_mac[0].address
+  mac_address = var.generate_mac ? macaddress.vm_mac[0].address : var.mac_address
 }
 
 resource "incus_storage_volume" "vm_data" {

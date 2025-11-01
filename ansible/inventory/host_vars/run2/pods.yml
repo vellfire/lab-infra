@@ -1,0 +1,11 @@
+---
+user_pods:
+  - name: gitea-runner
+    image: docker.io/gitea/act_runner:0.2.13
+    env:
+      GITEA_INSTANCE_URL: "https://{{ lookup('ripplefcl.bwscache.secret', 'gitea_domain').value }}"
+      GITEA_RUNNER_REGISTRATION_TOKEN: "{{ lookup('ripplefcl.bwscache.secret', 'gitea_runner_key').value }}"
+      GITEA_RUNNER_NAME: "run2"
+    volumes:
+      - "/opt/pods/gitea-runner/data:/data"
+      - "/var/run/docker.sock:/var/run/docker.sock"
