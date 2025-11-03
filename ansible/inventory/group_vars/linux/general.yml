@@ -115,6 +115,20 @@ alloy_config: |
     endpoint { url = "https://{{ lookup('ripplefcl.bwscache.secret', 'loki_domain').value }}/loki/api/v1/push" }
   }
 
+  {% if req_restic | default(false) %}
+  loki.source.file "restic_logs" {
+    targets = [
+      { __path__ = "/var/log/restic/*.log", job = "restic", host = env("HOSTNAME"), source = "file" },
+    ]
+    forward_to = [loki.process.restic_files.receiver]
+  }
+
+  {% raw %}loki.process "restic_files" {
+    stage.static_labels { values = { log_type = "restic" } }
+    forward_to = [loki.write.loki.receiver]
+  }{% endraw %}
+  {% endif %}
+
   {% if 'docker.service' in ansible_facts.services %}
   discovery.docker "containers" {
     host             = "unix:///var/run/docker.sock"
