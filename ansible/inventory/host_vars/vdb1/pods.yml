@@ -239,7 +239,7 @@ user_pods:
       - "HealthCmd=wget --no-verbose --tries=1 --spider http://localhost:9090/-/healthy"
 
   - name: mktxp
-    image: ghcr.io/akpw/mktxp:1.2.14
+    image: ghcr.io/akpw/mktxp:1.2.15
     user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
     network:
       - monitor
