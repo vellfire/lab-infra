@@ -132,7 +132,7 @@ user_pods:
     state: absent
 
   - name: immich-server
-    image: ghcr.io/immich-app/immich-server:v2.2.1
+    image: ghcr.io/immich-app/immich-server:v2.2.2
     network:
       - immich
     env:
