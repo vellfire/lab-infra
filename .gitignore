@@ -2,6 +2,7 @@
 .lock
 .venv
 .ansible
+.git
 
 .vscode
 .fleet
