@@ -5,7 +5,7 @@
   block:
     - name: Create SeaweedFS config directory
       ansible.builtin.file:
-        path: "{{ standard_pod_path_prefix | default('/opt/pods') }}/seaweedfs/config"
+        path: "{{ docker_pod_path_prefix }}/seaweedfs/config"
         state: directory
         recurse: true
         owner: "{{ ansible_user }}"
@@ -15,7 +15,7 @@
     - name: Deploy SeaweedFS filer configuration
       ansible.builtin.copy:
         content: "{{ seaweedfs_filer_config }}"
-        dest: "{{ standard_pod_path_prefix | default('/opt/pods') }}/seaweedfs/config/filer.toml"
+        dest: "{{ docker_pod_path_prefix }}/seaweedfs/config/filer.toml"
         owner: "{{ ansible_user }}"
         group: "{{ ansible_user }}"
         mode: '0644'

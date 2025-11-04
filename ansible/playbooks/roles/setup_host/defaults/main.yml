@@ -1,0 +1,21 @@
+---
+setup_host_standard_packages:
+  - bzip2
+  - git
+  - vim
+  - tmux
+  - htop
+  - nfs-common
+  - lm-sensors
+  - tree
+  - jq
+  - curl
+  - systemd-resolved
+  - python3-requests
+
+setup_host_additional_packages: []
+
+setup_host_github_user: vellfire
+
+setup_host_dns_stub_listener: false
+setup_host_llmnr: false

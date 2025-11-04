@@ -1,0 +1,11 @@
+---
+- name: "Create docker volumes"
+  community.docker.docker_volume:
+    name: "{{ volume.name }}"
+    driver: "{{ volume.driver | default('local') }}"
+    driver_options: "{{ volume.driver_options | default(omit) }}"
+    state: present
+  loop: "{{ pod_volumes }}"
+  loop_control:
+    label: "{{ volume.name }}"
+    loop_var: volume

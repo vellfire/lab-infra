@@ -4,8 +4,8 @@
     dest: /etc/systemd/resolved.conf
     content: |
       [Resolve]
-      DNSStubListener=no
-      LLMNR=no
+      DNSStubListener={{ 'yes' if setup_host_dns_stub_listener else 'no' }}
+      LLMNR={{ 'yes' if setup_host_llmnr else 'no' }}
     owner: root
     group: root
     mode: '0644'

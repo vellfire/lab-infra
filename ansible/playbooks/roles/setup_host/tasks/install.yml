@@ -1,19 +1,6 @@
 ---
 - name: Install standard packages
   ansible.builtin.apt:
-    name: "{{ standard_packages + (additional_packages | default([])) }}"
+    name: "{{ setup_host_standard_packages + setup_host_additional_packages }}"
     state: present
-  vars:
-    standard_packages:
-      - bzip2
-      - git
-      - vim
-      - tmux
-      - htop
-      - nfs-common
-      - lm-sensors
-      - tree
-      - jq
-      - curl
-      - systemd-resolved
-      - python3-requests
+    cache_valid_time: 3600

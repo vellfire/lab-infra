@@ -16,3 +16,16 @@
   ansible.builtin.systemd_service:
     name: podman
     state: restarted
+
+- name: Prune unused podman resources (user)
+  ansible.builtin.command:
+    cmd: podman system prune --all --force
+  environment:
+    XDG_RUNTIME_DIR: "/run/user/{{ ansible_facts.user_uid }}"
+  changed_when: true
+
+- name: Prune unused podman resources (system)
+  become: true
+  ansible.builtin.command:
+    cmd: podman system prune --all --force
+  changed_when: true

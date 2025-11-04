@@ -43,6 +43,7 @@ unix:
         vpod:
         run1:
         run2:
+        lab1:
 
     vm_dads:
       hosts:

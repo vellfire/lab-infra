@@ -11,6 +11,7 @@ variable "vm_pet_cfg" {
     "vws1"     = { host = "kvm2", cpus = 2, memory = "4GiB" }
     "run1"     = { host = "kvm1", cpus = 2, memory = "4GiB" }
     "run2"     = { host = "kvm2", cpus = 2, memory = "4GiB" }
+    "lab1"     = { host = "kvm1", cpus = 4, memory = "8GiB" }
   }
 }
 
