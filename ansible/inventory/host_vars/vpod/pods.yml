@@ -238,7 +238,7 @@ user_pods:
       - "UserNS=keep-id"
 
   - name: gitea
-    image: docker.gitea.com/gitea:1.25.0-rootless
+    image: docker.gitea.com/gitea:1.25.1-rootless
     network:
       - gitea
     env:
