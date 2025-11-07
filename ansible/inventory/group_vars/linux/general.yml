@@ -31,6 +31,12 @@ restic__cache_config: true
 restic__cache_dir: /opt/restic/cache
 restic_version: '0.18.1'
 
+# Tailscale Configuration
+tailscale_authkey: "{{ lookup('ripplefcl.bwscache.secret', 'tailscale_oauth_secret').value }}"
+tailscale_tags: ["ansible"]
+tailscale_up_skip: false
+tailscale_oauth_preauthorized: true
+
 # Alloy Configuration
 alloy_config: |
   prometheus.exporter.unix "node" {

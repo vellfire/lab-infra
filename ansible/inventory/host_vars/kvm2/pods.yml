@@ -105,7 +105,6 @@ user_pods:
     publish:
       - "27031:3000"
       - "27032:3001"
-    state: absent
 
   - name: bws-cache
     image: ghcr.io/ripplefcl/bws-cache:v3.2.2

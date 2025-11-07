@@ -2,3 +2,10 @@
 ansible_user: automation
 req_monitor: true
 req_restic: true
+req_tailscale: true
+
+tailscale_oauth_ephemeral: true
+tailscale_args: >-
+  --hostname={{ inventory_hostname }}
+  --ssh=false
+  --accept-dns=false

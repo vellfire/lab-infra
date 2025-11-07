@@ -35,9 +35,9 @@ fs_setup:
 
 mounts:
 %{~ if node_type == "control" }
-- ["/dev/sdb1", "/var/lib/etcd"]
+- ["/dev/sdb1", "/var/lib/etcd", "ext4", "defaults,noatime", "0", "2"]
 %{~ else }
-- ["/dev/sdb1", "/var/lib/kubelet"]
+- ["/dev/sdb1", "/var/lib/longhorn", "ext4", "defaults,noatime", "0", "2"]
 %{~ endif }
 
 runcmd:

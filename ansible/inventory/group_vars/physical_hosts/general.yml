@@ -2,6 +2,7 @@
 req_monitor: true
 req_ntp: true
 req_restic: true
+req_tailscale: true
 
 nut_client_ups: apc
 
@@ -10,3 +11,11 @@ additional_packages:
 
 smartctl_exporter_system_user: root
 smartctl_exporter_system_group: root
+
+tailscale_oauth_ephemeral: false
+tailscale_args: >-
+  --hostname={{ inventory_hostname }}
+  --ssh=false
+  --accept-dns=false
+  --advertise-exit-node
+  --advertise-routes={{ lookup('ripplefcl.bwscache.secret', 'tailscale_routes').value }}

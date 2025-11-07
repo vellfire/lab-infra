@@ -1,1 +1,7 @@
 ---
+tailscale_oauth_ephemeral: true
+tailscale_args: >-
+  --hostname={{ inventory_hostname }}
+  --ssh=false
+  --accept-dns=false
+  --stateful-filtering=false

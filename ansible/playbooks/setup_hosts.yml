@@ -10,27 +10,21 @@
 
   tasks:
     - name: Update hosts
+      tags: ["update"]
       ansible.builtin.include_role:
         name: update_hosts
         apply:
           become: true
-          tags:
-            - update
-      tags:
-        - update
 
     - name: Run standard setup tasks
       when: ansible_os_family == 'Debian'
+      tags:
+        - setup
+        - all
       ansible.builtin.include_role:
         name: setup_host
         apply:
           become: true
-          tags:
-            - setup
-            - all
-      tags:
-        - setup
-        - all
 
     - name: Setup NTP
       when: req_ntp | default(false)
@@ -39,8 +33,6 @@
         name: geerlingguy.ntp
         apply:
           become: true
-          tags:
-            - time
       vars:
         ntp_enabled: true
         ntp_timezone: "Europe/London"
@@ -58,8 +50,7 @@
 
     - name: Setup Alloy monitoring
       when: req_monitor | default(false)
-      tags:
-        - alloy
+      tags: ["alloy"]
       block:
         - name: Install and configure Alloy
           ansible.builtin.include_role:
@@ -79,8 +70,7 @@
 
     - name: Setup NUT client
       when: req_nut | default(false)
-      tags:
-        - nut
+      tags: ["nut"]
       block:
         - name: Lookup NUT secret
           ansible.builtin.set_fact:
@@ -92,54 +82,78 @@
             name: geerlingguy.nut_client
             apply:
               become: true
-              tags:
-                - nut
               no_log: true
 
     - name: Setup podman pods
       when: req_podman | default(false)
+      tags:
+        - podman
+        - pods
       ansible.builtin.include_role:
         name: podman
         apply:
           become: false
-          tags:
-            - podman
-            - pods
-      tags:
-        - podman
-        - pods
 
     - name: Setup docker
       when: req_docker | default(false)
+      tags: ["docker"]
       ansible.builtin.include_role:
         name: geerlingguy.docker
         apply:
           become: true
-          tags:
-            - docker
-      tags:
-        - docker
 
     - name: Setup docker containers
       when: user_pods is defined and req_docker | default(false)
+      tags:
+        - docker
+        - pods
       ansible.builtin.include_role:
         name: docker
         apply:
           become: false
-          tags:
-            - docker
-            - pods
-      tags:
-        - docker
-        - pods
 
     - name: Setup restic
       when: req_restic | default(false)
+      tags: ["restic"]
       ansible.builtin.include_role:
         name: roles-ansible.restic
         apply:
           become: true
-          tags:
-            - restic
-      tags:
-        - restic
+
+    - name: Install Tailscale
+      when: req_tailscale | default(false)
+      become: true
+      tags: ["tailscale"]
+      block:
+        - name: Parse Tailscale arguments
+          ansible.builtin.set_fact:
+            tailscale_args_list: "{{ (tailscale_args | default('')).split() }}"
+
+        - name: Check if IP forwarding is needed
+          ansible.builtin.set_fact:
+            tailscale_needs_forwarding: >-
+              {{
+                tailscale_enable_forwarding | default(false) or
+                '--advertise-exit-node' in tailscale_args_list or
+                (tailscale_args_list | select('match', '^--advertise-routes=.+') | list | length > 0)
+              }}
+
+        - name: Configure IPv4 forwarding
+          ansible.posix.sysctl:
+            name: net.ipv4.ip_forward
+            value: "{{ '1' if tailscale_needs_forwarding | bool else '0' }}"
+            state: present
+            sysctl_file: /etc/sysctl.d/99-tailscale.conf
+            reload: true
+
+        - name: Configure IPv6 forwarding
+          ansible.posix.sysctl:
+            name: net.ipv6.conf.all.forwarding
+            value: "{{ '1' if tailscale_needs_forwarding | bool else '0' }}"
+            state: present
+            sysctl_file: /etc/sysctl.d/99-tailscale.conf
+            reload: true
+
+        - name: Install and configure Tailscale
+          ansible.builtin.include_role:
+            name: artis3n.tailscale.machine
