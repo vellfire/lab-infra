@@ -19,3 +19,4 @@ tailscale_args: >-
   --accept-dns=false
   --advertise-exit-node
   --advertise-routes={{ lookup('ripplefcl.bwscache.secret', 'tailscale_routes').value }}
+  --accept-routes=false
