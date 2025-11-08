@@ -92,7 +92,7 @@
       ansible.builtin.include_role:
         name: podman
         apply:
-          become: false
+          tags: ["pods"]
 
     - name: Setup docker
       when: req_docker | default(false)
@@ -110,7 +110,7 @@
       ansible.builtin.include_role:
         name: docker
         apply:
-          become: false
+          tags: ["pods"]
 
     - name: Setup restic
       when: req_restic | default(false)
