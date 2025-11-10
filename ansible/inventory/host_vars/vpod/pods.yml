@@ -203,8 +203,12 @@ user_pods:
       - "10001:10001/udp"
     env:
       DB_MONGO_LOCAL: "false"
-      DB_MONGO_URI: "mongodb://unifi:{{ lookup('ripplefcl.bwscache.secret', 'unifi_db_pass').value }}@vdb1.conf.{{ lookup('ripplefcl.bwscache.secret', 'root_domain').value }}:27017/unifi?authSource=admin"
-      STATDB_MONGO_URI: "mongodb://unifi:{{ lookup('ripplefcl.bwscache.secret', 'unifi_db_pass').value }}@vdb1.conf.{{ lookup('ripplefcl.bwscache.secret', 'root_domain').value }}:27017/unifi_stat?authSource=admin"
+      DB_MONGO_URI: >-
+        mongodb://unifi:{{ lookup('ripplefcl.bwscache.secret', 'unifi_db_pass').value }}@vdb1.conf.{{
+        lookup('ripplefcl.bwscache.secret', 'root_domain').value }}:27017/unifi?authSource=admin
+      STATDB_MONGO_URI: >-
+        mongodb://unifi:{{ lookup('ripplefcl.bwscache.secret', 'unifi_db_pass').value }}@vdb1.conf.{{
+        lookup('ripplefcl.bwscache.secret', 'root_domain').value }}:27017/unifi_stat?authSource=admin
       UNIFI_DB_NAME: "unifi"
       TZ: "Europe/London"
       UNIFI_UID: "{{ ansible_facts.user_uid }}"
