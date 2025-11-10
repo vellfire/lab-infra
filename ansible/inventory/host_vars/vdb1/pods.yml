@@ -1,0 +1,303 @@
+---
+user_pods:
+  - name: mariadb_ams
+    image: public.ecr.aws/docker/library/mariadb:11.4
+    network:
+      - db
+      - monitor
+    publish:
+      - "15000:3306"
+    env:
+      MARIADB_ROOT_PASSWORD: "{{ lookup('ripplefcl.bwscache.secret', 'dad_db_root').value | replace('%', '%%') }}"
+    volume:
+      - "/opt/pods/mariadb_ams/data:/var/lib/mysql:U"
+      - "/opt/pods/mariadb_ams/config/my.cnf:/etc/mysql/my.cnf"
+      - "/opt/pods/mariadb_ams/config/backup.cnf:/etc/mysql/backup.cnf"
+    quadlet_options:
+      - "HealthCmd=/usr/local/bin/healthcheck.sh --connect --innodb_initialized"
+
+  - name: pma_ams
+    image: public.ecr.aws/docker/library/phpmyadmin:5.2.3
+    env:
+      PMA_HOST: vdb1:15000
+      PMA_USER: "pma"
+      PMA_PASSWORD: "{{ lookup('ripplefcl.bwscache.secret', 'pma_pass').value | replace('%', '%%') }}"
+    quadlet_options:
+      - "HealthCmd=curl -f http://localhost/robots.txt"
+
+  - name: mariadb_bnt
+    image: public.ecr.aws/docker/library/mariadb:11.4
+    network:
+      - db
+      - monitor
+    publish:
+      - "15001:3306"
+    env:
+      MARIADB_ROOT_PASSWORD: "{{ lookup('ripplefcl.bwscache.secret', 'dad_db_root').value | replace('%', '%%') }}"
+    volume:
+      - "/opt/pods/mariadb_bnt/data:/var/lib/mysql:U"
+    quadlet_options:
+      - "HealthCmd=/usr/local/bin/healthcheck.sh --connect --innodb_initialized"
+
+  - name: pma_bnt
+    image: public.ecr.aws/docker/library/phpmyadmin:5.2.3
+    env:
+      PMA_HOST: vdb1:15001
+      PMA_USER: "pma"
+      PMA_PASSWORD: "{{ lookup('ripplefcl.bwscache.secret', 'pma_pass').value | replace('%', '%%') }}"
+    quadlet_options:
+      - "HealthCmd=curl -f http://localhost/robots.txt"
+
+  - name: romm-db
+    image: public.ecr.aws/docker/library/mariadb:11.8
+    network:
+      - db
+      - monitor
+    publish:
+      - "15006:3306"
+    env:
+      MARIADB_ROOT_PASSWORD: "{{ lookup('ripplefcl.bwscache.secret', 'romm_db_root').value }}"
+      MARIADB_DATABASE: "romm"
+      MARIADB_USER: "romm"
+      MARIADB_PASSWORD: "{{ lookup('ripplefcl.bwscache.secret', 'romm_db_pass').value }}"
+    volume:
+      - "/opt/pods/romm-db/data:/var/lib/mysql:U"
+    quadlet_options:
+      - "HealthCmd=/usr/local/bin/healthcheck.sh --connect --innodb_initialized"
+
+  - name: media-db
+    image: public.ecr.aws/docker/library/postgres:17.6
+    network:
+      - db
+      - monitor
+    publish:
+      - "15002:5432"
+    env:
+      POSTGRES_USER: "media"
+      POSTGRES_PASSWORD: "{{ lookup('ripplefcl.bwscache.secret', 'media_db_pass').value | replace('%', '%%') }}"
+    volume:
+      - "/opt/pods/media-db/pgdata:/var/lib/postgresql/data:U"
+    quadlet_options:
+      - "HealthCmd=pg_isready -U media"
+
+  - name: gitea-db
+    image: public.ecr.aws/docker/library/postgres:17.6
+    network:
+      - db
+      - monitor
+    publish:
+      - "15003:5432"
+    env:
+      POSTGRES_USER: "gitea"
+      POSTGRES_PASSWORD: "{{ lookup('ripplefcl.bwscache.secret', 'gitea_db_pass').value | replace('%', '%%') }}"
+      POSTGRES_DB: "gitea"
+    volume:
+      - "/opt/pods/gitea-db/pgdata:/var/lib/postgresql/data:U"
+    quadlet_options:
+      - "HealthCmd=pg_isready -U gitea"
+
+  - name: seaweedfs-db
+    image: public.ecr.aws/docker/library/postgres:17.6
+    network:
+      - db
+      - monitor
+    publish:
+      - "15004:5432"
+    env:
+      POSTGRES_USER: "seaweed"
+      POSTGRES_PASSWORD: "{{ lookup('ripplefcl.bwscache.secret', 'seaweed_db_pass').value | replace('%', '%%') }}"
+      POSTGRES_DB: "seaweed"
+    volume:
+      - "/opt/pods/seaweedfs-db/pgdata:/var/lib/postgresql/data"
+    user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
+    quadlet_options:
+      - "UserNS=keep-id"
+      - "HealthCmd=pg_isready -U seaweed"
+
+  - name: authentik-db
+    image: public.ecr.aws/docker/library/postgres:17.6
+    network:
+      - db
+      - monitor
+    publish:
+      - "15005:5432"
+    env:
+      POSTGRES_USER: "authentik"
+      POSTGRES_PASSWORD: "{{ lookup('ripplefcl.bwscache.secret', 'authentik_db').value | replace('%', '%%') }}"
+      POSTGRES_DB: "authentik"
+    volume:
+      - "/opt/pods/authentik-db/pgdata:/var/lib/postgresql/data"
+    user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
+    quadlet_options:
+      - "UserNS=keep-id"
+      - "HealthCmd=pg_isready -U authentik"
+
+  - name: immich_postgres
+    image: ghcr.io/immich-app/postgres:14-vectorchord0.4.3-pgvectors0.2.0@sha256:bcf63357191b76a916ae5eb93464d65c07511da41e3bf7a8416db519b40b1c23
+    network:
+      - db
+      - monitor
+    publish:
+      - "15011:5432"
+    env:
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "{{ lookup('ripplefcl.bwscache.secret', 'immich_db_pass').value | replace('%', '%%') }}"
+      POSTGRES_DB: "immich"
+      POSTGRES_INITDB_ARGS: "--data-checksums"
+    volume:
+      - "/opt/pods/immich_postgres/db:/var/lib/postgresql/data:U"
+    quadlet_options:
+      - "ShmSize=128m"
+      - "HealthCmd=pg_isready -U postgres"
+
+  - name: immich_redis
+    image: docker.io/valkey/valkey:8-bookworm@sha256:fea8b3e67b15729d4bb70589eb03367bab9ad1ee89c876f54327fc7c6e618571
+    publish:
+      - "15012:6379"
+    quadlet_options:
+      - "HealthCmd=redis-cli ping || exit 1"
+
+  - name: db_backup
+    image: ghcr.io/tiredofit/docker-db-backup:4.1.21
+    network:
+      - db
+    env:
+      MODE: "AUTO"
+      DEFAULT_BACKUP_LOCATION: "S3"
+      DEFAULT_COMPRESSION_LEVEL: "9"
+      DEFAULT_BACKUP_INTERVAL: "1440"
+      DEFAULT_BACKUP_BEGIN: "0000"
+      DEFAULT_CLEANUP_TIME: "10080"
+      DEFAULT_MYSQL_CLIENT: "mariadb"
+      DEFAULT_S3_BUCKET: "db-backup"
+      DEFAULT_S3_KEY_ID: "{{ lookup('ripplefcl.bwscache.secret', 'db_backup_key').value | replace('%', '%%') }}"
+      DEFAULT_S3_KEY_SECRET: "{{ lookup('ripplefcl.bwscache.secret', 'db_backup_key_secret').value | replace('%', '%%') }}"
+      DEFAULT_S3_REGION: "us-east-1"
+      DEFAULT_S3_HOST: "{{ lookup('ripplefcl.bwscache.secret', 's3_domain').value | replace('%', '%%') }}"
+      DEFAULT_S3_PROTOCOL: "https"
+      DEFAULT_S3_CERT_SKIP_VERIFY: "false"
+      CONTAINER_ENABLE_MONITORING: "false"
+      DB01_S3_PATH: "ams"
+      DB01_TYPE: "mysql"
+      DB01_HOST: "mariadb_ams"
+      DB01_NAME: "ALL"
+      DB01_USER: "backup"
+      DB01_PASS: "{{ lookup('ripplefcl.bwscache.secret', 'dad_db_root').value | replace('%', '%%') }}"
+      DB02_S3_PATH: "bnt"
+      DB02_TYPE: "mysql"
+      DB02_HOST: "mariadb_bnt"
+      DB02_NAME: "ALL"
+      DB02_USER: "root"
+      DB02_PASS: "{{ lookup('ripplefcl.bwscache.secret', 'dad_db_root').value | replace('%', '%%') }}"
+      DB03_S3_PATH: "media"
+      DB03_TYPE: "pgsql"
+      DB03_HOST: "media-db"
+      DB03_NAME: "ALL"
+      DB03_USER: "media"
+      DB03_PASS: "{{ lookup('ripplefcl.bwscache.secret', 'media_db_pass').value | replace('%', '%%') }}"
+      DB04_S3_PATH: "gitea"
+      DB04_TYPE: "pgsql"
+      DB04_HOST: "gitea-db"
+      DB04_NAME: "ALL"
+      DB04_USER: "gitea"
+      DB04_PASS: "{{ lookup('ripplefcl.bwscache.secret', 'gitea_db_pass').value | replace('%', '%%') }}"
+      DB05_S3_PATH: "seaweedfs"
+      DB05_TYPE: "pgsql"
+      DB05_HOST: "seaweedfs-db"
+      DB05_NAME: "ALL"
+      DB05_USER: "seaweed"
+      DB05_PASS: "{{ lookup('ripplefcl.bwscache.secret', 'seaweed_db_pass').value | replace('%', '%%') }}"
+      DB06_S3_PATH: "immich"
+      DB06_TYPE: "pgsql"
+      DB06_HOST: "immich_postgres"
+      DB06_NAME: "ALL"
+      DB06_USER: "postgres"
+      DB06_PASS: "{{ lookup('ripplefcl.bwscache.secret', 'immich_db_pass').value | replace('%', '%%') }}"
+      DB07_S3_PATH: "authentik"
+      DB07_TYPE: "pgsql"
+      DB07_HOST: "authentik-db"
+      DB07_NAME: "ALL"
+      DB07_USER: "authentik"
+      DB07_PASS: "{{ lookup('ripplefcl.bwscache.secret', 'authentik_db').value | replace('%', '%%') }}"
+
+  - name: prometheus
+    image: quay.io/prometheus/prometheus:v3.7.3
+    user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
+    network:
+      - monitor
+    publish:
+      - "9090:9090"
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
+      - "--web.enable-remote-write-receiver"
+    volume:
+      - "/opt/pods/prometheus/config/prometheus.yml:/etc/prometheus/prometheus.yml:ro"
+      - "/opt/pods/prometheus/data:/prometheus"
+    quadlet_options:
+      - "UserNS=keep-id"
+      - "HealthCmd=wget --no-verbose --tries=1 --spider http://localhost:9090/-/healthy"
+
+  - name: mktxp
+    image: ghcr.io/akpw/mktxp:1.2.15
+    user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
+    network:
+      - monitor
+    volume:
+      - "/opt/pods/mktxp/config:/mktxp"
+    quadlet_options:
+      - "UserNS=keep-id"
+
+  - name: loki
+    image: docker.io/grafana/loki:3.5.8
+    user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
+    network:
+      - monitor
+    publish:
+      - "3100:3100"
+    volume:
+      - "/opt/pods/loki/config:/mnt/config"
+      - "/opt/pods/loki/data:/loki"
+    quadlet_options:
+      - "UserNS=keep-id"
+      - "HealthCmd=wget --no-verbose --tries=1 --spider http://localhost:3100/ready"
+
+  - name: pod-alloy
+    image: docker.io/grafana/alloy:v1.11.3
+    user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
+    network:
+      - monitor
+      - db
+    publish:
+      - "12346:12345"
+      - "1514:1514/udp"
+      - "1515:1515/udp"
+    command: "run --disable-reporting --server.http.listen-addr=0.0.0.0:12345 --storage.path=/alloy-data /etc/alloy/config.alloy"
+    volume:
+      - "/opt/pods/alloy/data:/alloy-data"
+      - "/opt/pods/alloy/config/config.alloy:/etc/alloy/config.alloy:ro"
+    quadlet_options:
+      - "UserNS=keep-id"
+
+  - name: unifi-db
+    image: public.ecr.aws/docker/library/mongo:8.0.15
+    network:
+      - db
+    publish:
+      - "27017:27017"
+    env:
+      MONGO_INITDB_ROOT_USERNAME: "root"
+      MONGO_INITDB_ROOT_PASSWORD: "{{ lookup('ripplefcl.bwscache.secret', 'unifi_db_pass').value | replace('%', '%%') }}"
+      MONGO_USER: "unifi"
+      MONGO_PASS: "{{ lookup('ripplefcl.bwscache.secret', 'unifi_db_pass').value | replace('%', '%%') }}"
+      MONGO_DBNAME: "unifi"
+      MONGO_AUTHSOURCE: "admin"
+    volume:
+      - "/opt/pods/unifi-db/db:/data/db:U"
+      - "/opt/pods/unifi-db/init-mongo.sh:/docker-entrypoint-initdb.d/init-mongo.sh:ro"
+    quadlet_options:
+      - "HealthCmd=mongosh --quiet --eval 'db.runCommand({ping:1}).ok'"
+
+pod_networks:
+  - name: db
+  - name: monitor

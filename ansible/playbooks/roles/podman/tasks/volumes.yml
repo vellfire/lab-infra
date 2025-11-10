@@ -1,0 +1,11 @@
+---
+- name: Create podman volumes
+  containers.podman.podman_volume:
+    name: "{{ volume.name }}"
+    driver: "{{ volume.driver | default('local') }}"
+    options: "{{ volume.options | default(omit) }}"
+    state: present
+  loop: "{{ pod_volumes }}"
+  loop_control:
+    label: "{{ volume.name }}"
+    loop_var: volume

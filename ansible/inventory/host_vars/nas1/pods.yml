@@ -1,0 +1,70 @@
+---
+standard_pod_path_prefix: "/tank/pods"
+storage_pod_path_prefix: "/tank/pods"
+
+user_pods:
+  - name: seaweedfs-master
+    image: "{{ seaweedfs_image }}"
+    ports:
+      - "9333:9333"
+      - "19333:19333"
+      - "9324:9324"
+    volumes:
+      - "/tank/pods/seaweedfs/master:/data"
+    command:
+      - master
+      - "-ip={{ ansible_default_ipv4.address }}"
+      - "-ip.bind=::"
+      - "-port=9333"
+      - "-mdir=/data"
+      - "-peers={{ seaweedfs_peers.split(',') | join(':9333,') ~ ':9333' }}"
+      - "-defaultReplication={{ seaweedfs_replication }}"
+      - "-volumeSizeLimitMB=102400"
+
+  - name: seaweedfs-volume
+    image: "{{ seaweedfs_image }}"
+    ports:
+      - "8090:8090"
+      - "18090:18090"
+      - "9325:9325"
+    volumes:
+      - "/tank/pods/seaweedfs/volume:/data"
+    command:
+      - volume
+      - "-mserver={{ seaweedfs_peers.split(',') | join(':9333,') ~ ':9333' }}"
+      - "-port=8090"
+      - "-dir=/data"
+      - "-max={{ seaweedfs_max_volumes }}"
+      - "-ip={{ ansible_default_ipv4.address }}"
+      - "-ip.bind=::"
+
+  - name: seaweedfs-filer
+    image: "{{ seaweedfs_image }}"
+    ports:
+      - "8889:8889"
+      - "18889:18889"
+      - "9326:9326"
+    volumes:
+      - "/tank/pods/seaweedfs/filer:/data"
+      - "/tank/pods/seaweedfs/config/filer.toml:/etc/seaweedfs/filer.toml:ro"
+    command:
+      - filer
+      - "-master={{ seaweedfs_peers.split(',') | join(':9333,') ~ ':9333' }}"
+      - "-port=8889"
+      - "-port.grpc=18889"
+      - "-ip={{ ansible_default_ipv4.address }}"
+      - "-ip.bind=::"
+
+  - name: seaweedfs-s3
+    image: "{{ seaweedfs_image }}"
+    ports:
+      - "8333:8333"
+      - "9327:9327"
+    env:
+      AWS_ACCESS_KEY_ID: "{{ lookup('ripplefcl.bwscache.secret', 'seaweed_s3_access_key').value }}"
+      AWS_SECRET_ACCESS_KEY: "{{ lookup('ripplefcl.bwscache.secret', 'seaweed_s3_secret_key').value }}"
+    command:
+      - s3
+      - "-filer={{ ansible_default_ipv4.address }}:8889"
+      - "-ip.bind=::"
+      - "-port=8333"

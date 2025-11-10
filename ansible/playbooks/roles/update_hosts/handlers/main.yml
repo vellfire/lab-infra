@@ -1,0 +1,6 @@
+---
+- name: Reboot if required
+  ansible.builtin.reboot:
+    msg: "Machine rebooting for updates"
+    reboot_timeout: 300
+  when: update_hosts_reboot_required.stat.exists

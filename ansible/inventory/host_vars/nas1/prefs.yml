@@ -1,0 +1,15 @@
+---
+req_nut: true
+req_docker: true
+req_garage: true
+
+nut_client_ups: apc
+
+tailscale_oauth_ephemeral: true
+tailscale_args: >-
+  --hostname={{ inventory_hostname }}
+  --ssh=false
+  --accept-dns=false
+  --stateful-filtering=false
+  --advertise-exit-node
+  --advertise-routes={{ lookup('ripplefcl.bwscache.secret', 'tailscale_routes').value }}

@@ -1,0 +1,57 @@
+---
+- name: "Create directories"
+  when: pod.directory is defined
+  become: true
+  changed_when: false
+  ansible.builtin.file:
+    path: "/opt/pods/{{ pod.name }}"
+    state: directory
+    recurse: true
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: '0755'
+  loop: "{{ user_pods }}"
+  loop_control:
+    label: "{{ pod.name }}"
+    loop_var: pod
+
+- name: Check existing directories from volume bind mounts
+  ansible.builtin.stat:
+    path: "{{ volume.split(':')[0] }}"
+  loop: "{{ ((user_pods | default([]) | selectattr('volume', 'defined') | map(attribute='volume') | list)
+           + (user_pods | default([]) | selectattr('volumes', 'defined') | map(attribute='volumes') | list))
+           | flatten }}"
+  loop_control:
+    loop_var: volume
+    label: "{{ volume.split(':')[0] }}"
+  register: docker_volume_dir_stat
+  when:
+    - volume is string
+    - "':' in volume"
+    - volume.split(':')[0].startswith('/opt/pods/') or volume.split(':')[0].startswith('/etc/')
+    - not (volume.split(':')[0] | basename | regex_search('\.'))
+
+- name: Create directories from volume bind mounts (user pods)
+  become: true
+  ansible.builtin.file:
+    path: "{{ item.volume.split(':')[0] }}"
+    state: directory
+    recurse: true
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: '0755'
+  loop: "{{ docker_volume_dir_stat.results | default([]) }}"
+  loop_control:
+    label: "{{ item.volume.split(':')[0] if item.volume is defined else 'skipped' }}"
+  when:
+    - item.skipped is not defined
+    - not item.stat.exists
+
+- name: "Create docker containers"  # noqa args[module]
+  community.docker.docker_container: "{{ docker_container_defaults | combine(pod) }}"
+  loop: "{{ user_pods | default([]) }}"
+  loop_control:
+    label: "{{ pod.name }}"
+    loop_var: pod
+  register: docker_container_result
+  notify: Prune unused docker resources

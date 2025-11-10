@@ -1,0 +1,61 @@
+---
+unix:
+  children:
+    macos:
+      hosts:
+        Wills-MBP:
+          ansible_connection: local
+
+    linux:
+      children:
+        physical_hosts:
+        virtual_machines:
+
+    physical_hosts:
+      hosts:
+        sbc1:
+        nas1:
+        kvm1:
+        kvm2:
+
+    virtual_machines:
+      children:
+        k8s:
+        vm_pets:
+        vm_dads:
+
+    k8s:
+      children:
+        k8s_ctrl:
+        k8s_wkr:
+
+    k8s_ctrl:
+      hosts:
+        k8ctrl1:
+
+    k8s_wkr:
+      hosts:
+        k8wkr[1:4]:
+
+    vm_pets:
+      hosts:
+        vdb1:
+        vpod:
+        run1:
+        run2:
+        lab1:
+
+    vm_dads:
+      hosts:
+        vws1:
+
+    seaweedfs:
+      hosts:
+        kvm1:
+        kvm2:
+        nas1:
+
+    home:
+      children:
+        physical_hosts:
+        virtual_machines:

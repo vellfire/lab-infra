@@ -1,0 +1,161 @@
+---
+- name: Run host setup tasks
+  hosts: linux
+  gather_facts: true
+  pre_tasks:
+    - name: Wait for system to be ready
+      ansible.builtin.wait_for_connection:
+        timeout: 300
+      tags: always
+
+  tasks:
+    - name: Update hosts
+      tags: ["update"]
+      ansible.builtin.include_role:
+        name: update_hosts
+        apply:
+          become: true
+
+    - name: Run standard setup tasks
+      when: ansible_os_family == 'Debian'
+      tags:
+        - setup
+        - all
+      ansible.builtin.include_role:
+        name: setup_host
+        apply:
+          become: true
+
+    - name: Setup NTP
+      when: req_ntp | default(false)
+      tags: ["time"]
+      ansible.builtin.include_role:
+        name: geerlingguy.ntp
+        apply:
+          become: true
+      vars:
+        ntp_enabled: true
+        ntp_timezone: "Europe/London"
+        ntp_manage_config: true
+        ntp_servers:
+          - "10.10.0.1"
+
+    - name: Get service facts
+      ansible.builtin.service_facts:
+      tags:
+        - setup
+        - alloy
+        - docker
+        - podman
+
+    - name: Setup Alloy monitoring
+      when: req_monitor | default(false)
+      tags: ["alloy"]
+      block:
+        - name: Install and configure Alloy
+          ansible.builtin.include_role:
+            name: grafana.grafana.alloy
+            apply:
+              become: true
+          vars:
+            alloy_env_file_vars:
+              CUSTOM_ARGS: "--disable-reporting"
+
+        - name: Install smartctl exporter
+          when: "'physical_hosts' in group_names"
+          ansible.builtin.include_role:
+            name: prometheus.prometheus.smartctl_exporter
+            apply:
+              become: true
+
+    - name: Setup NUT client
+      when: req_nut | default(false)
+      tags: ["nut"]
+      block:
+        - name: Lookup NUT secret
+          ansible.builtin.set_fact:
+            nut_client_password: "{{ lookup('ripplefcl.bwscache.secret', 'nut_pass').value }}"
+          no_log: true
+
+        - name: Install NUT client
+          ansible.builtin.include_role:
+            name: geerlingguy.nut_client
+            apply:
+              become: true
+              no_log: true
+
+    - name: Setup podman pods
+      when: req_podman | default(false)
+      tags:
+        - podman
+        - pods
+      ansible.builtin.include_role:
+        name: podman
+        apply:
+          tags: ["pods"]
+
+    - name: Setup docker
+      when: req_docker | default(false)
+      tags: ["docker"]
+      ansible.builtin.include_role:
+        name: geerlingguy.docker
+        apply:
+          become: true
+
+    - name: Setup docker containers
+      when: user_pods is defined and req_docker | default(false)
+      tags:
+        - docker
+        - pods
+      ansible.builtin.include_role:
+        name: docker
+        apply:
+          tags: ["pods"]
+
+    - name: Setup restic
+      when: req_restic | default(false)
+      tags: ["restic"]
+      ansible.builtin.include_role:
+        name: roles-ansible.restic
+        apply:
+          become: true
+
+    - name: Install Tailscale
+      when: req_tailscale | default(false)
+      become: true
+      tags: ["tailscale"]
+      block:
+        - name: Parse Tailscale arguments
+          ansible.builtin.set_fact:
+            tailscale_args_list: "{{ (tailscale_args | default('')).split() }}"
+
+        - name: Check if IP forwarding is needed
+          ansible.builtin.set_fact:
+            tailscale_needs_forwarding: >-
+              {{
+              tailscale_enable_forwarding | default(false) or
+              '--advertise-exit-node' in tailscale_args_list or
+              (tailscale_args_list | select('match', '^--advertise-routes=.+') | list | length > 0)
+              }}
+
+        - name: Configure IPv4 forwarding
+          when: "'k8s_cluster' not in group_names"
+          ansible.posix.sysctl:
+            name: net.ipv4.ip_forward
+            value: "{{ '1' if tailscale_needs_forwarding | bool else '0' }}"
+            state: present
+            sysctl_file: /etc/sysctl.d/99-tailscale.conf
+            reload: true
+
+        - name: Configure IPv6 forwarding
+          when: "'k8s_cluster' not in group_names"
+          ansible.posix.sysctl:
+            name: net.ipv6.conf.all.forwarding
+            value: "{{ '1' if tailscale_needs_forwarding | bool else '0' }}"
+            state: present
+            sysctl_file: /etc/sysctl.d/99-tailscale.conf
+            reload: true
+
+        - name: Install and configure Tailscale
+          ansible.builtin.include_role:
+            name: artis3n.tailscale.machine

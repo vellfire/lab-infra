@@ -1,0 +1,15 @@
+---
+- name: Update using apt
+  ansible.builtin.apt:
+    update_cache: true
+    cache_valid_time: 3600
+    upgrade: full
+    autoremove: true
+    autoclean: true
+    purge: true
+
+- name: Check if reboot is required
+  ansible.builtin.stat:
+    path: /var/run/reboot-required
+  register: update_hosts_reboot_required
+  notify: Reboot if required

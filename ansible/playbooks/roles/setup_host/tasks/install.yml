@@ -1,0 +1,6 @@
+---
+- name: Install standard packages
+  ansible.builtin.apt:
+    name: "{{ setup_host_standard_packages + setup_host_additional_packages }}"
+    state: present
+    cache_valid_time: 3600

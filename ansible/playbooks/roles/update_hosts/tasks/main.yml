@@ -1,0 +1,4 @@
+---
+- name: Update debian hosts
+  ansible.builtin.include_tasks: deb.yml
+  when: ansible_os_family == 'Debian'

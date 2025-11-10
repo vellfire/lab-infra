@@ -1,0 +1,141 @@
+---
+user_pods:
+  - name: seaweedfs-master
+    image: "{{ seaweedfs_image }}"
+    publish:
+      - "9333:9333"
+      - "19333:19333"
+      - "9324:9324"
+    volume:
+      - "/opt/pods/seaweedfs/master:/data"
+    command:
+      - master
+      - "-ip={{ ansible_default_ipv4.address }}"
+      - "-ip.bind=::"
+      - "-port=9333"
+      - "-mdir=/data"
+      - "-peers={{ seaweedfs_peers.split(',') | join(':9333,') ~ ':9333' }}"
+      - "-defaultReplication={{ seaweedfs_replication }}"
+      - "-volumeSizeLimitMB=102400"
+    user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
+    quadlet_options:
+      - "UserNS=keep-id"
+      - "HealthCmd=wget --no-verbose --tries=1 --spider http://localhost:9333/cluster/healthz"
+
+  - name: seaweedfs-volume
+    image: "{{ seaweedfs_image }}"
+    publish:
+      - "8090:8090"
+      - "18090:18090"
+      - "9325:9325"
+    volume:
+      - "/opt/pods/seaweedfs/volume:/data"
+    command:
+      - volume
+      - "-mserver={{ seaweedfs_peers.split(',') | join(':9333,') ~ ':9333' }}"
+      - "-port=8090"
+      - "-dir=/data"
+      - "-max={{ seaweedfs_max_volumes }}"
+      - "-ip={{ ansible_default_ipv4.address }}"
+      - "-ip.bind=::"
+    user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
+    quadlet_options:
+      - "UserNS=keep-id"
+      - "HealthCmd=wget --no-verbose --tries=1 --spider http://localhost:8090/healthz"
+
+  - name: seaweedfs-filer
+    image: "{{ seaweedfs_image }}"
+    publish:
+      - "8889:8889"
+      - "18889:18889"
+      - "9326:9326"
+    volume:
+      - "/opt/pods/seaweedfs/filer:/data"
+      - "/opt/pods/seaweedfs/config/filer.toml:/etc/seaweedfs/filer.toml:ro"
+    command:
+      - filer
+      - "-master={{ seaweedfs_peers.split(',') | join(':9333,') ~ ':9333' }}"
+      - "-port=8889"
+      - "-port.grpc=18889"
+      - "-ip={{ ansible_default_ipv4.address }}"
+      - "-ip.bind=::"
+    user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
+    quadlet_options:
+      - "UserNS=keep-id"
+      - "HealthCmd=wget --no-verbose --tries=1 --spider http://localhost:8889/healthz"
+
+  - name: seaweedfs-s3
+    image: "{{ seaweedfs_image }}"
+    publish:
+      - "8333:8333"
+      - "9327:9327"
+    env:
+      AWS_ACCESS_KEY_ID: "{{ lookup('ripplefcl.bwscache.secret', 'seaweed_s3_access_key').value }}"
+      AWS_SECRET_ACCESS_KEY: "{{ lookup('ripplefcl.bwscache.secret', 'seaweed_s3_secret_key').value }}"
+    command:
+      - s3
+      - "-filer={{ ansible_default_ipv4.address }}:8889"
+      - "-ip.bind=::"
+      - "-port=8333"
+    user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
+    quadlet_options:
+      - "UserNS=keep-id"
+
+  - name: traefik
+    image: public.ecr.aws/docker/library/traefik:3.6.0
+    network: host
+    env:
+      BUNNY_API_KEY: "{{ lookup('ripplefcl.bwscache.secret', 'bunny_api').value }}"
+      BUNNY_POLLING_TIMEOUT: "600"
+      BUNNY_POLLING_INTERVAL: "5"
+      BUNNY_TTL: "3600"
+      CF_API_EMAIL: "{{ lookup('ripplefcl.bwscache.secret', 'will_email').value }}"
+      CF_API_KEY: "{{ lookup('ripplefcl.bwscache.secret', 'cf_token').value }}"
+    volume:
+      - "/etc/localtime:/etc/localtime:ro"
+      - "/opt/pods/traefik/config/traefik.yml:/traefik.yml:ro"
+      - "/opt/pods/traefik/config/providers:/providers:ro"
+      - "/opt/pods/traefik/config/certs:/certs:ro"
+      - "/opt/pods/traefik/config/acme.json:/acme.json"
+    quadlet_options:
+      - "HealthCmd=wget --no-verbose --tries=1 --spider https://traefik.{{ lookup('ripplefcl.bwscache.secret', 'root_domain').value }}/metrics"
+
+  - name: openspeedtest
+    image: docker.io/openspeedtest/latest:v2.0.6
+    publish:
+      - "27031:3000"
+      - "27032:3001"
+
+  - name: bws-cache
+    image: ghcr.io/ripplefcl/bws-cache:v3.2.2
+    user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
+    publish:
+      - "5000:5000"
+    env:
+      LOG_LEVEL: "DEBUG"
+      ENABLE_TELEMETRY: "true"
+      SENTRY_ENVIRONMENT: "william"
+
+  - name: meshmon
+    image: ghcr.io/ripplefcl/meshmon:v4.0.0-beta.8
+    user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
+    publish:
+      - "8000:8000"
+      - "42069:42069"
+    volume: ["/opt/pods/meshmon/config:/app/config"]
+    quadlet_options:
+      - "UserNS=keep-id"
+
+system_pods:
+  - name: gravity
+    hostname: "{{ inventory_hostname }}"
+    image: ghcr.io/beryju/gravity:007613bad35f68afea28c40b2644e2fb09d75860
+    network: host
+    capabilities:
+      - NET_ADMIN
+      - NET_RAW
+    env:
+      LOG_LEVEL: info,etcd=error,dhcp=debug
+    volume:
+      - "/opt/pods/gravity/config:/config"
+      - "/opt/pods/gravity/data:/data"

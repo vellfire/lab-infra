@@ -1,0 +1,23 @@
+repos:
+  # Based on https://github.com/ansible/ansible-lint/blob/main/.pre-commit-hooks.yaml
+  - repo: https://github.com/ansible/ansible-lint
+    rev: v25.1.1
+    hooks:
+      - id: ansible-lint
+        stages: [pre-push]
+        name: Ansible-lint
+        description: This hook runs ansible-lint.
+        # https://github.com/pre-commit/pre-commit/issues/1110#issuecomment-747812172
+        entry: bash -c 'cd ansible && python3 -m ansiblelint -v --force-color'
+        language: python
+        # do not pass files to ansible-lint, see:
+        # https://github.com/ansible/ansible-lint/issues/611
+        pass_filenames: false
+        files: ^ansible/
+        additional_dependencies:
+          # https://github.com/pre-commit/pre-commit/issues/1526
+          # If you want to use specific version of ansible-core or ansible, feel
+          # free to override `additional_dependencies` in your own hook config
+          # file.
+          - .
+          - ansible-core>=2.13.3

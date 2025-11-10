@@ -1,0 +1,21 @@
+---
+docker_pod_path_prefix: /opt/pods
+
+docker_container_defaults:
+  default_host_ip: ""
+  restart_policy: unless-stopped
+  state: started
+  pull: missing
+  comparisons:
+    '*': strict
+    env: allow_more_present
+  security_opts:
+    - "no-new-privileges:true"
+  env:
+    TZ: "Europe/London"
+  log_driver: json-file
+  log_options:
+    max-size: "10m"
+    max-file: "3"
+  labels:
+    managed_by: ansible
