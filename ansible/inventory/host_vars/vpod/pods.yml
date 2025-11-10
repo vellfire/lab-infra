@@ -1,0 +1,390 @@
+---
+user_pods:
+  - name: sonarr
+    image: ghcr.io/home-operations/sonarr:4.0.16
+    network:
+      - media
+    publish:
+      - "8989:8989"
+    volume:
+      - "/opt/pods/sonarr/config:/config"
+      - "/opt/shares/pods/media:/media"
+      - "/opt/shares/pods/sonarr:/backup"
+    user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
+    quadlet_options:
+      - "UserNS=keep-id"
+      - |
+        [Unit]
+        RequiresMountsFor=/opt/shares/pods
+        BindsTo=opt-shares-pods.mount
+        After=opt-shares-pods.mount
+
+  - name: radarr
+    image: ghcr.io/home-operations/radarr:6.0.3
+    network:
+      - media
+    publish:
+      - "7878:7878"
+    volume:
+      - "/opt/pods/radarr/config:/config"
+      - "/opt/shares/pods/media:/media"
+      - "/opt/shares/pods/radarr:/backup"
+    user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
+    quadlet_options:
+      - "UserNS=keep-id"
+      - |
+        [Unit]
+        RequiresMountsFor=/opt/shares/pods
+        BindsTo=opt-shares-pods.mount
+        After=opt-shares-pods.mount
+
+  - name: prowlarr
+    image: ghcr.io/home-operations/prowlarr:2.1.5
+    network:
+      - media
+    publish:
+      - "9696:9696"
+    volume:
+      - "/opt/pods/prowlarr/config:/config"
+      - "/opt/shares/pods/prowlarr:/backup"
+    user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
+    quadlet_options:
+      - "UserNS=keep-id"
+      - |
+        [Unit]
+        RequiresMountsFor=/opt/shares/pods
+        BindsTo=opt-shares-pods.mount
+        After=opt-shares-pods.mount
+
+  - name: overseerr
+    image: ghcr.io/sct/overseerr:07dc8d755a0e94d100ecd8b1e950e43da1c0a7dd
+    network:
+      - media
+    publish:
+      - "5055:5055"
+    env:
+      LOG_LEVEL: info
+    volume:
+      - "/opt/pods/overseerr/config:/app/config"
+    user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
+    quadlet_options:
+      - "UserNS=keep-id"
+
+  - name: sabnzbd
+    image: ghcr.io/home-operations/sabnzbd:4.5.5
+    network:
+      - media
+    publish:
+      - "8238:8080"
+    volume:
+      - "/opt/pods/sabnzbd/config:/config"
+      - "/opt/shares/pods/media:/media"
+      - "/opt/shares/pods/sabnzbd:/backup"
+    user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
+    quadlet_options:
+      - "UserNS=keep-id"
+      - "HealthCmd=wget --no-verbose --tries=1 --spider 'http://localhost:8080/api?mode=auth'"
+      - |
+        [Unit]
+        RequiresMountsFor=/opt/shares/pods
+        BindsTo=opt-shares-pods.mount
+        After=opt-shares-pods.mount
+
+  - name: maintainerr
+    image: ghcr.io/maintainerr/maintainerr:2.20.0
+    network:
+      - media
+    publish:
+      - "6246:6246"
+    volume:
+      - "/opt/pods/maintainerr/config:/opt/data"
+    user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
+    quadlet_options:
+      - "UserNS=keep-id"
+
+  - name: tautulli
+    image: ghcr.io/home-operations/tautulli:2.16.0
+    network:
+      - media
+    publish:
+      - "8181:8181"
+    volume:
+      - "/opt/pods/tautulli/config:/config"
+      - "/opt/shares/pods/tautulli/backup:/config/backups"
+    user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
+    quadlet_options:
+      - "UserNS=keep-id"
+      - |
+        [Unit]
+        RequiresMountsFor=/opt/shares/pods
+        BindsTo=opt-shares-pods.mount
+        After=opt-shares-pods.mount
+
+  - name: immich-machine-learning
+    image: ghcr.io/immich-app/immich-machine-learning:v2.2.3
+    network:
+      - immich
+    device:
+      - /dev/dri:/dev/dri
+    volume:
+      - model-cache:/cache
+      - /dev/bus/usb:/dev/bus/usb
+    state: absent
+
+  - name: immich-server
+    image: ghcr.io/immich-app/immich-server:v2.2.3
+    network:
+      - immich
+    env:
+      DB_HOSTNAME: vdb1
+      DB_PORT: 15011
+      REDIS_HOSTNAME: vdb1
+      REDIS_PORT: 15012
+      DB_USER: postgres
+      DB_PASSWORD: "{{ lookup('ripplefcl.bwscache.secret', 'immich_db_pass').value }}"
+      DB_DATABASE_NAME: immich
+    publish:
+      - "2283:2283"
+    device:
+      - "/dev/dri:/dev/dri"
+    volume:
+      - "/opt/shares/pods/media/library/photos:/usr/src/app/upload:U"
+      - "/etc/localtime:/etc/localtime:ro"
+    user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
+    quadlet_options:
+      - "UserNS=keep-id"
+      - "HealthCmd=wget --no-verbose --tries=1 --spider http://localhost:2283/api/server/ping"
+      - |
+        [Unit]
+        RequiresMountsFor=/opt/shares/pods
+        BindsTo=opt-shares-pods.mount
+        After=opt-shares-pods.mount
+    state: absent
+
+  - name: grafana
+    image: docker.io/grafana/grafana:12.2.1
+    publish:
+      - "3000:3000"
+    env:
+      GF_INSTALL_PLUGINS: grafana-clock-panel,natel-discrete-panel,grafana-piechart-panel
+      GF_AUTH_GENERIC_OAUTH_ENABLED: "true"
+      GF_AUTH_GENERIC_OAUTH_NAME: "authentik"
+      GF_AUTH_GENERIC_OAUTH_CLIENT_ID: "{{ lookup('ripplefcl.bwscache.secret', 'grafana_oauth_id').value }}"
+      GF_AUTH_GENERIC_OAUTH_CLIENT_SECRET: "{{ lookup('ripplefcl.bwscache.secret', 'grafana_oauth_key').value }}"
+      GF_AUTH_GENERIC_OAUTH_SCOPES: "openid profile email"
+      GF_AUTH_GENERIC_OAUTH_AUTH_URL: "https://{{ lookup('ripplefcl.bwscache.secret', 'authentik_domain').value }}/application/o/authorize/"
+      GF_AUTH_GENERIC_OAUTH_TOKEN_URL: "https://{{ lookup('ripplefcl.bwscache.secret', 'authentik_domain').value }}/application/o/token/"
+      GF_AUTH_GENERIC_OAUTH_API_URL: "https://{{ lookup('ripplefcl.bwscache.secret', 'authentik_domain').value }}/application/o/userinfo/"
+      GF_AUTH_SIGNOUT_REDIRECT_URL: "https://{{ lookup('ripplefcl.bwscache.secret', 'authentik_domain').value }}/application/o/grafana/end-session/"
+      GF_AUTH_OAUTH_AUTO_LOGIN: "true"
+      GF_AUTH_GENERIC_OAUTH_ROLE_ATTRIBUTE_PATH: >-
+        contains(groups[*], 'Grafana Admins') && 'Admin' ||
+        contains(groups[*], 'Grafana Editors') && 'Editor' ||
+        'Viewer'
+      GF_SERVER_ROOT_URL: "https://graf.mcda.dev"
+    volume:
+      - "/opt/pods/grafana/data:/var/lib/grafana"
+    user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
+    quadlet_options:
+      - "UserNS=keep-id"
+      - "HealthCmd=wget --no-verbose --tries=1 --spider http://localhost:3000/api/health"
+
+  - name: unifi
+    image: docker.io/goofball222/unifi:9.5
+    network:
+      - unifi
+    publish:
+      - "8080:8080"
+      - "8443:8443"
+      - "8880:8880"
+      - "8843:8843"
+      - "27117:27117"
+      - "3478:3478/udp"
+      - "10001:10001/udp"
+    env:
+      DB_MONGO_LOCAL: "false"
+      DB_MONGO_URI: "mongodb://unifi:{{ lookup('ripplefcl.bwscache.secret', 'unifi_db_pass').value }}@vdb1.conf.mcda.dev:27017/unifi?authSource=admin"
+      STATDB_MONGO_URI: "mongodb://unifi:{{ lookup('ripplefcl.bwscache.secret', 'unifi_db_pass').value }}@vdb1.conf.mcda.dev:27017/unifi_stat?authSource=admin"
+      UNIFI_DB_NAME: "unifi"
+      TZ: "Europe/London"
+      UNIFI_UID: "{{ ansible_facts.user_uid }}"
+      UNIFI_GID: "{{ ansible_facts.user_gid }}"
+      UNIFI_STDOUT: "true"
+    volume:
+      - "/opt/pods/unifi/cert:/usr/lib/unifi/cert"
+      - "/opt/pods/unifi/data:/usr/lib/unifi/data"
+      - "/opt/pods/unifi/logs:/usr/lib/unifi/logs"
+    user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
+    quadlet_options:
+      - "UserNS=keep-id"
+
+  - name: unpoller
+    image: ghcr.io/unpoller/unpoller:v2.15.4
+    network:
+      - unifi
+    publish:
+      - "9130:9130"
+    env:
+      UP_UNIFI_DEFAULT_USER: poller
+      UP_UNIFI_DEFAULT_PASS: "{{ lookup('ripplefcl.bwscache.secret', 'unpoller_pass').value }}"
+      UP_UNIFI_DYNAMIC: "false"
+      UP_UNIFI_DEFAULT_URL: "https://unifi:8443"
+      UP_UNIFI_DEFAULT_VERIFY_SSL: "false"
+      UP_UNIFI_DEFAULT_SAVE_SITES: "true"
+      UP_INFLUXDB_DISABLE: "true"
+      UP_POLLER_DEBUG: "true"
+    user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
+    quadlet_options:
+      - "UserNS=keep-id"
+
+  - name: gitea
+    image: docker.gitea.com/gitea:1.25.1-rootless
+    network:
+      - gitea
+    env:
+      GITEA__database__DB_TYPE: postgres
+      GITEA__database__HOST: vdb1:15003
+      GITEA__database__NAME: gitea
+      GITEA__database__USER: gitea
+      GITEA__database__PASSWD: "{{ lookup('ripplefcl.bwscache.secret', 'gitea_db_pass').value | replace('%', '%%') }}"
+    volume:
+      - "/opt/pods/gitea/data:/var/lib/gitea"
+      - "/opt/pods/gitea/config:/etc/gitea"
+      - "/etc/timezone:/etc/timezone:ro"
+      - "/etc/localtime:/etc/localtime:ro"
+    publish:
+      - "8029:3000"
+      - "2222:2222"
+    user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
+    quadlet_options:
+      - "UserNS=keep-id"
+      - "HealthCmd=wget --no-verbose --tries=1 --spider http://localhost:3000/api/healthz"
+
+  - name: renovate-webhook
+    image: docker.io/almir/webhook:latest
+    network:
+      - gitea
+    publish:
+      - "8081:9000"
+    env:
+      GITEA_TOKEN: "{{ lookup('ripplefcl.bwscache.secret', 'gitea_api_token').value | replace('%', '%%') }}"
+      GITEA_URL: "https://{{ lookup('ripplefcl.bwscache.secret', 'gitea_domain').value }}"
+      WEBHOOK_SECRET: "{{ lookup('ripplefcl.bwscache.secret', 'renovate_webhook_secret').value | replace('%', '%%') }}"
+    volume:
+      - "/opt/pods/renovate-webhook/hooks.yaml:/etc/webhook/hooks.yaml:ro"
+      - "/opt/pods/renovate-webhook/trigger.sh:/usr/local/bin/trigger.sh:ro"
+    command: "-verbose -hooks=/etc/webhook/hooks.yaml -hotreload"
+
+  - name: cyberchef
+    image: ghcr.io/gchq/cyberchef:10.19.4
+    publish:
+      - "8082:80"
+
+  - name: it-tools
+    image: docker.io/corentinth/it-tools:latest
+    publish:
+      - "8083:80"
+
+  - name: networking-toolbox
+    image: ghcr.io/lissy93/networking-toolbox:1.5.0
+    publish:
+      - "8084:3000"
+
+  - name: omni-tools
+    image: docker.io/iib0011/omni-tools:0.6.0
+    publish:
+      - "8085:80"
+
+  - name: authentik-server
+    image: ghcr.io/goauthentik/server:2025.10.1
+    command: server
+    network:
+      - authentik
+    publish:
+      - "9000:9000"
+      - "9443:9443"
+      - "9300:9300"
+    env:
+      AUTHENTIK_POSTGRESQL__HOST: vdb1
+      AUTHENTIK_POSTGRESQL__PORT: "15005"
+      AUTHENTIK_POSTGRESQL__NAME: authentik
+      AUTHENTIK_POSTGRESQL__USER: authentik
+      AUTHENTIK_POSTGRESQL__PASSWORD: "{{ lookup('ripplefcl.bwscache.secret', 'authentik_db').value | replace('%', '%%') }}"
+      POSTGRES_PASSWORD: "{{ lookup('ripplefcl.bwscache.secret', 'authentik_db').value | replace('%', '%%') }}"
+      AUTHENTIK_SECRET_KEY: "{{ lookup('ripplefcl.bwscache.secret', 'authentik_secret_key').value | replace('%', '%%') }}"
+      AUTHENTIK_EMAIL__HOST: smtp-relay.gmail.com
+      AUTHENTIK_EMAIL__PORT: "587"
+      AUTHENTIK_EMAIL__USE_TLS: "true"
+      AUTHENTIK_EMAIL__FROM: "{{ lookup('ripplefcl.bwscache.secret', 'authentik_email').value }}"
+    volume:
+      - "/opt/pods/authentik/media:/media:U"
+      - "/opt/pods/authentik/templates:/templates:U"
+
+  - name: authentik-worker
+    image: ghcr.io/goauthentik/server:2025.10.1
+    command: worker
+    network:
+      - authentik
+    env:
+      AUTHENTIK_POSTGRESQL__HOST: vdb1
+      AUTHENTIK_POSTGRESQL__PORT: "15005"
+      AUTHENTIK_POSTGRESQL__NAME: authentik
+      AUTHENTIK_POSTGRESQL__USER: authentik
+      AUTHENTIK_POSTGRESQL__PASSWORD: "{{ lookup('ripplefcl.bwscache.secret', 'authentik_db').value | replace('%', '%%') }}"
+      POSTGRES_PASSWORD: "{{ lookup('ripplefcl.bwscache.secret', 'authentik_db').value | replace('%', '%%') }}"
+      AUTHENTIK_SECRET_KEY: "{{ lookup('ripplefcl.bwscache.secret', 'authentik_secret_key').value | replace('%', '%%') }}"
+      AUTHENTIK_EMAIL__HOST: smtp-relay.gmail.com
+      AUTHENTIK_EMAIL__PORT: "587"
+      AUTHENTIK_EMAIL__USE_TLS: "true"
+      AUTHENTIK_EMAIL__FROM: "{{ lookup('ripplefcl.bwscache.secret', 'authentik_email').value }}"
+    volume:
+      - "/opt/pods/authentik/media:/media:U"
+      - "/opt/pods/authentik/certs:/certs:U"
+      - "/opt/pods/authentik/templates:/templates:U"
+
+  - name: romm
+    image: ghcr.io/rommapp/romm:4.3.2
+    publish:
+      - "8031:8080"
+    env:
+      DB_HOST: "{{ lookup('ripplefcl.bwscache.secret', 'db_host').value }}"
+      DB_PORT: "15006"
+      DB_NAME: romm
+      DB_USER: romm
+      DB_PASSWD: "{{ lookup('ripplefcl.bwscache.secret', 'romm_db_pass').value }}"
+      OIDC_ENABLED: true
+      OIDC_PROVIDER: authentik
+      OIDC_CLIENT_ID: romm
+      OIDC_CLIENT_SECRET: "{{ lookup('ripplefcl.bwscache.secret', 'romm_oauth_key').value }}"
+      OIDC_REDIRECT_URI: "https://{{ lookup('ripplefcl.bwscache.secret', 'romm_domain').value }}/api/oauth/openid"
+      OIDC_SERVER_APPLICATION_URL: "https://{{ lookup('ripplefcl.bwscache.secret', 'authentik_domain').value }}/application/o/romm"
+      REDIS_HOST: "{{ lookup('ripplefcl.bwscache.secret', 'db_host').value }}"
+      REDIS_PORT: "15012"
+      ROMM_AUTH_SECRET_KEY: "{{ lookup('ripplefcl.bwscache.secret', 'romm_auth_key').value }}"
+      SCREENSCRAPER_USER: "{{ lookup('ripplefcl.bwscache.secret', 'romm_sc_user').value }}"
+      SCREENSCRAPER_PASSWORD: "{{ lookup('ripplefcl.bwscache.secret', 'romm_sc_pass').value }}"
+      RETROACHIEVEMENTS_API_KEY: "{{ lookup('ripplefcl.bwscache.secret', 'romm_ra_key').value }}"
+      STEAMGRIDDB_API_KEY: "{{ lookup('ripplefcl.bwscache.secret', 'romm_sg_key').value }}"
+      HASHEOUS_API_ENABLED: true
+    volume:
+      - romm_resources:/romm/resources
+      - /opt/shares/pods/romm/library:/romm/library
+      - /opt/shares/pods/romm/assets:/romm/assets
+      - /opt/pods/romm/config:/romm/config
+    quadlet_options:
+      - |
+        [Unit]
+        RequiresMountsFor=/opt/shares/pods
+        BindsTo=opt-shares-pods.mount
+        After=opt-shares-pods.mount
+
+pod_volumes:
+  - name: model-cache
+  - name: romm_resources
+
+pod_networks:
+  - name: media
+  - name: immich
+  - name: unifi
+  - name: authentik
+  - name: gitea

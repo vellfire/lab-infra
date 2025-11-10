@@ -1,0 +1,164 @@
+---
+user_pods:
+  - name: seaweedfs-master
+    image: "{{ seaweedfs_image }}"
+    publish:
+      - "9333:9333"
+      - "19333:19333"
+      - "9324:9324"
+    volume:
+      - "/opt/seaweedfs/master:/data"
+    command:
+      - master
+      - "-ip={{ ansible_default_ipv4.address }}"
+      - "-ip.bind=::"
+      - "-port=9333"
+      - "-mdir=/data"
+      - "-peers={{ seaweedfs_peers.split(',') | join(':9333,') ~ ':9333' }}"
+      - "-defaultReplication={{ seaweedfs_replication }}"
+      - "-volumeSizeLimitMB=102400"
+    user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
+    quadlet_options:
+      - "UserNS=keep-id"
+      - "HealthCmd=wget --no-verbose --tries=1 --spider http://localhost:9333/cluster/healthz"
+
+  - name: seaweedfs-volume
+    image: "{{ seaweedfs_image }}"
+    publish:
+      - "8090:8090"
+      - "18090:18090"
+      - "9325:9325"
+    volume:
+      - "/opt/seaweedfs/volume:/data"
+    command:
+      - volume
+      - "-mserver={{ seaweedfs_peers.split(',') | join(':9333,') ~ ':9333' }}"
+      - "-port=8090"
+      - "-dir=/data"
+      - "-max={{ seaweedfs_max_volumes }}"
+      - "-ip={{ ansible_default_ipv4.address }}"
+      - "-ip.bind=::"
+    user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
+    quadlet_options:
+      - "UserNS=keep-id"
+      - "HealthCmd=wget --no-verbose --tries=1 --spider http://localhost:8090/healthz"
+
+  - name: seaweedfs-filer
+    image: "{{ seaweedfs_image }}"
+    publish:
+      - "8889:8889"
+      - "18889:18889"
+      - "9326:9326"
+    volume:
+      - "/opt/seaweedfs/filer:/data"
+      - "/opt/seaweedfs/config/filer.toml:/etc/seaweedfs/filer.toml:ro"
+    command:
+      - filer
+      - "-master={{ seaweedfs_peers.split(',') | join(':9333,') ~ ':9333' }}"
+      - "-port=8889"
+      - "-port.grpc=18889"
+      - "-ip={{ ansible_default_ipv4.address }}"
+      - "-ip.bind=::"
+    user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
+    quadlet_options:
+      - "UserNS=keep-id"
+      - "HealthCmd=wget --no-verbose --tries=1 --spider http://localhost:8889/healthz"
+
+  - name: seaweedfs-s3
+    image: "{{ seaweedfs_image }}"
+    publish:
+      - "8333:8333"
+      - "9327:9327"
+    env:
+      AWS_ACCESS_KEY_ID: "{{ lookup('ripplefcl.bwscache.secret', 'seaweed_s3_access_key').value }}"
+      AWS_SECRET_ACCESS_KEY: "{{ lookup('ripplefcl.bwscache.secret', 'seaweed_s3_secret_key').value }}"
+    command:
+      - s3
+      - "-filer={{ ansible_default_ipv4.address }}:8889"
+      - "-ip.bind=::"
+      - "-port=8333"
+    user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
+    quadlet_options:
+      - "UserNS=keep-id"
+
+  - name: plex
+    image: ghcr.io/home-operations/plex:1.42.2
+    publish:
+      - "32400:32400"
+    network: pasta
+    env:
+      PLEX_ADVERTISE_URL: "{{ 'https://' + lookup('ripplefcl.bwscache.secret', 'plex_domain').value }}"
+      PLEX_CLAIM_TOKEN: "{{ lookup('ripplefcl.bwscache.secret', 'plex_claim_token').value }}"
+    volume:
+      - "/opt/pods/plex/config:/config"
+      - "/opt/shares/pods/media:/media"
+      - "/opt/shares/pods/plex:/backup"
+    device:
+      - "/dev/dri:/dev/dri"
+      - "nvidia.com/gpu=all"
+    user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
+    quadlet_options:
+      - "UserNS=keep-id"
+      - "HealthCmd=/healthcheck.sh"
+      - |
+        [Unit]
+        RequiresMountsFor=/opt/shares/pods
+        BindsTo=opt-shares-pods.mount
+        After=opt-shares-pods.mount
+
+  - name: immich-machine-learning
+    image: ghcr.io/immich-app/immich-machine-learning:v2.2.3
+    network:
+      - immich
+    device:
+      - /dev/dri:/dev/dri
+      - "nvidia.com/gpu=all"
+    volume:
+      - model-cache:/cache
+      - /dev/bus/usb:/dev/bus/usb
+
+  - name: immich-server
+    image: ghcr.io/immich-app/immich-server:v2.2.3
+    network:
+      - immich
+    env:
+      DB_HOSTNAME: vdb1
+      DB_PORT: 15011
+      REDIS_HOSTNAME: vdb1
+      REDIS_PORT: 15012
+      DB_USER: postgres
+      DB_PASSWORD: "{{ lookup('ripplefcl.bwscache.secret', 'immich_db_pass').value }}"
+      DB_DATABASE_NAME: immich
+    publish:
+      - "2283:2283"
+    device:
+      - "/dev/dri:/dev/dri"
+      - "nvidia.com/gpu=all"
+    volume:
+      - "/opt/shares/pods/media/library/photos:/usr/src/app/upload"
+      - "/etc/localtime:/etc/localtime:ro"
+    quadlet_options:
+      - "UserNS=host"
+      - "HealthCmd=wget --no-verbose --tries=1 --spider http://localhost:2283/api/server/ping"
+      - |
+        [Unit]
+        RequiresMountsFor=/opt/shares/pods
+        BindsTo=opt-shares-pods.mount
+        After=opt-shares-pods.mount
+
+system_pods:
+  - name: gravity
+    hostname: "{{ inventory_hostname }}"
+    image: ghcr.io/beryju/gravity:007613bad35f68afea28c40b2644e2fb09d75860
+    network: host
+    capabilities:
+      - NET_ADMIN
+      - NET_RAW
+    env:
+      LOG_LEVEL: info,etcd=error,dhcp=debug
+    volume:
+      - "/opt/pods/gravity/config:/config"
+      - "/opt/pods/gravity/data:/data"
+
+pod_networks:
+  - name: immich

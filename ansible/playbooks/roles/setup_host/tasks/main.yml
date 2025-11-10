@@ -1,0 +1,14 @@
+---
+- name: Install apt packages
+  ansible.builtin.include_tasks: install.yml
+
+- name: Configure systemd-resolved
+  ansible.builtin.include_tasks: resolved.yml
+
+- name: Configure user
+  ansible.builtin.include_tasks: user.yml
+  when: ansible_user is defined and ansible_user != 'root'
+
+- name: Configure shares
+  ansible.builtin.include_tasks: shares.yml
+  when: shares is defined

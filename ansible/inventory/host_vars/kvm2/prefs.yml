@@ -1,0 +1,3 @@
+---
+req_podman: true
+ansible_user: automation

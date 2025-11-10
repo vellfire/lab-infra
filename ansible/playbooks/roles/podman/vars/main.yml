@@ -1,0 +1,42 @@
+---
+podman_dns_searches: "{{ ['dns.podman'] + (ansible_dns.search | default([])) }}"
+
+podman_quadlet_defaults:
+  - |
+    [Service]
+    Restart=always
+  - |
+    [Install]
+    WantedBy=default.target
+
+podman_conf: |
+  [containers]
+  ipv6 = true
+
+  log_size_max = 10485760
+  log_driver = "journald"
+
+  pids_limit = 4096
+
+  prepare_volume_on_create = true
+
+  dns_searches = {{ podman_dns_searches | to_json }}
+
+  [engine]
+  events_logger = "file"
+  events_logfile_max_size = "10m"
+
+  database_backend = "sqlite"
+
+  image_parallel_copies = 3
+
+  compression_format = "zstd"
+  compression_level = 3
+
+  stop_timeout = 30
+
+  healthcheck_events = true
+
+  [network]
+  network_backend = "netavark"
+  firewall_driver = "nftables"

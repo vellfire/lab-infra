@@ -1,0 +1,12 @@
+---
+- name: "Create docker networks"
+  community.docker.docker_network:
+    name: "{{ network.name }}"
+    driver: "{{ network.driver | default('bridge') }}"
+    driver_options: "{{ network.driver_options | default(omit) }}"
+    ipam_config: "{{ network.ipam_config | default(omit) }}"
+    state: present
+  loop: "{{ pod_networks }}"
+  loop_control:
+    label: "{{ network.name }}"
+    loop_var: network

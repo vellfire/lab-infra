@@ -1,0 +1,28 @@
+---
+- name: Allow passwordless sudo for 'sudo' group
+  community.general.sudoers:
+    name: passwordless_sudo
+    group: sudo
+    nopassword: true
+    commands: ALL
+    runas: ALL:ALL
+    state: present
+
+- name: Create ~/.hushlogin for ansible_user
+  ansible.builtin.file:
+    path: "/home/{{ ansible_user }}/.hushlogin"
+    state: touch
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: '0644'
+    modification_time: preserve
+    access_time: preserve
+
+- name: Import ssh keys from github for users
+  ansible.posix.authorized_key:
+    user: "{{ item }}"
+    key: "https://github.com/{{ setup_host_github_user }}.keys"
+    state: present
+  loop:
+    - "{{ automation_user }}"
+    - "{{ ansible_user }}"

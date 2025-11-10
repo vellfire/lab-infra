@@ -1,0 +1,12 @@
+---
+- name: Create podman networks
+  become: false
+  containers.podman.podman_network:
+    name: "{{ network.name }}"
+    driver: "{{ network.driver | default('bridge') }}"
+    state: present
+    recreate: false
+  loop: "{{ pod_networks }}"
+  loop_control:
+    label: "{{ network.name }}"
+    loop_var: network

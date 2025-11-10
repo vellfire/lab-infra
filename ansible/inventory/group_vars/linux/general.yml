@@ -1,0 +1,228 @@
+---
+# Standard Variables
+ansible_user: will
+automation_user: automation
+automation_uid: 1337
+
+# Docker Variables
+docker_edition: 'ce'
+docker_packages:
+  - "docker-{{ docker_edition }}"
+  - "docker-{{ docker_edition }}-cli"
+  - "docker-{{ docker_edition }}-rootless-extras"
+docker_packages_state: present
+docker_users:
+  - "{{ ansible_user }}"
+  - "{{ automation_user }}"
+
+# Nut Client Configuration
+nut_client_server: sbc1
+nut_client_username: observer
+nut_client_state: started
+nut_client_enabled: true
+
+# Restic Configuration
+restic_user: root
+restic_log_dir: /var/log/restic
+restic_create_schedule: true
+restic_schedule_type: systemd
+restic_backup_now: false
+restic__cache_config: true
+restic__cache_dir: /opt/restic/cache
+restic_version: '0.18.1'
+
+# Tailscale Configuration
+tailscale_authkey: "{{ lookup('ripplefcl.bwscache.secret', 'tailscale_oauth_secret').value }}"
+tailscale_tags: ["ansible"]
+tailscale_up_skip: false
+tailscale_oauth_preauthorized: true
+
+# Alloy Configuration
+alloy_config: |
+  prometheus.exporter.unix "node" {
+    cpu { guest = {{ (ansible_facts.virtualization_role == 'guest') | lower }} }
+    disk {}
+    ethtool {}
+    hwmon {}
+    ntp {}
+    netclass {}
+    netstat {}
+    perf {}
+    sysctl {}
+    systemd {}
+    vmstat {}
+    netdev { device_exclude = "^(docker.*|br-.*|veth.*|tap.*|cni-podman.*|podman.*|tailscale.*)$" }
+    filesystem { mount_points_exclude = "^/(dev|proc|run/credentials/.+|sys|var/lib/docker/.+|opt/shares/.+)($|/)" }
+  }
+
+  prometheus.scrape "node" {
+    targets         = prometheus.exporter.unix.node.targets
+    job_name        = "node-exporter"
+    scrape_interval = "15s"
+    forward_to      = [prometheus.relabel.node.receiver]
+  }
+
+  prometheus.relabel "node" {
+    rule {
+      target_label = "instance"
+      replacement  = env("HOSTNAME")
+    }
+    forward_to = [prometheus.remote_write.prom.receiver]
+  }
+
+  prometheus.remote_write "prom" {
+    endpoint { url = "https://{{ lookup('ripplefcl.bwscache.secret', 'prometheus_domain').value }}/api/v1/write" }
+  }
+
+  loki.source.journal "all" {
+    max_age    = "12h"
+    path       = "/var/log/journal"
+    labels     = { job = "systemd-journal", host = env("HOSTNAME"), source = "journal" }
+    forward_to = [loki.process.journal.receiver]
+  }
+
+  {% raw %}loki.process "journal" {
+    stage.labels {
+      values = {
+        priority = "{{ .Priority }}",
+        unit     = "{{ or .__journal__SYSTEMD_UNIT .__journal__SYSTEMD_USER_UNIT \"\" }}",
+      }
+    }
+    stage.match {
+      selector = "{unit=~\"alloy.*\"}"
+      action   = "drop"
+    }
+    forward_to = [loki.write.loki.receiver]
+  }{% endraw %}
+
+  loki.source.file "system_logs" {
+    targets = [
+      { __path__ = "/var/log/auth.log", job = "auth", host = env("HOSTNAME"), source = "file" },
+      { __path__ = "/var/log/kern.log", job = "kernel", host = env("HOSTNAME"), source = "file" },
+      { __path__ = "/var/log/syslog", job = "syslog", host = env("HOSTNAME"), source = "file" },
+    ]
+    forward_to = [loki.process.system_files.receiver]
+  }
+
+  {% raw %}loki.process "system_files" {
+    stage.static_labels { values = { log_type = "file" } }
+    stage.regex {
+      expression = "^(?P<timestamp>\\S+\\s+\\d+\\s+\\S+)\\s+(?P<hostname>\\S+)\\s+(?P<service>\\S+?)(?:\\[(?P<pid>\\d+)\\])?:\\s+(?P<message>.*)$"
+    }
+    stage.labels { values = { service = "{{ .service }}" } }
+    stage.timestamp {
+      source = "timestamp"
+      format = "Jan _2 15:04:05"
+    }
+    forward_to = [loki.write.loki.receiver]
+  }{% endraw %}
+
+  loki.write "loki" {
+    endpoint { url = "https://{{ lookup('ripplefcl.bwscache.secret', 'loki_domain').value }}/loki/api/v1/push" }
+  }
+
+  {% if req_restic | default(false) %}
+  loki.source.file "restic_logs" {
+    targets = [
+      { __path__ = "/var/log/restic/*.log", job = "restic", host = env("HOSTNAME"), source = "file" },
+    ]
+    forward_to = [loki.process.restic_files.receiver]
+  }
+
+  {% raw %}loki.process "restic_files" {
+    stage.static_labels { values = { log_type = "restic" } }
+    forward_to = [loki.write.loki.receiver]
+  }{% endraw %}
+  {% endif %}
+
+  {% if 'docker.service' in ansible_facts.services %}
+  discovery.docker "containers" {
+    host             = "unix:///var/run/docker.sock"
+    refresh_interval = "5s"
+  }
+
+  discovery.relabel "containers" {
+    targets = discovery.docker.containers.targets
+
+    rule {
+      target_label = "job"
+      replacement  = "docker"
+    }
+
+    rule {
+      target_label = "source"
+      replacement  = "docker"
+    }
+
+    rule {
+      target_label = "host"
+      replacement  = env("HOSTNAME")
+    }
+
+    rule {
+      source_labels = ["__meta_docker_container_name"]
+      regex         = "/(.*)"
+      target_label  = "container"
+    }
+
+    rule {
+      source_labels = ["__meta_docker_container_name"]
+      regex         = "/(.*)"
+      target_label  = "instance"
+    }
+
+    rule {
+      source_labels = ["__meta_docker_container_image"]
+      target_label  = "image"
+    }
+
+    rule {
+      source_labels = ["__meta_docker_container_log_stream"]
+      target_label  = "stream"
+    }
+  }
+
+  loki.source.docker "containers" {
+    host             = "unix:///var/run/docker.sock"
+    targets          = discovery.relabel.containers.output
+    forward_to       = [loki.write.loki.receiver]
+    refresh_interval = "5s"
+  }
+  {% endif %}
+
+  {% if 'incus.service' in ansible_facts.services %}
+  prometheus.scrape "incus" {
+    targets         = [{ __address__ = "127.0.0.1:8443", __metrics_path__ = "/1.0/metrics", __scheme__ = "https" }]
+    job_name        = env("HOSTNAME")
+    scrape_interval = "15s"
+    forward_to      = [prometheus.relabel.incus.receiver]
+    tls_config {
+      insecure_skip_verify = true
+    }
+  }
+
+  prometheus.relabel "incus" {
+    rule {
+      target_label = "instance"
+      replacement  = env("HOSTNAME")
+    }
+    forward_to = [prometheus.remote_write.prom.receiver]
+  }
+  {% endif %}
+
+  {% if 'physical_hosts' in group_names %}
+  prometheus.scrape "smartctl" {
+    targets         = [{ __address__ = "127.0.0.1:9633" }]
+    job_name        = "smartctl"
+    scrape_interval = "60s"
+    forward_to      = [prometheus.relabel.smartctl.receiver]
+  }
+
+  prometheus.relabel "smartctl" {
+    rule {
+      target_label = "instance"
+      replacement  = env("HOSTNAME")
+    }
+    forward_to = [prometheus.remote_write.prom.receiver]
+  }
+  {% endif %}

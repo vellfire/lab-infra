@@ -1,0 +1,45 @@
+#cloud-config
+hostname: ${name}
+package_update: false
+package_upgrade: false
+packages:
+- "incus-agent"
+- "openssh-server"
+timezone: ${timezone}
+
+users:
+- name: ${standard_username}
+  shell: "/bin/bash"
+  ssh_authorized_keys:
+    - ${standard_ssh_key}
+    - ${automation_ssh_key}
+  sudo: "ALL=(ALL) NOPASSWD:ALL"
+- name: ${automation_username}
+  shell: "/bin/bash"
+  ssh_authorized_keys:
+    - ${standard_ssh_key}
+    - ${automation_ssh_key}
+  sudo: "ALL=(ALL) NOPASSWD:ALL"
+  uid: ${automation_uid}
+
+swap:
+  filename: /swap.img
+  size: 0
+  maxsize: 0
+
+disk_setup:
+  "/dev/sdb": {"layout": true, "overwrite": false, "table_type": "gpt"}
+
+fs_setup:
+- {"device": "/dev/sdb1", "filesystem": "ext4", "label": "k8s-data"}
+
+mounts:
+%{~ if node_type == "control" }
+- ["/dev/sdb1", "/var/lib/etcd", "ext4", "defaults,noatime", "0", "2"]
+%{~ else }
+- ["/dev/sdb1", "/var/lib/longhorn", "ext4", "defaults,noatime", "0", "2"]
+%{~ endif }
+
+runcmd:
+  - systemctl enable ssh.service
+  - systemctl start ssh.service

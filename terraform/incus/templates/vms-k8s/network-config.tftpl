@@ -1,0 +1,17 @@
+#cloud-config
+"ethernets":
+  "enp5s0":
+    "set-name": "eth0"
+    "match":
+      "macaddress": "${mac}"
+    "accept-ra": true
+    "dhcp4": true
+    "dhcp4-overrides":
+      "hostname": "${name}"
+      "send-hostname": true
+      "use-dns": true
+      "use-domains": true
+      "use-ntp": true
+      "use-routes": true
+    "dhcp6": false
+"version": 2

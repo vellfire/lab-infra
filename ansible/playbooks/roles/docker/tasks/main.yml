@@ -1,0 +1,16 @@
+---
+- name: Create docker networks
+  when: pod_networks is defined
+  ansible.builtin.include_tasks: networks.yml
+
+- name: Create docker volumes
+  when: pod_volumes is defined
+  ansible.builtin.include_tasks: volumes.yml
+
+- name: Configure SeaweedFS
+  when: "'seaweedfs' in group_names and seaweedfs_filer_config is defined"
+  ansible.builtin.include_tasks: seaweedfs.yml
+
+- name: Create docker containers
+  when: user_pods is defined
+  ansible.builtin.include_tasks: pods.yml
