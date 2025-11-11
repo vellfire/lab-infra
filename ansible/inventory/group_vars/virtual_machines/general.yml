@@ -10,3 +10,4 @@ tailscale_args: >-
   --ssh=false
   --accept-dns=false
   --accept-routes=false
+  --netfilter-mode=off

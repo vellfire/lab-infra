@@ -13,3 +13,4 @@ tailscale_args: >-
   --stateful-filtering=false
   --advertise-exit-node
   --advertise-routes={{ lookup('ripplefcl.bwscache.secret', 'tailscale_routes').value }}
+  --netfilter-mode=off
