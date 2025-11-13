@@ -166,7 +166,7 @@ user_pods:
     publish:
       - "3000:3000"
     env:
-      GF_INSTALL_PLUGINS: grafana-clock-panel,natel-discrete-panel,grafana-piechart-panel
+      GF_INSTALL_PLUGINS: grafana-clock-panel,natel-discrete-panel,grafana-piechart-panel,ae3e-plotly-panel
       GF_AUTH_GENERIC_OAUTH_ENABLED: "true"
       GF_AUTH_GENERIC_OAUTH_NAME: "authentik"
       GF_AUTH_GENERIC_OAUTH_CLIENT_ID: "{{ lookup('ripplefcl.bwscache.secret', 'grafana_oauth_id').value }}"
