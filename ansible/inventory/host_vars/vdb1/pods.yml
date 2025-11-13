@@ -279,6 +279,19 @@ user_pods:
     quadlet_options:
       - "UserNS=keep-id"
 
+  - name: starlink-exporter
+    image: docker.io/clarkzjw/starlink-exporter:v20250818
+    network:
+      - monitor
+
+  - name: speedtest-exporter
+    image: ghcr.io/miguelndecarvalho/speedtest-exporter:v3.5.4
+    network:
+      - monitor
+    env:
+      SPEEDTEST_PORT=8080
+      SPEEDTEST_SERVER=4078
+
   - name: unifi-db
     image: public.ecr.aws/docker/library/mongo:8.0.15
     network:
