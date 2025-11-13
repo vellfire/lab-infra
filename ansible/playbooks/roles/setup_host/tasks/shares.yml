@@ -20,7 +20,7 @@
     boot: true
     fstype: nfs
     state: mounted
-    opts: rw,vers=3,nolock,hard,intr,nofail
+    opts: rw,vers=3,nolock,hard,intr,nofail,_netdev
   loop: "{{ shares }}"
   loop_control:
     label: "{{ item.name }}"
