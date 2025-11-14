@@ -66,7 +66,7 @@ user_pods:
       - "HealthCmd=/usr/local/bin/healthcheck.sh --connect --innodb_initialized"
 
   - name: media-db
-    image: public.ecr.aws/docker/library/postgres:17.6
+    image: public.ecr.aws/docker/library/postgres:17.7
     network:
       - db
       - monitor
@@ -81,7 +81,7 @@ user_pods:
       - "HealthCmd=pg_isready -U media"
 
   - name: gitea-db
-    image: public.ecr.aws/docker/library/postgres:17.6
+    image: public.ecr.aws/docker/library/postgres:17.7
     network:
       - db
       - monitor
@@ -97,7 +97,7 @@ user_pods:
       - "HealthCmd=pg_isready -U gitea"
 
   - name: seaweedfs-db
-    image: public.ecr.aws/docker/library/postgres:17.6
+    image: public.ecr.aws/docker/library/postgres:17.7
     network:
       - db
       - monitor
@@ -115,7 +115,7 @@ user_pods:
       - "HealthCmd=pg_isready -U seaweed"
 
   - name: authentik-db
-    image: public.ecr.aws/docker/library/postgres:17.6
+    image: public.ecr.aws/docker/library/postgres:17.7
     network:
       - db
       - monitor
