@@ -20,7 +20,6 @@
       when: ansible_os_family == 'Debian'
       tags:
         - setup
-        - all
       ansible.builtin.include_role:
         name: setup_host
         apply:
