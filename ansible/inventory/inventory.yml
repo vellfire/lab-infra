@@ -20,22 +20,8 @@ unix:
 
     virtual_machines:
       children:
-        k8s:
         vm_pets:
         vm_dads:
-
-    k8s:
-      children:
-        k8s_ctrl:
-        k8s_wkr:
-
-    k8s_ctrl:
-      hosts:
-        k8ctrl1:
-
-    k8s_wkr:
-      hosts:
-        k8wkr[1:4]:
 
     vm_pets:
       hosts:
@@ -43,7 +29,8 @@ unix:
         vpod:
         run1:
         run2:
-        lab1:
+        dns1:
+        dns2:
 
     vm_dads:
       hosts:

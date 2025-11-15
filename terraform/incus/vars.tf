@@ -88,13 +88,13 @@ variable "dad_ssh_key" {
 variable "k8s_enabled" {
   description = "Enable k8s cluster"
   type        = bool
-  default     = true
+  default     = false
 }
 
 variable "k8s_worker_count" {
   description = "k8s worker count"
   type        = number
-  default     = 4
+  default     = 0
 }
 
 variable "k8s_control_hosts" {
