@@ -29,8 +29,7 @@ unix:
         vpod:
         run1:
         run2:
-        dns1:
-        dns2:
+        dns[1:2]:
 
     vm_dads:
       hosts:
