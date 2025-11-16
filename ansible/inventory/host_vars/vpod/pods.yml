@@ -290,7 +290,7 @@ user_pods:
       - "8083:80"
 
   - name: networking-toolbox
-    image: ghcr.io/lissy93/networking-toolbox:1.5.0
+    image: ghcr.io/lissy93/networking-toolbox:1.6.0
     publish:
       - "8084:3000"
 
