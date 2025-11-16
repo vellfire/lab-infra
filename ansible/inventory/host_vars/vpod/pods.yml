@@ -91,7 +91,7 @@ user_pods:
         After=opt-shares-pods.mount
 
   - name: maintainerr
-    image: ghcr.io/maintainerr/maintainerr:2.20.0
+    image: ghcr.io/maintainerr/maintainerr:2.21.0
     network:
       - media
     publish:
