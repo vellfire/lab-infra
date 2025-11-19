@@ -82,7 +82,7 @@ user_pods:
       - "UserNS=keep-id"
 
   - name: traefik
-    image: public.ecr.aws/docker/library/traefik:3.6.1
+    image: public.ecr.aws/docker/library/traefik:v3.6.2
     network: host
     env:
       BUNNY_API_KEY: "{{ lookup('ripplefcl.bwscache.secret', 'bunny_api').value }}"
