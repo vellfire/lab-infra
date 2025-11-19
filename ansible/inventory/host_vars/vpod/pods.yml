@@ -300,7 +300,7 @@ user_pods:
       - "8085:80"
 
   - name: authentik-server
-    image: ghcr.io/goauthentik/server:2025.10.1
+    image: ghcr.io/goauthentik/server:2025.10.2
     command: server
     network:
       - authentik
@@ -325,7 +325,7 @@ user_pods:
       - "/opt/pods/authentik/templates:/templates:U"
 
   - name: authentik-worker
-    image: ghcr.io/goauthentik/server:2025.10.1
+    image: ghcr.io/goauthentik/server:2025.10.2
     command: worker
     network:
       - authentik
